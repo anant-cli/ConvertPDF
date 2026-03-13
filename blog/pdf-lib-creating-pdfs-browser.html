@@ -1,10 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Developer's Guide to PDF-Lib: Creating PDFs in the Browser – ConvertPDF Blog</title>
+    <title>A Developer's Guide to PDF-Lib: Creating PDFs in the Browser � ConvertPDF Blog</title>
     <meta name="description"
         content="Learn how pdf-lib works, how to create and modify PDFs entirely in the browser using JavaScript, and why client-side PDF generation matters.">
     <meta name="keywords"
@@ -30,7 +31,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon"
-        href="../data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>">
+        href="../data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>??</text></svg>">
     <script
         type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Creating PDFs in the Browser with pdf-lib","description":"Technical guide to using pdf-lib.js for creating and manipulating PDFs entirely in the browser.","datePublished":"2026-03-03","author":{"@type":"Organization","name":"ConvertPDF"},"publisher":{"@type":"Organization","name":"ConvertPDF","url":"https://convert-pdf-tool.netlify.app"}}</script>
 </head>
@@ -39,7 +40,7 @@
     <header class="site-header">
         <div class="header-container">
             <div class="logo">
-                <a href="../index.html" title="ConvertPDF - Home">📄 ConvertPDF</a>
+                <a href="../index.html" title="ConvertPDF - Home">?? ConvertPDF</a>
             </div>
             <nav class="main-nav">
                 <ul>
@@ -56,42 +57,42 @@
     <main>
         <div class="app-container">
             <div style="margin-bottom: 2rem;">
-                <a href="index.html" class="back-btn">← Back to Blog</a>
+                <a href="index.html" class="back-btn">? Back to Blog</a>
             </div>
 
             <div class="blog-post">
                 <h1>A Developer's Guide to PDF-Lib: Creating PDFs in the Browser</h1>
-                <p class="post-meta">Published on March 3, 2026 | 📁 Development, JavaScript</p>
+                <p class="post-meta">Published on March 3, 2026 | ?? Development, JavaScript</p>
 
                 <section>
                     <h2>Introduction</h2>
                     <p>
-                        Generating PDF documents has traditionally been a server‑side operation. You'd send data to a
+                        Generating PDF documents has traditionally been a server-side operation. You'd send data to a
                         backend, use a library like wkhtmltopdf or Puppeteer, render the PDF, and send it back to the
-                        client. But what if you could skip the server entirely? That's exactly what pdf‑lib makes
+                        client. But what if you could skip the server entirely? That's exactly what pdf-lib makes
                         possible.
                     </p>
                     <p>
-                        pdf‑lib is a powerful JavaScript library that creates and modifies PDF documents directly in the
+                        pdf-lib is a powerful JavaScript library that creates and modifies PDF documents directly in the
                         browser. No server roundtrip, no file uploads, no external dependencies other than the library
-                        itself. In this guide, we'll explore how pdf‑lib works, its core capabilities, and why
-                        client‑side PDF generation is becoming the preferred approach for privacy‑conscious
+                        itself. In this guide, we'll explore how pdf-lib works, its core capabilities, and why
+                        client-side PDF generation is becoming the preferred approach for privacy-conscious
                         applications.
                     </p>
                 </section>
 
                 <section>
-                    <h2>What Is pdf‑lib?</h2>
+                    <h2>What Is pdf-lib?</h2>
                     <p>
-                        pdf‑lib is an open‑source JavaScript library created by Andrew Dillon. Unlike older PDF
-                        libraries that rely on HTML‑to‑PDF rendering (which essentially takes a screenshot of HTML
-                        content), pdf‑lib constructs PDFs programmatically from scratch. It manipulates the PDF
+                        pdf-lib is an open-source JavaScript library created by Andrew Dillon. Unlike older PDF
+                        libraries that rely on HTML-to-PDF rendering (which essentially takes a screenshot of HTML
+                        content), pdf-lib constructs PDFs programmatically from scratch. It manipulates the PDF
                         specification directly, giving you precise control over every element in your document.
                     </p>
                     <p>
                         The library works in both Node.js and browser environments with the same API. It has zero native
-                        dependencies, meaning it doesn't require any compiled binaries or system‑level libraries. This
-                        makes it ideal for browser‑based applications where you can't install software on the user's
+                        dependencies, meaning it doesn't require any compiled binaries or system-level libraries. This
+                        makes it ideal for browser-based applications where you can't install software on the user's
                         machine.
                     </p>
                     <p>
@@ -104,7 +105,7 @@
                 <section>
                     <h2>Core Concepts and API Overview</h2>
                     <p>
-                        Working with pdf‑lib revolves around a few central objects. The <code>PDFDocument</code> class
+                        Working with pdf-lib revolves around a few central objects. The <code>PDFDocument</code> class
                         is your starting point. You either create a new document with <code>PDFDocument.create()</code>
                         or load an existing one with <code>PDFDocument.load(bytes)</code>.
                     </p>
@@ -136,8 +137,8 @@
                         the bottom.
                     </p>
                     <p>
-                        Each element is positioned using x‑y coordinates, where the origin (0, 0) is at the bottom‑left
-                        corner of the page. This coordinate system differs from CSS where the origin is top‑left, so
+                        Each element is positioned using x-y coordinates, where the origin (0, 0) is at the bottom-left
+                        corner of the page. This coordinate system differs from CSS where the origin is top-left, so
                         you'll need to calculate positions relative to the page height.
                     </p>
                     <p>
@@ -147,7 +148,7 @@
                         headers, tables, and footers.
                     </p>
                     <p>
-                        Tables require manual layout since pdf‑lib doesn't have a built‑in table component. You
+                        Tables require manual layout since pdf-lib doesn't have a built-in table component. You
                         calculate column widths, draw header backgrounds, and iterate through rows, drawing text and
                         cell borders for each cell. This sounds tedious, but once you write a table helper function,
                         it's reusable across all your documents.
@@ -157,8 +158,8 @@
                 <section>
                     <h2>Advanced Features</h2>
                     <p>
-                        <strong>Merging PDFs:</strong> pdf‑lib can copy pages from one document to another using
-                        <code>document.copyPages()</code>. This is how ConvertPDF's merge tool works – it loads multiple
+                        <strong>Merging PDFs:</strong> pdf-lib can copy pages from one document to another using
+                        <code>document.copyPages()</code>. This is how ConvertPDF's merge tool works � it loads multiple
                         PDF files, copies all their pages into a new document, and saves the combined result. The entire
                         operation happens in memory within the browser.
                     </p>
@@ -168,7 +169,7 @@
                         with data from a web form, creating personalized documents instantly.
                     </p>
                     <p>
-                        <strong>Encryption:</strong> pdf‑lib supports password‑based encryption with configurable
+                        <strong>Encryption:</strong> pdf-lib supports password-based encryption with configurable
                         permissions. You can set separate user and owner passwords, and control whether the document can
                         be printed, copied, or modified. This is the foundation of ConvertPDF's encryption tool.
                     </p>
@@ -181,7 +182,7 @@
                 <section>
                     <h2>Performance Considerations</h2>
                     <p>
-                        Since pdf‑lib runs in the browser's main thread, very large documents (hundreds of pages with
+                        Since pdf-lib runs in the browser's main thread, very large documents (hundreds of pages with
                         embedded images) can cause momentary UI freezes. For production applications, consider using Web
                         Workers to offload PDF generation to a background thread.
                     </p>
@@ -191,23 +192,23 @@
                         reduce both processing time and output file size.
                     </p>
                     <p>
-                        Font subsetting – embedding only the characters actually used in the document rather than the
-                        entire font file – is another optimization that reduces file size. While pdf‑lib doesn't subset
+                        Font subsetting � embedding only the characters actually used in the document rather than the
+                        entire font file � is another optimization that reduces file size. While pdf-lib doesn't subset
                         fonts automatically, you can use complementary tools to subset fonts before embedding them.
                     </p>
                 </section>
 
                 <section>
-                    <h2>Why Client‑Side PDF Generation Matters</h2>
+                    <h2>Why Client-Side PDF Generation Matters</h2>
                     <p>
-                        Beyond the obvious privacy benefits (no server means no data exposure), client‑side PDF
+                        Beyond the obvious privacy benefits (no server means no data exposure), client-side PDF
                         generation offers architectural advantages. It eliminates server costs for PDF processing,
                         reduces latency since there's no network roundtrip, and scales infinitely because each user's
                         browser does its own work.
                     </p>
                     <p>
-                        For applications handling sensitive data – medical records, financial documents, legal contracts
-                        – client‑side generation can simplify compliance with regulations like GDPR and HIPAA by keeping
+                        For applications handling sensitive data � medical records, financial documents, legal contracts
+                        � client-side generation can simplify compliance with regulations like GDPR and HIPAA by keeping
                         personal data entirely on the client device.
                     </p>
                     <p>
@@ -219,22 +220,22 @@
                 <section>
                     <h2>Conclusion</h2>
                     <p>
-                        pdf‑lib has transformed what's possible in browser‑based document processing. It powers tools
+                        pdf-lib has transformed what's possible in browser-based document processing. It powers tools
                         like ConvertPDF that generate, merge, and encrypt PDFs without any server infrastructure. For
-                        developers building document‑heavy applications, it's an essential library that combines power,
+                        developers building document-heavy applications, it's an essential library that combines power,
                         flexibility, and privacy.
                     </p>
                     <p>
                         Whether you're building an invoice generator, a certificate creator, or a document management
-                        system, pdf‑lib gives you complete control over PDF output while keeping all processing local.
+                        system, pdf-lib gives you complete control over PDF output while keeping all processing local.
                         See it in action with our <a href="../index.html">free PDF tools</a>.
                     </p>
                 </section>
 
                 <div class="cta-box">
-                    <h3>See pdf‑lib in Action</h3>
-                    <p>All ConvertPDF tools are built with client‑side JavaScript. Try them free.</p>
-                    <a href="../index.html" class="button">Try Tools →</a>
+                    <h3>See pdf-lib in Action</h3>
+                    <p>All ConvertPDF tools are built with client-side JavaScript. Try them free.</p>
+                    <a href="../index.html" class="button">Try Tools ?</a>
                 </div>
             </div>
 
@@ -255,12 +256,12 @@
     <footer class="site-footer">
         <div class="footer-container">
             <div class="footer-col">
-                <h4>📄 ConvertPDF</h4>
-                <p>Free, private, client‑side PDF tools. No uploads, no sign‑up, no limits.</p>
+                <h4>?? ConvertPDF</h4>
+                <p>Free, private, client-side PDF tools. No uploads, no sign-up, no limits.</p>
                 <div class="social-links">
-                    <a href="https://github.com/tony90lang/ConvertPDF" target="_blank" title="GitHub">⌨️</a>
-                    <a href="mailto:convertpdf.contact@gmail.com" title="Email">📧</a>
-                    <a href="#" title="Twitter (coming soon)">🐦</a>
+                    <a href="https://github.com/tony90lang/ConvertPDF" target="_blank" title="GitHub">??</a>
+                    <a href="mailto:convertpdf.contact@gmail.com" title="Email">??</a>
+                    <a href="#" title="Twitter (coming soon)">??</a>
                 </div>
             </div>
             <div class="footer-col">
