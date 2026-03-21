@@ -1,13 +1,12 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="Create custom QR codes with colors, error correction, and optional logo. Download as PNG or SVG. 100% private, no uploads.">
-    <title>QR Code Generator – ConvertPDF</title>
+    <title>QR Code Generator ï¿½ ConvertPDF</title>
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="QR Code Generator - ConvertPDF">
@@ -23,8 +22,8 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://convert-pdf-tool.netlify.app/pages/qrmaker.html">
     <!-- Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preload font to reduce CLS from FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon"
@@ -60,19 +59,19 @@
 
             <!-- Extended description above footer -->
             <div class="content-section" style="margin-top: 3rem;">
-                <h2>QR Code Generator – Custom Codes, Full Privacy</h2>
+                <h2>QR Code Generator ï¿½ Custom Codes, Full Privacy</h2>
                 <p>
-                    From marketing campaigns to contactless menus, QR codes are everywhere. ConvertPDF’s QR generator
-                    lets you create custom codes with your brand colors, logos, and error correction – all in your
+                    From marketing campaigns to contactless menus, QR codes are everywhere. ConvertPDFï¿½s QR generator
+                    lets you create custom codes with your brand colors, logos, and error correction ï¿½ all in your
                     browser, with no data sent to any server.
                 </p>
-                <h3>Why It’s Different</h3>
+                <h3>Why Itï¿½s Different</h3>
                 <p>
                     <strong>Fully customizable:</strong> Choose foreground/background colors, add a central logo, and
                     pick error correction level (L to H). <strong>Multiple formats:</strong> Download as PNG (web) or
-                    SVG (print – infinitely scalable). <strong>No size limits:</strong> Encode long URLs or text without
+                    SVG (print ï¿½ infinitely scalable). <strong>No size limits:</strong> Encode long URLs or text without
                     worrying about server restrictions. <strong>Private:</strong> The data you encode stays on your
-                    device – no third party sees it.
+                    device ï¿½ no third party sees it.
                 </p>
                 <p>
                     After generating, you can <a href="img2png.html">convert the QR to PNG</a> for easier sharing, or
@@ -131,6 +130,22 @@
     <script src="../components.js"></script>
     <script src="../tools/qrmaker.js"></script>
     <script src="../tools/loader.js"></script>
-</body>
+    <!-- Lazy-load AdSense after page is idle -->
+    <script>
+    (function(){
+        function loadAds(){
+            var s=document.createElement('script');
+            s.async=true;
+            s.crossOrigin='anonymous';
+            s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';
+            document.head.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+            requestIdleCallback(loadAds,{timeout:2000});
+        } else {
+            setTimeout(loadAds,1000);
+        }
+    })();
+    </script></body>
 
 </html>

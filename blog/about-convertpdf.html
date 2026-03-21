@@ -1,11 +1,10 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Guide to All PDF Tools – Features & How They Work</title>
+    <title>Complete Guide to All PDF Tools ï¿½ Features & How They Work</title>
     <meta name="description"
         content="Detailed explanation of every PDF tool including Markdown to PDF, DOCX to PDF, Merge PDF, Image to PDF, Password Protection and more.">
     <meta name="keywords"
@@ -26,8 +25,8 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://convert-pdf-tool.netlify.app/blog/about-convertpdf.html">
     <!-- Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preload font to reduce CLS from FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon"
@@ -61,7 +60,7 @@
             </div>
 
             <div class="blog-post">
-                <h1>Complete Guide to All PDF Tools – Features & How They Work</h1>
+                <h1>Complete Guide to All PDF Tools ï¿½ Features & How They Work</h1>
                 <p class="post-meta">Published on March 3, 2026 | ?? PDF, Guide</p>
 
                 <section>
@@ -187,7 +186,7 @@
                         are not uploaded to external servers.
                     </p>
                     <p>
-                        Always review a platform’s privacy policy before uploading sensitive documents.
+                        Always review a platformï¿½s privacy policy before uploading sensitive documents.
                     </p>
                 </section>
 
@@ -266,6 +265,22 @@
 
     <script src="../utils.js"></script>
     <script src="../components.js"></script>
-</body>
+    <!-- Lazy-load AdSense after page is idle -->
+    <script>
+    (function(){
+        function loadAds(){
+            var s=document.createElement('script');
+            s.async=true;
+            s.crossOrigin='anonymous';
+            s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';
+            document.head.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+            requestIdleCallback(loadAds,{timeout:2000});
+        } else {
+            setTimeout(loadAds,1000);
+        }
+    })();
+    </script></body>
 
 </html>

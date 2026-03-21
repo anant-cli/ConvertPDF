@@ -1,11 +1,10 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Best Free Tools for Students: From Markdown to PDF – ConvertPDF Blog</title>
+    <title>The Best Free Tools for Students: From Markdown to PDF ï¿½ ConvertPDF Blog</title>
     <meta name="description"
         content="A comprehensive guide to the best free document tools for students, including Markdown to PDF, PDF merging, image conversion, and more.">
     <meta name="keywords"
@@ -26,8 +25,8 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://convert-pdf-tool.netlify.app/blog/best-free-tools-students.html">
     <!-- Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preload font to reduce CLS from FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon"
@@ -70,7 +69,7 @@
                         As a student, you're constantly creating, converting, and submitting documents. Lab reports need
                         to be formatted as PDFs. Scanned notes need to be combined into single files. Group project
                         presentations need images merged into one document. And all of this needs to happen on a tight
-                        budget – preferably free.
+                        budget ï¿½ preferably free.
                     </p>
                     <p>
                         The good news is that you don't need expensive software subscriptions to handle these tasks.
@@ -104,7 +103,7 @@
                 <section>
                     <h2>2. DOCX to PDF: The Assignment Essential</h2>
                     <p>
-                        Most universities accept – or require – PDF submissions. But many students write in Google Docs
+                        Most universities accept ï¿½ or require ï¿½ PDF submissions. But many students write in Google Docs
                         or Microsoft Word, which produce DOCX files. Converting these to PDF before submitting ensures
                         your formatting is preserved exactly as you intended, regardless of what software your professor
                         uses to open the file.
@@ -145,7 +144,7 @@
                 <section>
                     <h2>4. Images to PDF: Digitizing Handwritten Work</h2>
                     <p>
-                        Many courses – especially in mathematics, physics, and art – still require handwritten work.
+                        Many courses ï¿½ especially in mathematics, physics, and art ï¿½ still require handwritten work.
                         Photographing or scanning your pages and converting them to a single PDF creates a clean,
                         organized submission that professors appreciate.
                     </p>
@@ -179,7 +178,7 @@
                 <section>
                     <h2>6. TXT to DOCX: Upgrading Plain Text</h2>
                     <p>
-                        Sometimes you have notes in plain text format – perhaps exported from a coding environment,
+                        Sometimes you have notes in plain text format ï¿½ perhaps exported from a coding environment,
                         copied from a terminal, or typed in a basic text editor. Converting TXT to DOCX adds proper
                         formatting: custom fonts, consistent line spacing, margins, and the ability to add headers and
                         footers.
@@ -231,7 +230,7 @@
                         sensitive documents.
                     </p>
                     <p>
-                        The best part is that these tools work on any device with a web browser – no installations, no
+                        The best part is that these tools work on any device with a web browser ï¿½ no installations, no
                         subscriptions, no sign-ups. Bookmark them now and you'll be ready for whatever your next
                         assignment throws at you. <a href="../index.html">Explore all our free tools</a>.
                     </p>
@@ -305,6 +304,22 @@
 
     <script src="../utils.js"></script>
     <script src="../components.js"></script>
-</body>
+    <!-- Lazy-load AdSense after page is idle -->
+    <script>
+    (function(){
+        function loadAds(){
+            var s=document.createElement('script');
+            s.async=true;
+            s.crossOrigin='anonymous';
+            s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';
+            document.head.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+            requestIdleCallback(loadAds,{timeout:2000});
+        } else {
+            setTimeout(loadAds,1000);
+        }
+    })();
+    </script></body>
 
 </html>

@@ -1,13 +1,12 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="Combine multiple PDF files into one with drag-to-reorder. 100% private, no uploads.">
-    <title>Merge PDFs Online – ConvertPDF</title>
+    <title>Merge PDFs Online ï¿½ ConvertPDF</title>
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Merge PDFs Online - ConvertPDF">
@@ -23,8 +22,8 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://convert-pdf-tool.netlify.app/pages/mergepdf.html">
     <!-- Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preload font to reduce CLS from FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon"
@@ -60,15 +59,15 @@
 
             <!-- Extended description above footer -->
             <div class="content-section" style="margin-top: 3rem;">
-                <h2>Merge PDFs – The Privacy-First Way to Combine Documents</h2>
+                <h2>Merge PDFs ï¿½ The Privacy-First Way to Combine Documents</h2>
                 <p>
-                    Combining multiple PDFs is a daily task for many professionals – but most online mergers require
-                    uploading your files to a server, exposing sensitive data. ConvertPDF’s Merge tool runs entirely
+                    Combining multiple PDFs is a daily task for many professionals ï¿½ but most online mergers require
+                    uploading your files to a server, exposing sensitive data. ConvertPDFï¿½s Merge tool runs entirely
                     in your browser, using the <code>pdf-lib</code> library to assemble documents locally.
                 </p>
                 <h3>Key Advantages</h3>
                 <p>
-                    <strong>Unlimited files:</strong> Merge as many PDFs as you need – there’s no file count limit
+                    <strong>Unlimited files:</strong> Merge as many PDFs as you need ï¿½ thereï¿½s no file count limit
                     because nothing is uploaded. <strong>Reorder before merging:</strong> Drag-free up/down buttons
                     let you arrange pages in seconds. <strong>Preserved quality:</strong> All fonts, images, and
                     annotations stay intact. <strong>Instant download:</strong> Your merged PDF is ready immediately.
@@ -130,6 +129,22 @@
     <script src="../components.js"></script>
     <script src="../tools/mergepdf.js"></script>
     <script src="../tools/loader.js"></script>
-</body>
+    <!-- Lazy-load AdSense after page is idle -->
+    <script>
+    (function(){
+        function loadAds(){
+            var s=document.createElement('script');
+            s.async=true;
+            s.crossOrigin='anonymous';
+            s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';
+            document.head.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+            requestIdleCallback(loadAds,{timeout:2000});
+        } else {
+            setTimeout(loadAds,1000);
+        }
+    })();
+    </script></body>
 
 </html>

@@ -1,13 +1,12 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="Convert plain text to formatted Word documents with custom fonts, size, and line spacing. 100% private, no uploads.">
-    <title>TXT to DOCX Converter – ConvertPDF</title>
+    <title>TXT to DOCX Converter ï¿½ ConvertPDF</title>
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="TXT to DOCX Converter - ConvertPDF">
@@ -23,8 +22,8 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://convert-pdf-tool.netlify.app/pages/txt2docx.html">
     <!-- Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preload font to reduce CLS from FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon"
@@ -60,18 +59,18 @@
 
             <!-- Extended description above footer -->
             <div class="content-section" style="margin-top: 3rem;">
-                <h2>TXT to DOCX – Turn Plain Text into Polished Word Documents</h2>
+                <h2>TXT to DOCX ï¿½ Turn Plain Text into Polished Word Documents</h2>
                 <p>
-                    Plain text files are great for notes and code, but they lack formatting. ConvertPDF’s TXT to DOCX
-                    tool adds fonts, line spacing, and even automatic heading detection – all locally, with no uploads.
+                    Plain text files are great for notes and code, but they lack formatting. ConvertPDFï¿½s TXT to DOCX
+                    tool adds fonts, line spacing, and even automatic heading detection ï¿½ all locally, with no uploads.
                 </p>
-                <h3>Features You’ll Love</h3>
+                <h3>Features Youï¿½ll Love</h3>
                 <p>
                     <strong>Choose your style:</strong> Pick from four fonts (Arial, Times New Roman, Calibri, Courier
                     New)
                     and sizes from 10pt to 14pt. <strong>Line spacing control:</strong> Single, 1.15, 1.5, or double.
                     <strong>Heading detection:</strong> Convert lines starting with <code>#</code> into H1 headings and
-                    <code>##</code> into H2 – perfect for turning outlines into structured documents. <strong>Live
+                    <code>##</code> into H2 ï¿½ perfect for turning outlines into structured documents. <strong>Live
                         preview:</strong>
                     See the formatted text before you download.
                 </p>
@@ -133,6 +132,22 @@
     <script src="../components.js"></script>
     <script src="../tools/txt2docx.js"></script>
     <script src="../tools/loader.js"></script>
-</body>
+    <!-- Lazy-load AdSense after page is idle -->
+    <script>
+    (function(){
+        function loadAds(){
+            var s=document.createElement('script');
+            s.async=true;
+            s.crossOrigin='anonymous';
+            s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';
+            document.head.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+            requestIdleCallback(loadAds,{timeout:2000});
+        } else {
+            setTimeout(loadAds,1000);
+        }
+    })();
+    </script></body>
 
 </html>

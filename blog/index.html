@@ -1,11 +1,10 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog – ConvertPDF</title>
+    <title>Blog ï¿½ ConvertPDF</title>
     <meta name="description" content="Articles and guides about PDF conversion, privacy, and document tips.">
     <!-- Open Graph -->
     <meta property="og:type" content="website">
@@ -21,8 +20,8 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://convert-pdf-tool.netlify.app/blog/index.html">
     <!-- Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preload font to reduce CLS from FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon"
@@ -59,7 +58,7 @@
                 <hr style="margin: 2rem 0;">
 
                 <article>
-                    <h2><a href="understanding-pdf-permissions.html">Understanding PDF Permissions: Print, Copy, Edit –
+                    <h2><a href="understanding-pdf-permissions.html">Understanding PDF Permissions: Print, Copy, Edit ï¿½
                             What They Mean</a></h2>
                     <p>A complete guide to PDF permission settings and how to control what recipients can do with your
                         documents.</p>
@@ -69,7 +68,7 @@
                 <article>
                     <h2><a href="html-to-pdf-conversion-guide.html">A Beginner's Guide to HTML to PDF Conversion</a>
                     </h2>
-                    <p>Everything about converting HTML content to PDF – from saving web pages to generating invoices.
+                    <p>Everything about converting HTML content to PDF ï¿½ from saving web pages to generating invoices.
                     </p>
                     <p><em>Published: March 3, 2026</em></p>
                 </article>
@@ -130,7 +129,7 @@
                 </article>
 
                 <article>
-                    <h2><a href="merge-pdfs-online-privacy.html">Merging PDFs Online – Why You Should Avoid Uploading
+                    <h2><a href="merge-pdfs-online-privacy.html">Merging PDFs Online ï¿½ Why You Should Avoid Uploading
                             Sensitive Files</a></h2>
                     <p>Learn about the privacy risks of traditional PDF mergers and how to merge safely.</p>
                     <p><em>Published: March 3, 2026</em></p>
@@ -151,7 +150,7 @@
                 </article>
 
                 <article>
-                    <h2><a href="about-convertpdf.html">About ConvertPDF – Our Mission and Technology</a></h2>
+                    <h2><a href="about-convertpdf.html">About ConvertPDF ï¿½ Our Mission and Technology</a></h2>
                     <p>Learn about the story behind ConvertPDF, our privacy commitment, and the tech stack.</p>
                     <p><em>Published: March 3, 2026</em></p>
                 </article>
@@ -213,6 +212,22 @@
 
     <script src="../utils.js"></script>
     <script src="../components.js"></script>
-</body>
+    <!-- Lazy-load AdSense after page is idle -->
+    <script>
+    (function(){
+        function loadAds(){
+            var s=document.createElement('script');
+            s.async=true;
+            s.crossOrigin='anonymous';
+            s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';
+            document.head.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+            requestIdleCallback(loadAds,{timeout:2000});
+        } else {
+            setTimeout(loadAds,1000);
+        }
+    })();
+    </script></body>
 
 </html>

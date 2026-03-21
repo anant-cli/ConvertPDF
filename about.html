@@ -1,16 +1,15 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About ConvertPDF – Our Mission, Technology & Privacy Commitment</title>
+    <title>About ConvertPDF ï¿½ Our Mission, Technology & Privacy Commitment</title>
     <meta name="description"
         content="Learn about ConvertPDF: a free, private, client-side PDF tool built by a student developer. No uploads, open source, privacy first.">
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="About ConvertPDF – Our Mission & Privacy Commitment">
+    <meta property="og:title" content="About ConvertPDF ï¿½ Our Mission & Privacy Commitment">
     <meta property="og:description" content="Free, private, client-side PDF converter. No uploads, open source.">
     <meta property="og:url" content="https://convert-pdf-tool.netlify.app/about.html">
     <meta property="og:site_name" content="ConvertPDF">
@@ -21,8 +20,8 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://convert-pdf-tool.netlify.app/about.html">
     <!-- Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preload font to reduce CLS from FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="icon"
@@ -59,7 +58,7 @@
 
                 <h2>Our Story</h2>
                 <p>ConvertPDF was born from a simple frustration. As a first-year engineering student, I frequently
-                    needed to convert documents—Markdown notes to PDF, Word files to PDF, images to PDF—but every online
+                    needed to convert documentsï¿½Markdown notes to PDF, Word files to PDF, images to PDFï¿½but every online
                     converter I tried required uploading my files to some unknown server. How could I trust my research
                     notes, my assignments, or my personal documents to a website that might store, analyze, or even sell
                     them?</p>
@@ -67,7 +66,7 @@
                     monetize user data or impose strict file size limits to push paid subscriptions. I thought: there
                     has to be a better way.</p>
                 <p>So I built it. ConvertPDF is a completely free, open-source document toolkit that runs entirely in
-                    your browser. When you use ConvertPDF, your files never leave your device—they're processed locally
+                    your browser. When you use ConvertPDF, your files never leave your deviceï¿½they're processed locally
                     using JavaScript libraries, then downloaded directly. No servers, no uploads, no data leaks.</p>
 
                 <h2>Our Technology</h2>
@@ -87,7 +86,7 @@
                     from the internet after the page loads, and most tools will continue to work.</p>
 
                 <h2>Our Privacy Commitment</h2>
-                <p>Privacy isn't just a feature at ConvertPDF—it's the entire foundation. Here's what we promise:</p>
+                <p>Privacy isn't just a feature at ConvertPDFï¿½it's the entire foundation. Here's what we promise:</p>
                 <ul>
                     <li><strong>No file uploads:</strong> Your documents never leave your browser. We don't have servers
                         that receive your files, so we can't see them, store them, or share them.</li>
@@ -121,13 +120,13 @@
                     trustworthy web.</p>
                 <p>If you find ConvertPDF useful, please share it with others. If you have ideas for improvement, we'd
                     love to hear from you via our <a href="contact.html">contact page</a> or GitHub repository.</p>
-                <p><em>— The ConvertPDF Team (one passionate developer)</em></p>
+                <p><em>ï¿½ The ConvertPDF Team (one passionate developer)</em></p>
                 <p><a href="index.html">? Back to ConvertPDF</a></p>
             </div>
 
             <div class="content-section" style="margin-top: 3rem;">
                 <h2>Our Mission: Your Privacy Comes First</h2>
-                <p>At ConvertPDF, we believe that your documents belong to you—not to some server in the cloud. That's
+                <p>At ConvertPDF, we believe that your documents belong to youï¿½not to some server in the cloud. That's
                     why we built every tool to run entirely in your browser. No uploads, no data mining, no hidden fees.
                     Just fast, reliable conversions that respect your privacy.</p>
                 <p>Unlike many "free" converters that sell your data or impose file size limits, ConvertPDF gives you
@@ -186,6 +185,23 @@
     <script src="utils.js"></script>
     <script src="components.js"></script>
     <!-- AdSense & Analytics -->
-</body>
+
+    <!-- Lazy-load AdSense after page is idle -->
+    <script>
+    (function(){
+        function loadAds(){
+            var s=document.createElement('script');
+            s.async=true;
+            s.crossOrigin='anonymous';
+            s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';
+            document.head.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+            requestIdleCallback(loadAds,{timeout:2000});
+        } else {
+            setTimeout(loadAds,1000);
+        }
+    })();
+    </script></body>
 
 </html>

@@ -1,11 +1,10 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Understanding PDF Permissions: Print, Copy, Edit – What They Mean – ConvertPDF Blog</title>
+    <title>Understanding PDF Permissions: Print, Copy, Edit ï¿½ What They Mean ï¿½ ConvertPDF Blog</title>
     <meta name="description"
         content="A complete guide to understanding PDF permission settings including print, copy, and edit restrictions. Learn how to set the right permissions for your documents.">
     <meta name="keywords"
@@ -26,8 +25,8 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://convert-pdf-tool.netlify.app/blog/understanding-pdf-permissions.html">
     <!-- Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preload font to reduce CLS from FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon"
@@ -61,7 +60,7 @@
             </div>
 
             <div class="blog-post">
-                <h1>Understanding PDF Permissions: Print, Copy, Edit – What They Mean</h1>
+                <h1>Understanding PDF Permissions: Print, Copy, Edit ï¿½ What They Mean</h1>
                 <p class="post-meta">Published on March 3, 2026 | ?? Security, PDF Guide</p>
 
                 <section>
@@ -90,13 +89,13 @@
                         <strong>User Password (Document Open Password):</strong> This password is required to open the
                         PDF. Without it, the document cannot be viewed at all. When you set a user password, anyone who
                         receives the PDF must know this password before they can see a single page. This is the most
-                        restrictive form of protection – it controls access to the document itself.
+                        restrictive form of protection ï¿½ it controls access to the document itself.
                     </p>
                     <p>
                         <strong>Owner Password (Permissions Password):</strong> This password controls what can be done
                         with the document after it's opened. When you set only an owner password (no user password),
-                        anyone can open and read the document, but they cannot perform actions you've restricted – like
-                        printing, copying, or editing – unless they enter the owner password.
+                        anyone can open and read the document, but they cannot perform actions you've restricted ï¿½ like
+                        printing, copying, or editing ï¿½ unless they enter the owner password.
                     </p>
                     <p>
                         You can use both passwords together: a user password to control who can open the document, and
@@ -247,7 +246,7 @@
                     </p>
                     <p>
                         Ready to set the right permissions for your PDFs? Try our <a href="../pages/pdfencrypt.html">PDF
-                            Password Protection tool</a> – free, private, and completely client-side.
+                            Password Protection tool</a> ï¿½ free, private, and completely client-side.
                     </p>
                 </section>
 
@@ -318,6 +317,22 @@
 
     <script src="../utils.js"></script>
     <script src="../components.js"></script>
-</body>
+    <!-- Lazy-load AdSense after page is idle -->
+    <script>
+    (function(){
+        function loadAds(){
+            var s=document.createElement('script');
+            s.async=true;
+            s.crossOrigin='anonymous';
+            s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';
+            document.head.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+            requestIdleCallback(loadAds,{timeout:2000});
+        } else {
+            setTimeout(loadAds,1000);
+        }
+    })();
+    </script></body>
 
 </html>

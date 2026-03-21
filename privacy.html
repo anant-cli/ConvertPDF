@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy Policy | ConvertPDF</title>
@@ -45,11 +44,18 @@
             </section>
 
             <section class="policy-section">
-                <h2>Google AdSense and Cookies</h2>
-                <p>We use Google AdSense to serve advertisements on our website. Google, as a third-party vendor, uses cookies to serve ads based on your visit to this and other websites on the Internet.</p>
-                <p>Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visit to our sites and/or other sites on the Internet.</p>
-                <p>You may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener">Google Ad Settings</a>. Alternatively, you can opt out of a third-party vendor's use of cookies for personalized advertising by visiting <a href="https://www.aboutads.info" target="_blank" rel="noopener">www.aboutads.info</a>.</p>
+                <h2>Google AdSense and Advertising Cookies</h2>
+                <p>ConvertPDF is supported by advertising through <strong>Google AdSense</strong>. While <em>your documents are never uploaded</em> (all PDF processing is 100% client-side), displaying ads requires Google to set certain third-party cookies in your browser.</p>
+                <p>These cookies may include: <code>IDE</code>, <code>NID</code>, <code>DSID</code>, <code>__gads</code>, <code>__gpi</code>, and others set by <code>doubleclick.net</code>, <code>googlesyndication.com</code>, and <code>adtrafficquality.google</code>. They are used by Google and its partners to measure ad performance and serve personalised or contextual advertisements.</p>
+                <p><strong>You can opt out at any time:</strong></p>
+                <ul>
+                    <li>Visit <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google Ad Settings</a> to manage personalised advertising preferences.</li>
+                    <li>Visit <a href="https://optout.aboutads.info/" target="_blank" rel="noopener noreferrer">AboutAds.info</a> to opt out of interest-based ads from participating networks.</li>
+                    <li>Install the <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">Google Analytics Opt-out Browser Add-on</a>.</li>
+                </ul>
+                <p>For more information on how Google uses data when you visit sites that use its services, see <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">How Google uses information from sites or apps that use our services</a>.</p>
             </section>
+
 
             <section class="policy-section">
                 <h2>External Links</h2>
@@ -73,5 +79,22 @@
 
     <script src="utils.js"></script>
     <script src="components.js"></script>
-</body>
+
+    <!-- Lazy-load AdSense after page is idle -->
+    <script>
+    (function(){
+        function loadAds(){
+            var s=document.createElement('script');
+            s.async=true;
+            s.crossOrigin='anonymous';
+            s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';
+            document.head.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+            requestIdleCallback(loadAds,{timeout:2000});
+        } else {
+            setTimeout(loadAds,1000);
+        }
+    })();
+    </script></body>
 </html>

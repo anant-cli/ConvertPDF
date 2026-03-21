@@ -1,11 +1,10 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Beginner's Guide to HTML to PDF Conversion – ConvertPDF Blog</title>
+    <title>A Beginner's Guide to HTML to PDF Conversion ï¿½ ConvertPDF Blog</title>
     <meta name="description"
         content="Learn everything about converting HTML content to PDF documents. From saving web pages to generating invoices, this guide covers all the basics.">
     <meta name="keywords"
@@ -26,8 +25,8 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://convert-pdf-tool.netlify.app/blog/html-to-pdf-conversion-guide.html">
     <!-- Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preload font to reduce CLS from FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon"
@@ -83,8 +82,8 @@
                 <section>
                     <h2>What Is HTML to PDF Conversion?</h2>
                     <p>
-                        At its core, HTML to PDF conversion takes HTML markup – the combination of HTML structure, CSS
-                        styling, and sometimes JavaScript interactivity – and renders it as a fixed-layout PDF document.
+                        At its core, HTML to PDF conversion takes HTML markup ï¿½ the combination of HTML structure, CSS
+                        styling, and sometimes JavaScript interactivity ï¿½ and renders it as a fixed-layout PDF document.
                         The result looks like a printed version of the web page, with text, images, colors, and layout
                         preserved in a format that displays identically on any device.
                     </p>
@@ -168,7 +167,7 @@
                     </p>
                     <p>
                         <strong>Set explicit page dimensions:</strong> Unlike web pages that scroll infinitely, PDFs
-                        have fixed page sizes. Common sizes include A4 (210mm × 297mm) and Letter (8.5" × 11"). Setting
+                        have fixed page sizes. Common sizes include A4 (210mm ï¿½ 297mm) and Letter (8.5" ï¿½ 11"). Setting
                         the <code>@page</code> CSS rule with explicit dimensions ensures your content fits properly.
                     </p>
                     <p>
@@ -199,7 +198,7 @@
                     <h2>HTML Snippets vs. Full Web Pages</h2>
                     <p>
                         There's an important distinction between converting a snippet of HTML and converting an entire
-                        web page. Snippets are self-contained pieces of HTML code – an invoice template, a certificate
+                        web page. Snippets are self-contained pieces of HTML code ï¿½ an invoice template, a certificate
                         design, a formatted email. These convert cleanly because they're designed to stand alone.
                     </p>
                     <p>
@@ -229,7 +228,7 @@
                         For private content, client-side conversion is always the safer choice.
                     </p>
                     <p>
-                        Try it yourself with our <a href="../pages/web2pdf.html">HTML to PDF converter</a> – paste your
+                        Try it yourself with our <a href="../pages/web2pdf.html">HTML to PDF converter</a> ï¿½ paste your
                         HTML, see the preview, and download your PDF in seconds.
                     </p>
                 </section>
@@ -302,6 +301,22 @@
 
     <script src="../utils.js"></script>
     <script src="../components.js"></script>
-</body>
+    <!-- Lazy-load AdSense after page is idle -->
+    <script>
+    (function(){
+        function loadAds(){
+            var s=document.createElement('script');
+            s.async=true;
+            s.crossOrigin='anonymous';
+            s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';
+            document.head.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+            requestIdleCallback(loadAds,{timeout:2000});
+        } else {
+            setTimeout(loadAds,1000);
+        }
+    })();
+    </script></body>
 
 </html>

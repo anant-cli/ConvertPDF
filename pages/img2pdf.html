@@ -1,13 +1,12 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="Combine multiple JPG/PNG images into a single PDF. Auto-orientation and page size control. 100% private, no uploads.">
-    <title>Images to PDF Converter – ConvertPDF</title>
+    <title>Images to PDF Converter ï¿½ ConvertPDF</title>
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Images to PDF Converter - ConvertPDF">
@@ -23,8 +22,8 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://convert-pdf-tool.netlify.app/pages/img2pdf.html">
     <!-- Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preload font to reduce CLS from FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon"
@@ -60,23 +59,23 @@
 
             <!-- Extended description above footer -->
             <div class="content-section" style="margin-top: 3rem;">
-                <h2>Images to PDF – Combine, Reorder, and Deliver</h2>
+                <h2>Images to PDF ï¿½ Combine, Reorder, and Deliver</h2>
                 <p>
-                    Whether you’re scanning handwritten notes, creating a portfolio, or archiving receipts, ConvertPDF’s
+                    Whether youï¿½re scanning handwritten notes, creating a portfolio, or archiving receipts, ConvertPDFï¿½s
                     Images to PDF tool lets you merge multiple JPG/PNG files into a single, well-organized PDF.
                     Unlike upload-based services, your images stay on your device.
                 </p>
-                <h3>Why It’s Better</h3>
+                <h3>Why Itï¿½s Better</h3>
                 <p>
                     <strong>Drag-free reordering:</strong> Use the simple up/down buttons to arrange images exactly as
-                    you want. <strong>Smart orientation:</strong> Choose “Auto” to let the tool detect portrait vs.
+                    you want. <strong>Smart orientation:</strong> Choose ï¿½Autoï¿½ to let the tool detect portrait vs.
                     landscape, or force a specific orientation. <strong>Page size control:</strong> Output in A4 or
-                    Letter – perfect for printing. <strong>Live preview:</strong> See the generated PDF right in your
+                    Letter ï¿½ perfect for printing. <strong>Live preview:</strong> See the generated PDF right in your
                     browser before downloading.
                 </p>
                 <p>
                     After merging, you can <a href="pdfencrypt.html">password-protect</a> the combined PDF or
-                    <a href="img2png.html">convert individual images to PNG</a> – all without uploading.
+                    <a href="img2png.html">convert individual images to PNG</a> ï¿½ all without uploading.
                 </p>
             </div>
         </div>
@@ -131,6 +130,22 @@
     <script src="../components.js"></script>
     <script src="../tools/img2pdf.js"></script>
     <script src="../tools/loader.js"></script>
-</body>
+    <!-- Lazy-load AdSense after page is idle -->
+    <script>
+    (function(){
+        function loadAds(){
+            var s=document.createElement('script');
+            s.async=true;
+            s.crossOrigin='anonymous';
+            s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';
+            document.head.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+            requestIdleCallback(loadAds,{timeout:2000});
+        } else {
+            setTimeout(loadAds,1000);
+        }
+    })();
+    </script></body>
 
 </html>

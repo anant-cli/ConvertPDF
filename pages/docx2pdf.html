@@ -1,13 +1,12 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Convert Word documents to PDF with perfect formatting – preserves tables, images, and headings. 100% private, no uploads.">
-    <title>DOCX to PDF Converter – ConvertPDF</title>
+        content="Convert Word documents to PDF with perfect formatting ï¿½ preserves tables, images, and headings. 100% private, no uploads.">
+    <title>DOCX to PDF Converter ï¿½ ConvertPDF</title>
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="DOCX to PDF Converter - ConvertPDF">
@@ -23,8 +22,8 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://convert-pdf-tool.netlify.app/pages/docx2pdf.html">
     <!-- Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preload font to reduce CLS from FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon"
@@ -60,11 +59,11 @@
 
             <!-- Extended description above footer -->
             <div class="content-section" style="margin-top: 3rem;">
-                <h2>DOCX to PDF – Preserve Every Detail, Privately</h2>
+                <h2>DOCX to PDF ï¿½ Preserve Every Detail, Privately</h2>
                 <p>
                     Microsoft Word documents are the standard for resumes, reports, and contracts. But when you share
                     them,
-                    formatting can break – fonts shift, images move, tables collapse. ConvertPDF’s DOCX to PDF tool
+                    formatting can break ï¿½ fonts shift, images move, tables collapse. ConvertPDFï¿½s DOCX to PDF tool
                     locks
                     your layout exactly as you designed it, using Mammoth.js to faithfully convert every element.
                 </p>
@@ -74,13 +73,13 @@
                     preserved.
                     <strong>Markdown-style heading detection:</strong> Optionally convert lines starting with
                     <code>#</code>
-                    into proper heading tags – ideal if you draft in plain text. <strong>Privacy first:</strong> Your
+                    into proper heading tags ï¿½ ideal if you draft in plain text. <strong>Privacy first:</strong> Your
                     Word
                     files never leave your browser; no server ever sees them. <strong>No upload limits:</strong> Convert
-                    documents of any size – from a one-page memo to a 500-page thesis.
+                    documents of any size ï¿½ from a one-page memo to a 500-page thesis.
                 </p>
                 <p>
-                    After conversion, take your PDF further – <a href="pdfencrypt.html">encrypt it</a> or
+                    After conversion, take your PDF further ï¿½ <a href="pdfencrypt.html">encrypt it</a> or
                     <a href="mergepdf.html">merge it</a> with other files, all client-side.
                 </p>
             </div>
@@ -136,6 +135,22 @@
     <script src="../components.js"></script>
     <script src="../tools/docx2pdf.js"></script>
     <script src="../tools/loader.js"></script>
-</body>
+    <!-- Lazy-load AdSense after page is idle -->
+    <script>
+    (function(){
+        function loadAds(){
+            var s=document.createElement('script');
+            s.async=true;
+            s.crossOrigin='anonymous';
+            s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';
+            document.head.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+            requestIdleCallback(loadAds,{timeout:2000});
+        } else {
+            setTimeout(loadAds,1000);
+        }
+    })();
+    </script></body>
 
 </html>

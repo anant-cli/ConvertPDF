@@ -1,30 +1,29 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact ConvertPDF – Get Support, Report Issues, or Share Feedback</title>
+    <title>Contact ConvertPDF ï¿½ Get Support, Report Issues, or Share Feedback</title>
     <meta name="description"
         content="Need help with ConvertPDF? Found a bug? Have a feature request? Contact us via email or GitHub. We respond within 48 hours.">
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Contact ConvertPDF – Get Support &amp; Share Feedback">
+    <meta property="og:title" content="Contact ConvertPDF ï¿½ Get Support &amp; Share Feedback">
     <meta property="og:description"
         content="Need help with ConvertPDF? Contact us via email or GitHub. We respond within 48 hours.">
     <meta property="og:url" content="https://convert-pdf-tool.netlify.app/contact.html">
     <meta property="og:site_name" content="ConvertPDF">
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Contact ConvertPDF – Get Support &amp; Share Feedback">
+    <meta name="twitter:title" content="Contact ConvertPDF ï¿½ Get Support &amp; Share Feedback">
     <meta name="twitter:description"
         content="Need help with ConvertPDF? Contact us via email or GitHub. We respond within 48 hours.">
     <!-- Canonical -->
     <link rel="canonical" href="https://convert-pdf-tool.netlify.app/contact.html">
     <!-- Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preload font to reduce CLS from FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="icon"
@@ -65,7 +64,7 @@
                 <p>For general inquiries, support requests, or feedback, email us at:</p>
                 <p><strong><a href="mailto:convertpdf.contact@gmail.com">convertpdf.contact@gmail.com</a></strong></p>
                 <p>We aim to respond to all emails within 48 hours (and usually much sooner). Please include as much
-                    detail as possible—if you're reporting a bug, let us know which tool you were using, what browser
+                    detail as possibleï¿½if you're reporting a bug, let us know which tool you were using, what browser
                     and device you're on, and any steps to reproduce the issue.</p>
 
                 <h2>?? Report a Bug</h2>
@@ -130,7 +129,7 @@
 
             <div class="content-section" style="margin-top: 3rem;">
                 <h2>We'd Love to Hear From You</h2>
-                <p>Whether you have a feature request, found a bug, or just want to say hello – we're here for you.
+                <p>Whether you have a feature request, found a bug, or just want to say hello ï¿½ we're here for you.
                     ConvertPDF is a community-driven project, and your feedback helps us make it better for everyone.
                 </p>
                 <p>If you're a developer interested in contributing, check out our <a
@@ -187,6 +186,23 @@
     <script src="utils.js"></script>
     <script src="components.js"></script>
     <!-- AdSense & Analytics -->
-</body>
+
+    <!-- Lazy-load AdSense after page is idle -->
+    <script>
+    (function(){
+        function loadAds(){
+            var s=document.createElement('script');
+            s.async=true;
+            s.crossOrigin='anonymous';
+            s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';
+            document.head.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+            requestIdleCallback(loadAds,{timeout:2000});
+        } else {
+            setTimeout(loadAds,1000);
+        }
+    })();
+    </script></body>
 
 </html>

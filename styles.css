@@ -129,11 +129,12 @@ a {
     color: var(--accent);
     text-decoration: none;
     font-weight: 500;
-    transition: color 0.15s;
+    transition: opacity 0.15s;
 }
 
 a:hover {
     color: var(--accent-light);
+    opacity: 0.85;
 }
 
 code {
@@ -431,7 +432,7 @@ button:hover {
 .button.secondary,
 button.secondary {
     background: rgba(255, 255, 255, 0.04);
-    color: var(--text-secondary);
+    color: #a8bfd8; /* WCAG AA contrast-safe upgrade from --text-secondary */
     border-color: var(--border-subtle);
     box-shadow: none;
 }
@@ -1156,15 +1157,16 @@ input[type="color"] {
 }
 
 .footer-col a {
-    color: var(--text-muted);
+    color: #7a92b4; /* WCAG AA upgrade from --text-muted (#4e6082) on dark bg */
     font-size: 0.875rem;
     font-weight: 400;
-    transition: color 0.15s, padding-left 0.15s;
+    transition: opacity 0.15s, padding-left 0.15s;
 }
 
 .footer-col a:hover {
     color: var(--accent);
     padding-left: 4px;
+    opacity: 1;
 }
 
 .social-links {
@@ -1205,7 +1207,7 @@ input[type="color"] {
 }
 
 .footer-bottom a {
-    color: var(--text-muted);
+    color: #7a92b4; /* WCAG AA upgrade from --text-muted on dark bg */
     margin: 0 0.4rem;
 }
 
@@ -1572,4 +1574,20 @@ input[type="color"] {
     letter-spacing: 0.07em;
     color: var(--text-muted);
     margin-bottom: 0.5rem;
+}
+
+/* ── AdSense reserved space (prevents CLS) ── */
+.ad-slot {
+    width: 100%;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    contain: layout style;
+}
+
+.ad-slot ins.adsbygoogle {
+    display: block;
+    width: 100%;
 }

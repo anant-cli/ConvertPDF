@@ -1,11 +1,10 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>How to Extract Images from PDFs for Social Media – ConvertPDF Blog</title>
+    <title>How to Extract Images from PDFs for Social Media ï¿½ ConvertPDF Blog</title>
     <meta name="description"
         content="Learn how to extract high-quality images from PDF files for social media posts, presentations, and web content using free browser-based tools.">
     <meta name="keywords"
@@ -26,8 +25,8 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://convert-pdf-tool.netlify.app/blog/extract-images-from-pdfs.html">
     <!-- Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preload font to reduce CLS from FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon"
@@ -85,11 +84,11 @@
                         The most common mistake people make is screenshotting a PDF page. While this technically
                         produces an image, the results are almost always disappointing. Screenshots capture your
                         screen's resolution, which means on a standard 1080p display, a full-page PDF screenshot might
-                        only be 800 pixels wide – far below what social media platforms recommend.
+                        only be 800 pixels wide ï¿½ far below what social media platforms recommend.
                     </p>
                     <p>
-                        Instagram recommends images at least 1080 pixels wide. LinkedIn suggests 1200×627 pixels for
-                        link previews. Twitter (X) recommends 1600×900 pixels. A screenshot rarely meets any of these
+                        Instagram recommends images at least 1080 pixels wide. LinkedIn suggests 1200ï¿½627 pixels for
+                        link previews. Twitter (X) recommends 1600ï¿½900 pixels. A screenshot rarely meets any of these
                         requirements, resulting in blurry, pixelated images that look unprofessional on feeds.
                     </p>
                     <p>
@@ -107,8 +106,8 @@
                         content at the optimal resolution, producing images that are crisp at any size.
                     </p>
                     <p>
-                        ConvertPDF's PDF to JPG tool, for example, renders pages at print quality (typically 150–300
-                        DPI), resulting in images that are 1200–2400 pixels wide for a standard letter-size page. These
+                        ConvertPDF's PDF to JPG tool, for example, renders pages at print quality (typically 150ï¿½300
+                        DPI), resulting in images that are 1200ï¿½2400 pixels wide for a standard letter-size page. These
                         images look sharp on high-DPI phone screens, 4K monitors, and printed materials alike.
                     </p>
                     <p>
@@ -152,22 +151,22 @@
                         extracting your images from a PDF, you may need to resize or crop them for optimal display.
                     </p>
                     <p>
-                        <strong>Instagram:</strong> Square images (1080×1080) work for feed posts, while Stories require
-                        1080×1920 vertical format. If your PDF page is landscape-oriented, you might crop to focus on
+                        <strong>Instagram:</strong> Square images (1080ï¿½1080) work for feed posts, while Stories require
+                        1080ï¿½1920 vertical format. If your PDF page is landscape-oriented, you might crop to focus on
                         the most important section for an Instagram square.
                     </p>
                     <p>
-                        <strong>LinkedIn:</strong> Professional content performs best at 1200×627 pixels for shared
-                        posts. LinkedIn users expect polished, informative visuals – charts, data visualizations, and
+                        <strong>LinkedIn:</strong> Professional content performs best at 1200ï¿½627 pixels for shared
+                        posts. LinkedIn users expect polished, informative visuals ï¿½ charts, data visualizations, and
                         professional infographics extracted from PDFs work exceptionally well here.
                     </p>
                     <p>
-                        <strong>Twitter/X:</strong> Images at 1600×900 pixels (16:9 ratio) fill the timeline preview
+                        <strong>Twitter/X:</strong> Images at 1600ï¿½900 pixels (16:9 ratio) fill the timeline preview
                         completely. Landscape charts and wide infographics from PDF reports are ideal for Twitter
                         sharing.
                     </p>
                     <p>
-                        <strong>Pinterest:</strong> Vertical images dominate on Pinterest. A 1000×1500 pixel crop of a
+                        <strong>Pinterest:</strong> Vertical images dominate on Pinterest. A 1000ï¿½1500 pixel crop of a
                         tall infographic from a PDF can drive significant engagement and traffic on this platform.
                     </p>
                 </section>
@@ -226,13 +225,13 @@
                     </p>
                     <p>
                         Ready to extract images from your PDFs? Try our <a href="../pages/pdf2jpg.html">PDF to JPG
-                            converter</a> – it's free, fast, and completely private.
+                            converter</a> ï¿½ it's free, fast, and completely private.
                     </p>
                 </section>
 
                 <div class="cta-box">
                     <h3>Extract PDF Pages as Images</h3>
-                    <p>Convert PDF pages to high-quality JPG images – free and private in your browser.</p>
+                    <p>Convert PDF pages to high-quality JPG images ï¿½ free and private in your browser.</p>
                     <a href="../pages/pdf2jpg.html" class="button">Convert PDF ? JPG ?</a>
                 </div>
             </div>
@@ -298,6 +297,22 @@
 
     <script src="../utils.js"></script>
     <script src="../components.js"></script>
-</body>
+    <!-- Lazy-load AdSense after page is idle -->
+    <script>
+    (function(){
+        function loadAds(){
+            var s=document.createElement('script');
+            s.async=true;
+            s.crossOrigin='anonymous';
+            s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';
+            document.head.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+            requestIdleCallback(loadAds,{timeout:2000});
+        } else {
+            setTimeout(loadAds,1000);
+        }
+    })();
+    </script></body>
 
 </html>

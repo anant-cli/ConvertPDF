@@ -1,13 +1,12 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="Convert Markdown to PDF with LaTeX math, syntax highlighting, and custom page breaks. 100% private, no uploads.">
-    <title>Markdown to PDF Converter – ConvertPDF</title>
+    <title>Markdown to PDF Converter ï¿½ ConvertPDF</title>
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Markdown to PDF Converter - ConvertPDF">
@@ -23,8 +22,8 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://convert-pdf-tool.netlify.app/pages/md2pdf.html">
     <!-- Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preload font to reduce CLS from FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon"
@@ -65,28 +64,28 @@
 
             <!-- Extended description -->
             <div class="content-section" style="margin-top: 3rem;">
-                <h2>Markdown to PDF – Technical Documentation, Beautifully Rendered</h2>
-                <p>ConvertPDF’s Markdown to PDF tool is built for developers, researchers, and writers who need precise
+                <h2>Markdown to PDF ï¿½ Technical Documentation, Beautifully Rendered</h2>
+                <p>ConvertPDFï¿½s Markdown to PDF tool is built for developers, researchers, and writers who need precise
                     control over their documents. Unlike server-based converters that upload your files, everything
-                    happens locally in your browser – your notes, code, and LaTeX equations never leave your device.</p>
+                    happens locally in your browser ï¿½ your notes, code, and LaTeX equations never leave your device.</p>
                 <h3>Why This Tool Stands Out</h3>
                 <p><strong>Full LaTeX math support:</strong> Write inline math with <code>$...$</code> or display
                     equations with <code>$$...$$</code>. KaTeX renders them instantly, producing publication-ready
                     formulas.<br>
                     <strong>Syntax highlighting for 270+ languages:</strong> Code blocks are automatically highlighted
-                    using Prism.js – choose from a variety of themes.<br>
+                    using Prism.js ï¿½ choose from a variety of themes.<br>
                     <strong>Custom page breaks:</strong> Insert <code>\newpage</code> or
-                    <code>&lt;!-- pagebreak --&gt;</code> anywhere in your Markdown to control pagination – ideal for
+                    <code>&lt;!-- pagebreak --&gt;</code> anywhere in your Markdown to control pagination ï¿½ ideal for
                     books or long reports.<br>
                     <strong>No file size limits:</strong> Because we never upload, you can convert documents hundreds of
                     pages long without worrying about server restrictions.
                 </p>
                 <h3>Real-World Uses</h3>
                 <p>Academics use it to turn LaTeX-heavy lecture notes into PDFs for students. Developers generate API
-                    documentation from Markdown. Writers create e-books with precise chapter breaks. And because it’s
+                    documentation from Markdown. Writers create e-books with precise chapter breaks. And because itï¿½s
                     private, you can safely convert proprietary code or confidential research.</p>
-                <p>After conversion, you can further process your PDF – <a href="pdf2jpg.html">extract images</a> or <a
-                        href="pdfencrypt.html">add a password</a> – all without ever uploading a file.</p>
+                <p>After conversion, you can further process your PDF ï¿½ <a href="pdf2jpg.html">extract images</a> or <a
+                        href="pdfencrypt.html">add a password</a> ï¿½ all without ever uploading a file.</p>
             </div>
         </div>
     </main>
@@ -140,6 +139,22 @@
     <script src="../components.js"></script>
     <script src="../tools/md2pdf.js"></script>
     <script src="../tools/loader.js"></script>
-</body>
+    <!-- Lazy-load AdSense after page is idle -->
+    <script>
+    (function(){
+        function loadAds(){
+            var s=document.createElement('script');
+            s.async=true;
+            s.crossOrigin='anonymous';
+            s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';
+            document.head.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+            requestIdleCallback(loadAds,{timeout:2000});
+        } else {
+            setTimeout(loadAds,1000);
+        }
+    })();
+    </script></body>
 
 </html>

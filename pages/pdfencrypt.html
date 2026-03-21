@@ -1,13 +1,12 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="Protect your PDFs with a password. Set permissions for printing, copying, and modifying. 100% private, no uploads.">
-    <title>PDF Password Protector – ConvertPDF</title>
+    <title>PDF Password Protector ï¿½ ConvertPDF</title>
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="PDF Password Protection - ConvertPDF">
@@ -23,8 +22,8 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://convert-pdf-tool.netlify.app/pages/pdfencrypt.html">
     <!-- Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preload font to reduce CLS from FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon"
@@ -60,9 +59,9 @@
 
             <!-- Extended description above footer -->
             <div class="content-section" style="margin-top: 3rem;">
-                <h2>PDF Password Protection – Strong Encryption, No Compromises</h2>
+                <h2>PDF Password Protection ï¿½ Strong Encryption, No Compromises</h2>
                 <p>
-                    When you share confidential documents – contracts, financial statements, legal briefs – a simple
+                    When you share confidential documents ï¿½ contracts, financial statements, legal briefs ï¿½ a simple
                     PDF without a password is a risk. ConvertPDF adds AES-256 encryption to your PDFs directly in your
                     browser. Your file never touches a server.
                 </p>
@@ -72,12 +71,12 @@
                     password to control printing, copying, and editing. <strong>Real-time password strength
                         meter:</strong>
                     Ensure your password is strong enough. <strong>Granular permissions:</strong> Allow printing but
-                    disallow copying, or block all modifications – you decide. <strong>Client-side only:</strong> No
+                    disallow copying, or block all modifications ï¿½ you decide. <strong>Client-side only:</strong> No
                     one but you ever sees the file or the password.
                 </p>
                 <p>
                     After encryption, you can still <a href="mergepdf.html">merge</a> the protected PDF or
-                    <a href="pdf2jpg.html">extract images</a> – but only if you have the password.
+                    <a href="pdf2jpg.html">extract images</a> ï¿½ but only if you have the password.
                 </p>
             </div>
         </div>
@@ -132,6 +131,22 @@
     <script src="../components.js"></script>
     <script src="../tools/pdfencrypt.js"></script>
     <script src="../tools/loader.js"></script>
-</body>
+    <!-- Lazy-load AdSense after page is idle -->
+    <script>
+    (function(){
+        function loadAds(){
+            var s=document.createElement('script');
+            s.async=true;
+            s.crossOrigin='anonymous';
+            s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';
+            document.head.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+            requestIdleCallback(loadAds,{timeout:2000});
+        } else {
+            setTimeout(loadAds,1000);
+        }
+    })();
+    </script></body>
 
 </html>
