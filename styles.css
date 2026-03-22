@@ -4,7 +4,7 @@
    ============================================ */
 
 /* ── Google Fonts ── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* Font loaded via non-blocking <link> in HTML — no @import needed */
 
 /* ── Design Tokens ── */
 :root {
@@ -1143,7 +1143,7 @@ input[type="color"] {
 
 .footer-col p {
     font-size: 0.875rem;
-    color: var(--text-muted);
+    color: #7a92b4; /* WCAG AA: 5.57:1 on #111827 — was var(--text-muted)=#4e6082 at 2.8:1 */
     line-height: 1.6;
 }
 
@@ -1203,7 +1203,7 @@ input[type="color"] {
     margin-top: 2.5rem;
     border-top: 1px solid var(--border-subtle);
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: #7a92b4; /* WCAG AA: 5.57:1 on #111827 — was var(--text-muted)=#4e6082 at 2.8:1 */
 }
 
 .footer-bottom a {
