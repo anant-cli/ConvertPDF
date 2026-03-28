@@ -67,7 +67,7 @@ Want to contribute or run ConvertPDF on your own machine? It's easy!
 
 We welcome contributions! ConvertPDF is an open-source project driven by the community. 
 
-- Found a bug? [Open an issue](https://github.com/tony90lang/ConvertPDF/issues).
+- Found a bug? [Open an issue](https://github.com/anant-cli/ConvertPDF/issues).
 - Have a feature request? Let us know!
 - Want to write code? Submit a pull request. We have issues tagged `good first issue` to help you get started.
 
