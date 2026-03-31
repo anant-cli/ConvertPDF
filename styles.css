@@ -144,6 +144,32 @@ a:hover {
     opacity: 0.85;
 }
 
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--accent-light);
+    outline-offset: 2px;
+}
+
+.skip-link {
+    position: absolute;
+    left: 0.75rem;
+    top: -120px;
+    background: #ffffff;
+    color: #111827;
+    border-radius: var(--r-sm);
+    padding: 0.65rem 0.95rem;
+    font-weight: 700;
+    z-index: 5000;
+    box-shadow: var(--shadow-md);
+}
+
+.skip-link:focus {
+    top: 0.75rem;
+}
+
 code {
     background: rgba(79, 158, 255, 0.12);
     color: var(--accent-light);
@@ -1806,8 +1832,31 @@ input[type="color"] {
 .policy-section table th {
     color: var(--text-primary);
     font-weight: 600;
+    border-bottom: 1px solid var(--border-subtle);
+    background: rgba(79, 158, 255, 0.08) !important;
 }
 
 .policy-section table td {
     color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.policy-section table {
+    width: 100%;
+    border-collapse: collapse;
+    display: block;
+    overflow-x: auto;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-md);
+}
+
+.policy-section table tr {
+    background: transparent;
+}
+
+@media (max-width: 700px) {
+    .policy-section table th,
+    .policy-section table td {
+        min-width: 170px;
+    }
 }

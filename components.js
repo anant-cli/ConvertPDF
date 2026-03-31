@@ -1,17 +1,13 @@
-/**
- * components.js – shared header/footer enhancer for ConvertPDF
- * Adds: mobile hamburger nav, active nav link detection
- * Include ONCE at the end of <body> on every page.
+﻿/**
+ * components.js - shared UI and trust enhancements for ConvertPDF
+ * Adds: mobile nav, active link detection, accessibility helpers, cookie consent banner,
+ * and symbol normalization for consistent user experience.
  */
 (function () {
     'use strict';
 
-    /* ─── Determine root-relative path depth ─── */
-    // pages/ and blog/ are one level deep; root files are at depth 0
-    const depth = (window.location.pathname.match(/\//g) || []).length - 1;
-    const root = depth >= 2 ? '../' : '';
+    const CONSENT_KEY = 'convertpdf_cookie_consent_v1';
 
-    /* ─── Inject hamburger button into existing header ─── */
     function setupHamburger() {
         const nav = document.querySelector('.main-nav');
         const headerContainer = document.querySelector('.header-container');
@@ -23,10 +19,8 @@
         toggle.setAttribute('role', 'button');
         toggle.setAttribute('aria-expanded', 'false');
         toggle.setAttribute('aria-controls', 'main-nav-list');
-        toggle.innerHTML =
-            '<span class="bar"></span><span class="bar"></span><span class="bar"></span>';
+        toggle.innerHTML = '<span class="bar"></span><span class="bar"></span><span class="bar"></span>';
 
-        // Insert before nav
         headerContainer.insertBefore(toggle, nav);
 
         const ul = nav.querySelector('ul');
@@ -38,7 +32,6 @@
             toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
         });
 
-        // Close when clicking outside
         document.addEventListener('click', function (e) {
             if (!headerContainer.contains(e.target) && nav.classList.contains('open')) {
                 nav.classList.remove('open');
@@ -47,7 +40,6 @@
             }
         });
 
-        // Close on Escape
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && nav.classList.contains('open')) {
                 nav.classList.remove('open');
@@ -58,7 +50,6 @@
         });
     }
 
-    /* ─── Mark active nav link ─── */
     function setActiveNavLink() {
         const path = window.location.pathname;
         const filename = path.split('/').pop() || 'index.html';
@@ -76,7 +67,77 @@
         });
     }
 
-    /* ─── Ensure toast container exists ─── */
+    function ensureMainId() {
+        const main = document.querySelector('main');
+        if (main && !main.id) {
+            main.id = 'main-content';
+        }
+    }
+
+    function ensureSkipLink() {
+        ensureMainId();
+        if (document.querySelector('.skip-link')) return;
+        if (!document.body) return;
+
+        const skip = document.createElement('a');
+        skip.className = 'skip-link';
+        skip.href = '#main-content';
+        skip.textContent = 'Skip to main content';
+        document.body.insertBefore(skip, document.body.firstChild);
+    }
+
+    function normalizeGlobalLabels() {
+        const navMap = {
+            'index.html': '🏠 Home',
+            'all-tools.html': '🛠️ All Tools',
+            'blog': '📰 Blog',
+            'about.html': 'ℹ️ About',
+            'contact.html': '📞 Contact',
+            'privacy.html': '🔒 Privacy',
+            'terms.html': '📜 Terms'
+        };
+
+        document.querySelectorAll('.main-nav a').forEach(function (a) {
+            const href = a.getAttribute('href') || '';
+            const lower = href.toLowerCase();
+            if (lower.endsWith('index.html')) a.textContent = navMap['index.html'];
+            else if (lower.endsWith('all-tools.html')) a.textContent = navMap['all-tools.html'];
+            else if (lower.includes('blog/')) a.textContent = navMap.blog;
+            else if (lower.endsWith('about.html')) a.textContent = navMap['about.html'];
+            else if (lower.endsWith('contact.html')) a.textContent = navMap['contact.html'];
+            else if (lower.endsWith('privacy.html')) a.textContent = navMap['privacy.html'];
+            else if (lower.endsWith('terms.html')) a.textContent = navMap['terms.html'];
+        });
+
+        const logo = document.querySelector('.logo a');
+        if (logo) {
+            logo.textContent = '📄 ConvertPDF';
+            if (!logo.getAttribute('title')) {
+                logo.setAttribute('title', 'ConvertPDF - Home');
+            }
+        }
+
+        document.querySelectorAll('.back-btn').forEach(function (btn) {
+            if (/back to home/i.test(btn.textContent)) {
+                btn.textContent = '🏠 Back to Home';
+            }
+        });
+
+        document.querySelectorAll('.social-links a').forEach(function (a) {
+            const title = (a.getAttribute('title') || '').toLowerCase();
+            if (title.includes('github')) {
+                a.textContent = '🐙';
+                a.setAttribute('aria-label', 'GitHub');
+            } else if (title.includes('email')) {
+                a.textContent = '✉️';
+                a.setAttribute('aria-label', 'Email');
+            } else if (title.includes('twitter')) {
+                a.textContent = '🐦';
+                a.setAttribute('aria-label', 'Twitter (coming soon)');
+            }
+        });
+    }
+
     function ensureToastContainer() {
         if (!document.getElementById('toast-container')) {
             const container = document.createElement('div');
@@ -87,16 +148,86 @@
         }
     }
 
-    /* ─── Init ─── */
+    function applyConsentMode(choice) {
+        if (choice === 'rejected') {
+            window.adsbygoogle = window.adsbygoogle || [];
+            window.adsbygoogle.requestNonPersonalizedAds = 1;
+        }
+
+        if (typeof window.gtag === 'function') {
+            const granted = choice === 'accepted' ? 'granted' : 'denied';
+            window.gtag('consent', 'update', {
+                ad_storage: granted,
+                analytics_storage: granted,
+                ad_user_data: granted,
+                ad_personalization: granted
+            });
+        }
+    }
+
+    function hideCookieBanner() {
+        const banner = document.getElementById('cookie-consent-banner');
+        if (!banner) return;
+        banner.classList.remove('show');
+        setTimeout(function () {
+            banner.remove();
+        }, 350);
+    }
+
+    function ensureCookieBanner() {
+        const saved = localStorage.getItem(CONSENT_KEY);
+        if (saved === 'accepted' || saved === 'rejected') {
+            applyConsentMode(saved);
+            return;
+        }
+        if (document.getElementById('cookie-consent-banner')) return;
+
+        const banner = document.createElement('div');
+        banner.id = 'cookie-consent-banner';
+        banner.innerHTML = [
+            '<div class="cookie-consent-content">',
+            '<p>We use cookies for analytics and ads to keep ConvertPDF free. You can accept or reject non-essential cookies anytime. ',
+            '<a href="' + (window.location.pathname.includes('/pages/') || window.location.pathname.includes('/blog/') ? '../privacy.html' : 'privacy.html') + '">Learn more</a>.</p>',
+            '<div class="cookie-consent-actions">',
+            '<button type="button" class="cookie-btn reject" id="cookie-reject">Reject</button>',
+            '<button type="button" class="cookie-btn accept" id="cookie-accept">Accept</button>',
+            '</div>',
+            '</div>'
+        ].join('');
+
+        document.body.appendChild(banner);
+        requestAnimationFrame(function () {
+            banner.classList.add('show');
+        });
+
+        const accept = banner.querySelector('#cookie-accept');
+        const reject = banner.querySelector('#cookie-reject');
+
+        accept.addEventListener('click', function () {
+            localStorage.setItem(CONSENT_KEY, 'accepted');
+            applyConsentMode('accepted');
+            hideCookieBanner();
+        });
+
+        reject.addEventListener('click', function () {
+            localStorage.setItem(CONSENT_KEY, 'rejected');
+            applyConsentMode('rejected');
+            hideCookieBanner();
+        });
+    }
+
+    function init() {
+        ensureSkipLink();
+        normalizeGlobalLabels();
+        setupHamburger();
+        setActiveNavLink();
+        ensureToastContainer();
+        ensureCookieBanner();
+    }
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
         init();
-    }
-
-    function init() {
-        setupHamburger();
-        setActiveNavLink();
-        ensureToastContainer();
     }
 })();
