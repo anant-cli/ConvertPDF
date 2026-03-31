@@ -208,6 +208,15 @@
     <script defer src="utils.js"></script>
     <script defer src="script.js"></script>
     <script defer src="components.js"></script>
+    <!-- Google Analytics GA4 — Replace G-7FVBKG4BEH with your actual Measurement ID -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7FVBKG4BEH"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-7FVBKG4BEH');
+    </script>
+
     <!-- Lazy-load AdSense after page is idle -->
     <script>
     (function(){

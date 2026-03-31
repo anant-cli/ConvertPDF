@@ -36,8 +36,8 @@ function loadImage(file) {
     });
 }
 
-// ---------- DYNAMIC SCRIPT LOADER ----------
-function loadScript(src) {
+// ---------- DYNAMIC SCRIPT LOADER (with optional SRI) ----------
+function loadScript(src, integrity) {
     return new Promise((resolve, reject) => {
         const existing = document.querySelector(`script[src="${src}"]`);
         if (existing) {
@@ -46,14 +46,18 @@ function loadScript(src) {
         }
         const script = document.createElement('script');
         script.src = src;
+        if (integrity) {
+            script.integrity = integrity;
+            script.crossOrigin = 'anonymous';
+        }
         script.onload = () => resolve();
         script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
         document.head.appendChild(script);
     });
 }
 
-// ---------- DYNAMIC STYLESHEET LOADER ----------
-function loadStylesheet(href) {
+// ---------- DYNAMIC STYLESHEET LOADER (with optional SRI) ----------
+function loadStylesheet(href, integrity) {
     return new Promise((resolve, reject) => {
         const existing = document.querySelector(`link[href="${href}"]`);
         if (existing) {
@@ -63,10 +67,65 @@ function loadStylesheet(href) {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
         link.href = href;
+        if (integrity) {
+            link.integrity = integrity;
+            link.crossOrigin = 'anonymous';
+        }
         link.onload = resolve;
         link.onerror = () => reject(new Error(`Failed to load stylesheet: ${href}`));
         document.head.appendChild(link);
     });
+}
+
+// ---------- COOKIE CONSENT BANNER ----------
+function initCookieConsent() {
+    if (localStorage.getItem('cookie-consent') === 'accepted') return;
+    if (document.getElementById('cookie-consent-banner')) return;
+
+    const banner = document.createElement('div');
+    banner.id = 'cookie-consent-banner';
+    banner.setAttribute('role', 'dialog');
+    banner.setAttribute('aria-label', 'Cookie consent');
+    banner.innerHTML = `
+        <div class="cookie-consent-content">
+            <p>🍪 We use cookies for analytics (Google Analytics) and advertising (Google AdSense) to improve your experience. 
+            No personal file data is ever collected. 
+            <a href="/privacy.html" style="color: var(--accent-light);">Learn more</a></p>
+            <div class="cookie-consent-actions">
+                <button id="cookie-accept" class="cookie-btn accept">Accept All</button>
+                <button id="cookie-reject" class="cookie-btn reject">Reject Non-Essential</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(banner);
+
+    // Trigger reflow then show
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            banner.classList.add('show');
+        });
+    });
+
+    document.getElementById('cookie-accept').addEventListener('click', function () {
+        localStorage.setItem('cookie-consent', 'accepted');
+        banner.classList.remove('show');
+        setTimeout(() => banner.remove(), 400);
+    });
+
+    document.getElementById('cookie-reject').addEventListener('click', function () {
+        localStorage.setItem('cookie-consent', 'rejected');
+        // Disable GA if rejected
+        window['ga-disable-G-7FVBKG4BEH'] = true;
+        banner.classList.remove('show');
+        setTimeout(() => banner.remove(), 400);
+    });
+}
+
+// Auto-init cookie consent on page load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCookieConsent);
+} else {
+    initCookieConsent();
 }
 
 // ---------- TOAST NOTIFICATIONS ----------

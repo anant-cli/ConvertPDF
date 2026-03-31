@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Developer's Guide to PDF-Lib: Creating PDFs in the Browser � ConvertPDF Blog</title>
+    <title>A Developer's Guide to PDF-Lib: Creating PDFs in the Browser ? ConvertPDF Blog</title>
     <meta name="description"
         content="Learn how pdf-lib works, how to create and modify PDFs entirely in the browser using JavaScript, and why client-side PDF generation matters.">
     <meta name="keywords"
@@ -154,7 +154,7 @@
                     <h2>Advanced Features</h2>
                     <p>
                         <strong>Merging PDFs:</strong> pdf-lib can copy pages from one document to another using
-                        <code>document.copyPages()</code>. This is how ConvertPDF's merge tool works � it loads multiple
+                        <code>document.copyPages()</code>. This is how ConvertPDF's merge tool works ? it loads multiple
                         PDF files, copies all their pages into a new document, and saves the combined result. The entire
                         operation happens in memory within the browser.
                     </p>
@@ -187,8 +187,8 @@
                         reduce both processing time and output file size.
                     </p>
                     <p>
-                        Font subsetting � embedding only the characters actually used in the document rather than the
-                        entire font file � is another optimization that reduces file size. While pdf-lib doesn't subset
+                        Font subsetting ? embedding only the characters actually used in the document rather than the
+                        entire font file ? is another optimization that reduces file size. While pdf-lib doesn't subset
                         fonts automatically, you can use complementary tools to subset fonts before embedding them.
                     </p>
                 </section>
@@ -202,8 +202,8 @@
                         browser does its own work.
                     </p>
                     <p>
-                        For applications handling sensitive data � medical records, financial documents, legal contracts
-                        � client-side generation can simplify compliance with regulations like GDPR and HIPAA by keeping
+                        For applications handling sensitive data ? medical records, financial documents, legal contracts
+                        ? client-side generation can simplify compliance with regulations like GDPR and HIPAA by keeping
                         personal data entirely on the client device.
                     </p>
                     <p>
@@ -295,7 +295,16 @@
 
     <script defer src="../utils.js"></script>
     <script defer src="../components.js"></script>
-    <!-- Lazy-load AdSense after page is idle -->
+    
+    <!-- Google Analytics GA4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7FVBKG4BEH"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-7FVBKG4BEH');
+    </script>
+<!-- Lazy-load AdSense after page is idle -->
     <script>
     (function(){
         function loadAds(){
