@@ -7,6 +7,9 @@
     'use strict';
 
     const CONSENT_KEY = 'convertpdf_cookie_consent_v1';
+    const GA_ID = 'G-7FVBKG4BEH';
+    const ADS_CLIENT = 'ca-pub-1745874358886453';
+    const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1']);
 
     function setupHamburger() {
         const nav = document.querySelector('.main-nav');
@@ -148,6 +151,63 @@
         }
     }
 
+    function isLocalRuntime() {
+        return window.location.protocol === 'file:' || LOCAL_HOSTS.has(window.location.hostname);
+    }
+
+    function shouldLoadAds() {
+        return localStorage.getItem(CONSENT_KEY) !== 'rejected';
+    }
+
+    function ensureDataLayer() {
+        window.dataLayer = window.dataLayer || [];
+        if (typeof window.gtag !== 'function') {
+            window.gtag = function () {
+                window.dataLayer.push(arguments);
+            };
+        }
+    }
+
+    function appendExternalScript(src, attributes) {
+        if (document.querySelector('script[src="' + src + '"]')) return;
+
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+
+        if (attributes) {
+            Object.keys(attributes).forEach(function (key) {
+                script.setAttribute(key, attributes[key]);
+            });
+        }
+
+        document.head.appendChild(script);
+    }
+
+    function initAnalyticsAndAds() {
+        if (isLocalRuntime()) return;
+
+        ensureDataLayer();
+        window.gtag('js', new Date());
+        window.gtag('config', GA_ID, { send_page_view: true });
+        appendExternalScript('https://www.googletagmanager.com/gtag/js?id=' + GA_ID);
+
+        if (!shouldLoadAds()) return;
+
+        const loadAds = function () {
+            appendExternalScript(
+                'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADS_CLIENT,
+                { crossorigin: 'anonymous' }
+            );
+        };
+
+        if ('requestIdleCallback' in window) {
+            window.requestIdleCallback(loadAds, { timeout: 2000 });
+        } else {
+            window.setTimeout(loadAds, 1000);
+        }
+    }
+
     function applyConsentMode(choice) {
         if (choice === 'rejected') {
             window.adsbygoogle = window.adsbygoogle || [];
@@ -223,6 +283,7 @@
         setActiveNavLink();
         ensureToastContainer();
         ensureCookieBanner();
+        initAnalyticsAndAds();
     }
 
     if (document.readyState === 'loading') {
