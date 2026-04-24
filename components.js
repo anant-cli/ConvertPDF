@@ -1,4 +1,4 @@
-﻿/**
+/**
  * components.js - shared UI and trust enhancements for ConvertPDF
  * Adds: mobile nav, active link detection, accessibility helpers, cookie consent banner,
  * and symbol normalization for consistent user experience.
@@ -194,18 +194,23 @@
 
         if (!shouldLoadAds()) return;
 
+        let adsLoaded = false;
         const loadAds = function () {
+            if (adsLoaded) return;
+            adsLoaded = true;
             appendExternalScript(
                 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADS_CLIENT,
                 { crossorigin: 'anonymous' }
             );
+            ['scroll', 'mousemove', 'touchstart'].forEach(function(e) {
+                window.removeEventListener(e, loadAds);
+            });
         };
 
-        if ('requestIdleCallback' in window) {
-            window.requestIdleCallback(loadAds, { timeout: 2000 });
-        } else {
-            window.setTimeout(loadAds, 1000);
-        }
+        ['scroll', 'mousemove', 'touchstart'].forEach(function(e) {
+            window.addEventListener(e, loadAds, { once: true, passive: true });
+        });
+        window.setTimeout(loadAds, 5000);
     }
 
     function applyConsentMode(choice) {
