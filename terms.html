@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -11,7 +11,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"></noscript>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="styles.css"></noscript>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📄%3C/text%3E%3C/svg%3E">
 </head>
 
@@ -65,7 +66,7 @@
             <section class="policy-section">
                 <h2>4. Intellectual Property</h2>
                 <p><strong>Your Content:</strong> You retain all rights to the documents, images, and files you process using ConvertPDF. Since all processing happens locally in your browser, we never have access to, ownership of, or any claim to your content.</p>
-                <p><strong>Our Content:</strong> The ConvertPDF website, its design, logo, branding, original text, and code are owned by ConvertPDF and protected under applicable copyright and intellectual property laws. The underlying source code is licensed under the <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer">MIT License</a> and is available on <a href="https://github.com/tony90lang/ConvertPDF" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
+                <p><strong>Our Content:</strong> The ConvertPDF website, its design, logo, branding, original text, and code are owned by ConvertPDF and protected under applicable copyright and intellectual property laws. The underlying source code is licensed under the <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer">MIT License</a> and is available on <a href="https://github.com/anant-cli/ConvertPDF" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
                 <p><strong>Third-Party Libraries:</strong> ConvertPDF uses open-source libraries (pdf-lib, mammoth.js, marked, KaTeX, Prism.js, and others) which are each governed by their respective licenses.</p>
             </section>
 
@@ -151,15 +152,14 @@
 
     <script defer src="utils.js"></script>
     <script defer src="components.js"></script>
-
     <!-- Google Analytics GA4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7FVBKG4BEH"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-7FVBKG4BEH');
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js',new Date());
+    gtag('config','G-7FVBKG4BEH',{send_page_view:true});
     </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7FVBKG4BEH"></script>
 
     <!-- Lazy-load AdSense after page is idle -->
     <script>

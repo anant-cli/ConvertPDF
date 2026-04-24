@@ -38,6 +38,7 @@ async function renderdocx2pdf(container) {
         <div id="docxStats" style="display:none; text-align:right; margin-bottom: 1rem; color: var(--text-muted); font-size: 0.9rem;">
             File Size: <span id="docxSize">0 Bytes</span>
         </div>
+        <div class="orientation-selector" style="margin-top: 0; margin-bottom: 1rem;">
             <label>📐 Page size: <select id="docxPageSize"><option value="a4">A4</option><option value="letter">Letter</option></select></label>
             <label>🔄 Orientation: <select id="docxOrientation"><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></label>
         </div>

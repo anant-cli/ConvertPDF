@@ -116,9 +116,13 @@ async function renderimg2pdf(container) {
                 delBtn.addEventListener('click', () => {
                     filesArray.splice(index, 1);
                     renderPreviewList();
-                    const dt = new DataTransfer();
-                    filesArray.forEach(f => dt.items.add(f));
-                    input.files = dt.files;
+                    if (typeof DataTransfer === 'function') {
+                        const dt = new DataTransfer();
+                        filesArray.forEach(f => dt.items.add(f));
+                        input.files = dt.files;
+                    } else {
+                        input.value = '';
+                    }
                 });
 
                 previewList.appendChild(item);

@@ -79,7 +79,8 @@ async function rendertxt2docx(container) {
         </div>
         <button id="convertTxtBtn" class="primary">📝 → 📘 Convert to DOCX</button>
         <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
-        <button id="downloadDocxBtn" class="download-btn" disabled>⬇ Download DOCX</button>
+            <button id="downloadDocxBtn" class="download-btn" disabled>⬇ Download DOCX</button>
+        </div>
     `;
 
         const txtFile = document.getElementById('txtFile');

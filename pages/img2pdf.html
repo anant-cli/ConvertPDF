@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -43,7 +43,8 @@
         content="Combine JPG and PNG images into a single PDF. Auto-orientation and page size control. No uploads.">
     <!-- Canonical -->
     <link rel="canonical" href="https://convert-pdf-tool.netlify.app/pages/img2pdf.html">
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../styles.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="../styles.css"></noscript>
     <link rel="icon"
         href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📄%3C/text%3E%3C/svg%3E">
 </head>
@@ -176,7 +177,7 @@
                 <h4>📄 ConvertPDF</h4>
                 <p>Free, private, client-side PDF tools. No uploads, no sign-up, no limits.</p>
                 <div class="social-links">
-                    <a href="https://github.com/tony90lang/ConvertPDF" target="_blank" rel="noopener noreferrer" title="GitHub">🐙</a>
+                    <a href="https://github.com/anant-cli/ConvertPDF" target="_blank" rel="noopener noreferrer" title="GitHub">🐙</a>
                     <a href="mailto:convertpdf.contact@gmail.com" title="Email">✉️</a>
                     <a href="#" title="Twitter (coming soon)">🐦</a>
                 </div>
@@ -206,7 +207,7 @@
                 <h4>✉️ Get in Touch</h4>
                 <p>Have questions or feedback! ✉️ We'd love to hear from you.</p>
                 <p><a href="mailto:convertpdf.contact@gmail.com">convertpdf.contact@gmail.com</a></p>
-                <p><a href="https://github.com/tony90lang/ConvertPDF" target="_blank" rel="noopener noreferrer">GitHub Repository</a></p>
+                <p><a href="https://github.com/anant-cli/ConvertPDF" target="_blank" rel="noopener noreferrer">GitHub Repository</a></p>
             </div>
         </div>
         <div class="footer-bottom">
@@ -219,15 +220,14 @@
     <script defer src="../components.js"></script>
     <script defer src="../tools/img2pdf.js"></script>
     <script defer src="../tools/loader.js"></script>
-    
     <!-- Google Analytics GA4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7FVBKG4BEH"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-7FVBKG4BEH');
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js',new Date());
+    gtag('config','G-7FVBKG4BEH',{send_page_view:true});
     </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7FVBKG4BEH"></script>
 <!-- Lazy-load AdSense after page is idle -->
     <script>
     (function(){

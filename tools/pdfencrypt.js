@@ -1,7 +1,7 @@
 ﻿// pdfencrypt.js - Using official pdf-lib
 async function renderpdfencrypt(container) {
     try {
-        await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js');
+        await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib-with-encrypt@1.2.1/dist/pdf-lib.min.js');
 
         container.innerHTML = '';
         const area = document.createElement('div');
@@ -113,6 +113,10 @@ async function renderpdfencrypt(container) {
                 const newPdf = await PDFDocument.create();
                 const copiedPages = await newPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
                 copiedPages.forEach(page => newPdf.addPage(page));
+
+                if (typeof newPdf.encrypt !== 'function') {
+                    throw new Error('PDF encryption is not available in this browser session. Please refresh and try again.');
+                }
 
                 // Encrypt the new PDF
                 await newPdf.encrypt({

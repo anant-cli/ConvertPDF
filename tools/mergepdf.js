@@ -115,11 +115,13 @@ async function rendermergepdf(container) {
                     filesArray.splice(index, 1);
                     renderFileList();
 
-                    // Also update the input element if it matches the current array
-                    // Creating a DataTransfer object to modify the FileList
-                    const dt = new DataTransfer();
-                    filesArray.forEach(f => dt.items.add(f));
-                    mergeInp.files = dt.files;
+                    if (typeof DataTransfer === 'function') {
+                        const dt = new DataTransfer();
+                        filesArray.forEach(f => dt.items.add(f));
+                        mergeInp.files = dt.files;
+                    } else {
+                        mergeInp.value = '';
+                    }
                 });
                 fileList.appendChild(li);
             });
