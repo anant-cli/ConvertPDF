@@ -281,6 +281,92 @@
         });
     }
 
+    // --- Premium UI Enhancements ---
+    function initPremiumUI() {
+        // 1. Scroll Reveals
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
+
+        // 2. Custom Cursor
+        if (window.matchMedia("(pointer: fine)").matches) {
+            const cursor = document.createElement('div');
+            cursor.className = 'custom-cursor';
+            document.body.appendChild(cursor);
+
+            let cursorX = 0, cursorY = 0;
+            let targetX = 0, targetY = 0;
+
+            document.addEventListener('mousemove', function(e) {
+                targetX = e.clientX;
+                targetY = e.clientY;
+            });
+
+            function renderCursor() {
+                cursorX += (targetX - cursorX) * 0.2;
+                cursorY += (targetY - cursorY) * 0.2;
+                cursor.style.transform = 'translate(' + cursorX + 'px, ' + cursorY + 'px)';
+                requestAnimationFrame(renderCursor);
+            }
+            requestAnimationFrame(renderCursor);
+
+            const addHover = function() { cursor.classList.add('hover'); };
+            const removeHover = function() { cursor.classList.remove('hover'); };
+
+            // Apply hover to links/buttons but wait a bit for dynamic elements
+            setTimeout(function() {
+                document.querySelectorAll('a, button, .tool-card').forEach(function(el) {
+                    el.addEventListener('mouseenter', addHover);
+                    el.addEventListener('mouseleave', removeHover);
+                });
+            }, 500);
+        }
+
+        // 3. 3D Tilt & Spotlight for Tool Cards
+        setTimeout(function() {
+            document.querySelectorAll('.tool-card').forEach(function(card) {
+                card.addEventListener('mousemove', function(e) {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.setProperty('--mouse-x', x + 'px');
+                    card.style.setProperty('--mouse-y', y + 'px');
+
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -10;
+                    const rotateY = ((x - centerX) / centerX) * 10;
+                    
+                    card.style.transform = 'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) scale3d(1.02, 1.02, 1.02)';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    card.style.transform = '';
+                });
+            });
+
+            // 4. Magnetic Buttons
+            document.querySelectorAll('.button, .download-btn').forEach(function(btn) {
+                btn.addEventListener('mousemove', function(e) {
+                    const rect = btn.getBoundingClientRect();
+                    const x = (e.clientX - rect.left - rect.width / 2) * 0.3;
+                    const y = (e.clientY - rect.top - rect.height / 2) * 0.3;
+                    btn.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+                });
+                btn.addEventListener('mouseleave', function() {
+                    btn.style.transform = '';
+                });
+            });
+        }, 500); // wait for dynamic tool cards
+    }
+
     function init() {
         ensureSkipLink();
         normalizeGlobalLabels();
@@ -289,6 +375,7 @@
         ensureToastContainer();
         ensureCookieBanner();
         initAnalyticsAndAds();
+        initPremiumUI();
     }
 
     if (document.readyState === 'loading') {

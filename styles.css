@@ -467,7 +467,8 @@ button:hover {
 .button.secondary,
 button.secondary {
     background: rgba(255, 255, 255, 0.04);
-    color: #a8bfd8; /* WCAG AA contrast-safe upgrade from --text-secondary */
+    color: #a8bfd8;
+    /* WCAG AA contrast-safe upgrade from --text-secondary */
     border-color: var(--border-subtle);
     box-shadow: none;
 }
@@ -624,7 +625,8 @@ button:disabled,
 }
 
 .tool-desc {
-    color: #cbd5e1; /* Increased contrast from #4e6082 */
+    color: #cbd5e1;
+    /* Increased contrast from #4e6082 */
     font-size: 0.83rem;
     line-height: 1.45;
 }
@@ -1217,7 +1219,8 @@ input[type="color"] {
 
 .footer-col p {
     font-size: 0.875rem;
-    color: #7a92b4; /* WCAG AA: 5.57:1 on #111827 — was var(--text-muted)=#4e6082 at 2.8:1 */
+    color: #7a92b4;
+    /* WCAG AA: 5.57:1 on #111827 — was var(--text-muted)=#4e6082 at 2.8:1 */
     line-height: 1.6;
 }
 
@@ -1231,7 +1234,8 @@ input[type="color"] {
 }
 
 .footer-col a {
-    color: #7a92b4; /* WCAG AA upgrade from --text-muted (#4e6082) on dark bg */
+    color: #7a92b4;
+    /* WCAG AA upgrade from --text-muted (#4e6082) on dark bg */
     font-size: 0.875rem;
     font-weight: 400;
     transition: opacity 0.15s, padding-left 0.15s;
@@ -1277,11 +1281,13 @@ input[type="color"] {
     margin-top: 2.5rem;
     border-top: 1px solid var(--border-subtle);
     font-size: 0.8rem;
-    color: #7a92b4; /* WCAG AA: 5.57:1 on #111827 — was var(--text-muted)=#4e6082 at 2.8:1 */
+    color: #7a92b4;
+    /* WCAG AA: 5.57:1 on #111827 — was var(--text-muted)=#4e6082 at 2.8:1 */
 }
 
 .footer-bottom a {
-    color: #7a92b4; /* WCAG AA upgrade from --text-muted on dark bg */
+    color: #7a92b4;
+    /* WCAG AA upgrade from --text-muted on dark bg */
     margin: 0 0.4rem;
 }
 
@@ -1537,11 +1543,13 @@ input[type="color"] {
     .home-grid {
         grid-template-columns: 1fr;
     }
+
     .tool-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
     }
+
     .header-container .logo a {
         font-size: 1.25rem;
     }
@@ -1843,6 +1851,7 @@ input[type="color"] {
 
 .policy-section table {
     width: 100%;
+
     border-collapse: collapse;
     display: block;
     overflow-x: auto;
@@ -1855,8 +1864,68 @@ input[type="color"] {
 }
 
 @media (max-width: 700px) {
+
     .policy-section table th,
     .policy-section table td {
         min-width: 170px;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   PREMIUM UPGRADES (Top-Tier UI)
+═══════════════════════════════════════════ */
+
+/* Scroll Reveal Animations */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 3D Tilt Cards (Spotlight effect) */
+.tool-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(79, 158, 255, 0.08), transparent 40%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.tool-card:hover::after {
+    opacity: 1;
+}
+
+/* Custom Cursor */
+.custom-cursor {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.2s, height 0.2s, background-color 0.2s;
+    mix-blend-mode: screen;
+}
+
+.custom-cursor.hover {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(79, 158, 255, 0.2);
+    border-color: transparent;
+}
+
+@media (pointer: coarse) {
+    .custom-cursor {
+        display: none;
     }
 }
