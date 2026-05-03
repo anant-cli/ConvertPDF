@@ -38,7 +38,7 @@ async function renderpdfencrypt(container) {
                 <input type="password" id="pdfConfirmPassword" placeholder="Repeat user password" style="max-width: 100%;">
             </div>
 
-            <div class="faq-section" style="margin: 0; padding: 0.5rem; background: #f8faff;">
+            <div class="faq-section" style="margin: 0; padding: 0.5rem; background: var(--bg-input);">
                 <details>
                     <summary style="font-size: 0.85rem; padding: 0.5rem;">Advanced Permissions</summary>
                     <div style="padding: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
@@ -151,6 +151,11 @@ async function renderpdfencrypt(container) {
         });
     } catch (___err) {
         console.error('renderpdfencrypt error:', ___err);
-        container.innerHTML = '<div class="warning">⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.</div>';
+        const isLibraryError = ___err.message && ___err.message.includes('Failed to load script');
+        container.innerHTML = `<div class="warning">
+            ⚠️ ${isLibraryError
+                ? 'The encryption library failed to load. This may be a network issue — please check your connection and refresh the page.'
+                : 'Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.'}
+        </div>`;
     }
 }

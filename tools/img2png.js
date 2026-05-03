@@ -88,7 +88,7 @@ function renderimg2png(container) {
         originalFile = file;
 
         // Show file size
-        origSizeSpan.textContent = `Original: ${typeof formatFileSize === 'function' ? formatFileSize(file.size) : file.size + ' bytes'} (${file.type.split('/')[1].toUpperCase()})`;
+        origSizeSpan.textContent = `Original: ${typeof formatFileSize === 'function' ? formatFileSize(file.size) : file.size + ' bytes'} (${(file.type.split('/')[1] || 'image').toUpperCase()})`;
 
         conv.disabled = false;
 

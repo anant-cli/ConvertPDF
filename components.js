@@ -224,6 +224,15 @@
         }, 500); // wait for dynamic tool cards
     }
 
+    function ensureToastContainer() {
+        if (document.getElementById('toast-container')) return;
+        const container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container';
+        container.setAttribute('aria-live', 'polite');
+        document.body.appendChild(container);
+    }
+
     function init() {
         ensureSkipLink();
         normalizeGlobalLabels();

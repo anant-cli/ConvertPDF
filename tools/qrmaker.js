@@ -26,7 +26,7 @@ async function renderqrmaker(container) {
             </details>
         </div>
         <div class="qr-controls">
-            <textarea id="qrText" placeholder="Enter text or URL (one per line for batch generation)" style="width: 100%; min-height: 80px; padding: 0.8rem; border-radius: var(--r-md); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 1rem; font-family: inherit;">https://convert-pdf.vercel.app</textarea>
+            <textarea id="qrText" placeholder="Enter text or URL (one per line for batch generation)" style="width: 100%; min-height: 80px; padding: 0.8rem; border-radius: var(--r-md); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 1rem; font-family: inherit;">https://convert-pdf-tool.netlify.app</textarea>
             
             <div class="qr-options-grid">
                 <div class="qr-option"><label>Size:</label><select id="qrSize"><option value="200">Small</option><option value="300" selected>Medium</option><option value="500">Large</option><option value="1024">Print</option></select></div>

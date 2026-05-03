@@ -2,7 +2,7 @@
 
 🚀 **Convert PDFs, documents, and images entirely in your browser – no uploads, no servers, no privacy risks.**
 
-👉 **Live site:** [yourdomain.com](https://yourdomain.com)
+👉 **Live site:** [convert-pdf-tool.netlify.app](https://convert-pdf-tool.netlify.app)
 
 ---
 

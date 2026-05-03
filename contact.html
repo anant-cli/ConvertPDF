@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -12,21 +12,24 @@
     <meta property="og:title" content="Contact ConvertPDF - Get Support &amp; Share Feedback">
     <meta property="og:description"
         content="Need help with ConvertPDF? Contact us via email or GitHub. We respond within 48 hours.">
-    <meta property="og:url" content="https://yourdomain.com/contact.html">
-    <meta property="og:site_name" content="ConvertPDF">
-    <!-- Twitter Card -->
+    <meta property="og:url" content="https://convert-pdf-tool.netlify.app/contact.html">
+        <meta property="og:image" content="https://convert-pdf-tool.netlify.app/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+<meta property="og:site_name" content="ConvertPDF">
+<!-- Twitter Card -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="Contact ConvertPDF - Get Support &amp; Share Feedback">
     <meta name="twitter:description"
         content="Need help with ConvertPDF? Contact us via email or GitHub. We respond within 48 hours.">
-    <!-- Canonical -->
-    <link rel="canonical" href="https://yourdomain.com/contact.html">
+        <meta name="twitter:image" content="https://convert-pdf-tool.netlify.app/og-image.png">
+<!-- Canonical -->
+    <link rel="canonical" href="https://convert-pdf-tool.netlify.app/contact.html">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+        <link rel="icon" href="/favicon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon"
-        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📄%3C/text%3E%3C/svg%3E">
 </head>
 
 <body>
@@ -38,12 +41,12 @@
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="index.html">🏠 Home</a></li>
-                    <li><a href="all-tools.html">🛠️ All Tools</a></li>
-                    <li><a href="blog/index.html">📰 Blog</a></li>
-                    <li><a href="about.html">ℹ️ About</a></li>
-                    <li><a href="contact.html">📞 Contact</a></li>
-                    <li><a href="privacy.html">🔒 Privacy</a></li>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="all-tools.html">All Tools</a></li>
+                    <li><a href="blog/index.html">Blog</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html" class="active">Contact</a></li>
+                    <li><a href="privacy.html">Privacy 🔒</a></li>
                 </ul>
             </nav>
         </div>
@@ -51,7 +54,7 @@
     <main>
         <div class="app-container">
             <div style="margin-bottom: 2rem;">
-                <a href="index.html" class="back-btn">🏠 Back to Home</a>
+                <a href="index.html" class="back-btn"> Back to Home</a>
             </div>
 
             <div class="content-section" style="max-width: 800px; margin: 2rem auto;">
@@ -59,6 +62,15 @@
                 <p>We're here to help! Whether you have questions, encountered a technical issue, want to suggest a new
                     feature, or just want to say hello, we'd love to hear from you.</p>
 
+                <h2>Send Us a Message</h2>
+                <form name="contact" method="POST" netlify data-netlify="true" style="display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem;">
+                    <input type="hidden" name="form-name" value="contact">
+                    <div><label for="contact-name" style="display:block;margin-bottom:.4rem;font-weight:600;">Name <span style="color:#e05">*</span></label><input type="text" id="contact-name" name="name" required placeholder="Your name" style="width:100%;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:inherit;font-size:1rem;"></div>
+                    <div><label for="contact-email" style="display:block;margin-bottom:.4rem;font-weight:600;">Email <span style="color:#e05">*</span></label><input type="email" id="contact-email" name="email" required placeholder="your@email.com" style="width:100%;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:inherit;font-size:1rem;"></div>
+                    <div><label for="contact-subject" style="display:block;margin-bottom:.4rem;font-weight:600;">Subject <span style="color:#e05">*</span></label><input type="text" id="contact-subject" name="subject" required placeholder="What is this about?" style="width:100%;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:inherit;font-size:1rem;"></div>
+                    <div><label for="contact-message" style="display:block;margin-bottom:.4rem;font-weight:600;">Message <span style="color:#e05">*</span></label><textarea id="contact-message" name="message" required rows="6" placeholder="Tell us how we can help..." style="width:100%;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-family:inherit;font-size:1rem;resize:vertical;"></textarea></div>
+                    <button type="submit" class="button" style="align-self:flex-start;">Send Message</button>
+                </form>
                 <h2>✉️ Email Support</h2>
                 <p>For general inquiries, support requests, or feedback, email us at:</p>
                 <p><strong><a href="mailto:convertpdf.contact@gmail.com">convertpdf.contact@gmail.com</a></strong></p>
@@ -123,7 +135,7 @@
                     </tr>
                 </table>
 
-                <p><a href="index.html">🏠 Back to ConvertPDF</a></p>
+                <p><a href="index.html"> Back to ConvertPDF</a></p>
             </div>
 
             <div class="content-section" style="margin-top: 3rem;">
@@ -145,11 +157,10 @@
                 <div class="social-links">
                     <a href="https://github.com/anant-cli/ConvertPDF" target="_blank" rel="noopener noreferrer" title="GitHub">🐙</a>
                     <a href="mailto:convertpdf.contact@gmail.com" title="Email">✉️</a>
-                    <a href="#" title="Twitter (coming soon)">🐦</a>
                 </div>
             </div>
             <div class="footer-col">
-                <h4>🛠️ Tools</h4>
+                <h4> Tools</h4>
                 <ul>
                     <li><a href="pages/md2pdf.html">Markdown to PDF</a></li>
                     <li><a href="pages/docx2pdf.html">DOCX to PDF</a></li>
@@ -162,9 +173,9 @@
             <div class="footer-col">
                 <h4>📚 Resources</h4>
                 <ul>
-                    <li><a href="blog/index.html">📰 Blog</a></li>
+                    <li><a href="blog/index.html"> Blog</a></li>
                     <li><a href="about.html">About Us</a></li>
-                    <li><a href="contact.html">📞 Contact</a></li>
+                    <li><a href="contact.html"> Contact</a></li>
                     <li><a href="privacy.html">Privacy Policy</a></li>
                     <li><a href="terms.html">Terms of Service</a></li>
                 </ul>

@@ -163,7 +163,7 @@ async function rendermd2pdf(container) {
             return text;
         }
 
-        marked.setOptions({ gfm: true, breaks: true, headerIds: true, html: true, highlight: (code, lang) => code });
+        marked.use({ gfm: true, breaks: true });
 
         // Debounce function for live preview
         let timeoutId;
