@@ -5,9 +5,13 @@ async function rendermd2pdf(container) {
             loadScript('https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js'),
             loadScript('https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js'),
             loadScript('https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js'),
-            loadScript('https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js'),
-            loadScript('https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js')
+            loadScript('https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js')
         ]);
+        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js');
+        if (window.Prism && Prism.plugins && Prism.plugins.autoloader) {
+            Prism.plugins.autoloader.languages_path =
+                'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
+        }
         await loadStylesheet('https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css');
         await loadStylesheet('https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css');
 
@@ -257,20 +261,35 @@ async function rendermd2pdf(container) {
 <html><head><title>ConvertPDF - Markdown Document</title>${printStyles('print')}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\\\[',right:'\\\\]',display:true},{left:'\\\\(',right:'\\\\)',display:false}]}); window.print();"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"><\/script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"><\/script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"><\/script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"><\/script>
 <style>
 @page { size: ${sizeSelect.value} ${orientSelect.value}; }
 @media print { body { margin: 2.54cm; } }
 </style>
 </head><body><div class="markdown-body">${html}</div>
 <script>
-    setTimeout(()=>{ 
-        if(window.Prism) Prism.highlightAll();
-        setTimeout(() => window.print(), 500); 
-    }, 500);
+    window.addEventListener('load', function() {
+        if (window.Prism && Prism.plugins && Prism.plugins.autoloader) {
+            Prism.plugins.autoloader.languages_path =
+                'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
+        }
+        if (window.renderMathInElement) {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left:'$$',right:'$$',display:true},
+                    {left:'$',right:'$',display:false},
+                    {left:'\\\\[',right:'\\\\]',display:true},
+                    {left:'\\\\(',right:'\\\\)',display:false}
+                ],
+                throwOnError: false
+            });
+        }
+        if (window.Prism) Prism.highlightAll();
+        setTimeout(() => window.print(), 800);
+    });
 <\/script></body></html>`;
                 const win = window.open('', '_blank');
                 if (!win) {
