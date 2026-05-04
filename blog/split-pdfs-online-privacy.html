@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Splitting PDFs Online - Extract Pages Without Uploading Files | ConvertPDF</title>
+    <meta name="description"
+        content="Learn how to split PDF files into individual pages or custom ranges while keeping your documents completely private. No server uploads required.">
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Split PDFs Online Without Uploading Files">
+    <meta property="og:description"
+        content="How to split PDF files into pages while keeping your data private. Extract single pages or custom ranges locally in your browser.">
+    <meta property="og:url" content="https://convert-pdf-tool.netlify.app/blog/split-pdfs-online-privacy.html">
+        <meta property="og:image" content="https://convert-pdf-tool.netlify.app/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+<meta property="og:site_name" content="ConvertPDF">
+<!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Split PDFs Online Without Uploading Files">
+    <meta name="twitter:description"
+        content="How to split PDF files into pages while keeping your data private. Extract single pages or custom ranges locally in your browser.">
+        <meta name="twitter:image" content="https://convert-pdf-tool.netlify.app/og-image.png">
+<!-- Canonical -->
+    <link rel="canonical" href="https://convert-pdf-tool.netlify.app/blog/split-pdfs-online-privacy.html">
+    <link rel="icon" href="/favicon.png">
+<link rel="stylesheet" href="../styles.css">
+    <script
+        type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Split PDFs Online Without Uploading Files","description":"How to split PDF files into pages while keeping your data private. Extract single pages or custom ranges locally in your browser.","datePublished":"2026-05-03","author":{"@type":"Person","name":"Anant","url":"https://convert-pdf-tool.netlify.app/author/anant.html"},"publisher":{"@type":"Organization","name":"ConvertPDF","url":"https://convert-pdf-tool.netlify.app"}}</script>
+</head>
+
+<body>
+    <!-- New header menu -->
+    <header class="site-header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="../index.html" title="ConvertPDF - Home">📄 ConvertPDF</a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../all-tools.html">All Tools</a></li>
+                    <li><a href="../blog/index.html" class="active">Blog</a></li>
+                    <li><a href="../about.html">About</a></li>
+                    <li><a href="../contact.html">Contact</a></li>
+                    <li><a href="../privacy.html">Privacy 🔒</a></li>
+                </ul>
+            </nav>
+    </header>
+
+    <main>
+        <div class="app-container">
+            <div style="margin-bottom: 2rem;">
+                <a href="../index.html" class="back-btn"> Back to Home</a>
+            </div>
+
+            <article class="blog-post">
+                <header class="blog-header">
+                    <h1>Splitting PDFs Online - Extract Pages Without Uploading Files</h1>
+                    <div class="blog-meta">
+                        <span class="blog-date">May 3, 2026</span>
+                        <span class="blog-author">By <a href="../author/anant.html">Anant</a></span>
+                        <span class="blog-reading-time">5 min read</span>
+                    </div>
+                </header>
+
+                <div class="blog-content">
+                    <p class="blog-intro">
+                        Splitting PDF files is a common task, but most online tools require uploading your documents to servers.
+                        This creates privacy risks and potential data breaches. In this guide, I'll show you how to split PDFs
+                        completely offline using browser-based tools that never send your files over the internet.
+                    </p>
+
+                    <h2>The Privacy Problem with Traditional PDF Splitters</h2>
+                    <p>
+                        When you use a typical online PDF splitter, here's what usually happens:
+                    </p>
+                    <ul>
+                        <li>Your PDF file gets uploaded to a server</li>
+                        <li>The server processes and splits your document</li>
+                        <li>The split files are sent back to your browser</li>
+                        <li>Your original file may be stored temporarily or permanently</li>
+                    </ul>
+                    <p>
+                        This process creates multiple privacy concerns:
+                    </p>
+                    <ul>
+                        <li><strong>Data exposure:</strong> Your files are visible to server administrators</li>
+                        <li><strong>Storage risks:</strong> Files might be kept longer than promised</li>
+                        <li><strong>Network interception:</strong> Unencrypted uploads can be captured</li>
+                        <li><strong>Third-party access:</strong> Servers may share data with partners</li>
+                    </ul>
+
+                    <h2>How Client-Side PDF Splitting Works</h2>
+                    <p>
+                        A privacy-first PDF splitter runs entirely in your browser using JavaScript libraries.
+                        The process looks like this:
+                    </p>
+                    <ol>
+                        <li>You select a PDF file from your device</li>
+                        <li>The file is read into browser memory</li>
+                        <li>JavaScript processes the PDF locally</li>
+                        <li>Split files are generated and downloaded directly</li>
+                    </ol>
+                    <p>
+                        At no point does the PDF leave your computer. This approach uses libraries like pdf-lib
+                        to manipulate PDF structure entirely client-side.
+                    </p>
+
+                    <h2>Two Splitting Methods: All Pages vs Custom Ranges</h2>
+                    <h3>Splitting All Pages</h3>
+                    <p>
+                        This method creates one PDF file per page. For a 10-page document, you get 10 individual PDFs.
+                        This is useful when you need to:
+                    </p>
+                    <ul>
+                        <li>Extract specific pages for separate use</li>
+                        <li>Share individual pages with different people</li>
+                        <li>Reorganize content before merging back together</li>
+                    </ul>
+
+                    <h3>Custom Page Ranges</h3>
+                    <p>
+                        This method lets you specify exactly which pages to extract. You can use ranges like:
+                    </p>
+                    <ul>
+                        <li><code>1-3,5,7-9</code> - Pages 1 through 3, page 5, and pages 7 through 9</li>
+                        <li><code>2,4,6</code> - Only even pages</li>
+                        <li><code>10-15</code> - A specific section</li>
+                    </ul>
+                    <p>
+                        Custom ranges create a single PDF containing only your selected pages in order.
+                    </p>
+
+                    <h2>Practical Use Cases for PDF Splitting</h2>
+                    <h3>Document Preparation</h3>
+                    <p>
+                        Before sharing a large PDF, you might want to split it into smaller, focused documents.
+                        For example, splitting a 50-page report into individual chapters or sections.
+                    </p>
+
+                    <h3>Page Extraction</h3>
+                    <p>
+                        Sometimes you only need specific pages from a larger document. Instead of printing the whole thing,
+                        split out just the pages you need.
+                    </p>
+
+                    <h3>Content Reorganization</h3>
+                    <p>
+                        Split a PDF, then use a merge tool to recombine pages in a different order. This is useful for
+                        creating custom documents from existing PDFs.
+                    </p>
+
+                    <h2>Technical Implementation</h2>
+                    <p>
+                        The PDF splitting tool uses the pdf-lib library to:
+                    </p>
+                    <ul>
+                        <li>Load the original PDF document</li>
+                        <li>Copy individual pages or page ranges</li>
+                        <li>Create new PDF documents with selected pages</li>
+                        <li>Save the results as downloadable files</li>
+                    </ul>
+                    <p>
+                        For multiple files, JSZip creates a compressed archive containing all split PDFs.
+                    </p>
+
+                    <h2>Try It Yourself</h2>
+                    <p>
+                        Ready to split a PDF privately? <a href="../pages/splitpdf.html">Try the PDF Splitter tool</a>.
+                        It works completely in your browser with no uploads required.
+                    </p>
+
+                    <div class="blog-cta">
+                        <h3>Keep Your PDFs Private</h3>
+                        <p>
+                            Don't upload sensitive documents to unknown servers. Use client-side tools that process
+                            your files locally in your browser.
+                        </p>
+                        <a href="../pages/splitpdf.html" class="primary">Split PDF Now</a>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>📄 ConvertPDF</h4>
+                <p>Free, private, client-side PDF tools. No uploads, no sign-up, no limits.</p>
+                <div class="social-links">
+                    <a href="https://github.com/anant-cli/ConvertPDF" target="_blank" rel="noopener noreferrer" title="GitHub">🐙</a>
+                    <a href="mailto:convertpdf.contact@gmail.com" title="Email">✉️</a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>📚 Resources</h4>
+                <ul>
+                    <li><a href="index.html"> Blog</a></li>
+                    <li><a href="../about.html"> About</a></li>
+                    <li><a href="../contact.html"> Contact</a></li>
+                    <li><a href="../privacy.html"> Privacy</a></li>
+                    <li><a href="../terms.html">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>✉️ Get in Touch</h4>
+                <p>Have questions or feedback! ✉️ We'd love to hear from you.</p>
+                <p><a href="mailto:convertpdf.contact@gmail.com">convertpdf.contact@gmail.com</a></p>
+                <p><a href="https://github.com/anant-cli/ConvertPDF" target="_blank" rel="noopener noreferrer">GitHub Repository</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 ConvertPDF. All rights reserved. | <a href="../privacy.html">Privacy</a> | <a href="../terms.html">Terms</a> | <a href="../sitemap.xml">Sitemap</a></p>
+        </div>
+    </footer>
+
+    <script defer src="../utils.js"></script>
+    <script defer src="../components.js"></script>
+</body>
+
+</html>
