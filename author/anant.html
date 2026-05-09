@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -83,26 +83,34 @@
             <div style="margin-bottom: 2rem;">
                 <a href="../index.html" class="back-btn">ðŸ  Back to Home</a>
             </div>
-            <div class="content-section" style="max-width: 800px; margin: 2rem auto;">
-                <h1>Anant &mdash; Developer &amp; Creator</h1>
-                <p><strong>First-year engineering student</strong> passionate about privacy, open source, and making powerful tools accessible to everyone.</p>
+            <section class="author-profile">
+  <h1>Anant</h1>
+  <p class="author-tagline">Student Developer Â· Privacy-First Web Tools</p>
 
-                <h2>About Me</h2>
-                <p>I built ConvertPDF to solve a real problem I encountered daily: needing to convert documents &mdash; Markdown notes, Word files, images &mdash; without uploading them to unknown servers. Most &ldquo;free&rdquo; online converters require you to hand your files to a third-party server. That never sat right with me.</p>
-                <p>So I built a solution: a fully client-side PDF toolkit that runs entirely in your browser. No uploads. No tracking. No limits. Open source.</p>
+  <div class="author-bio">
+    <p>I'm a student developer passionate about building tools that respect user privacy. I built ConvertPDF after getting frustrated with free PDF tools that silently upload your sensitive documents to their servers.</p>
 
-                <h2>The Project</h2>
-                <p>ConvertPDF is hosted at <a href="https://convert-pdf-tool.netlify.app">convert-pdf-tool.netlify.app</a> and includes tools for Markdown-to-PDF, DOCX-to-PDF, image conversion, PDF merging, password protection, QR code generation, and more &mdash; all processed locally in your browser using modern JavaScript libraries.</p>
-                <p>The full source code is available on <a href="https://github.com/anant-cli" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
+    <p>ConvertPDF runs 10 browser-based file conversion tools â€” all powered by JavaScript libraries like <strong>pdf-lib</strong>, <strong>Mammoth.js</strong>, <strong>KaTeX</strong>, and <strong>Prism.js</strong> â€” with zero server uploads. Every file stays on your device.</p>
 
-                <h2>Contact</h2>
-                <ul>
-                    <li>GitHub: <a href="https://github.com/anant-cli" target="_blank" rel="noopener noreferrer">github.com/anant-cli</a></li>
-                    <li>Email: <a href="mailto:convertpdf.contact@gmail.com">convertpdf.contact@gmail.com</a></li>
-                </ul>
+    <h2>About this site</h2>
+    <p>ConvertPDF was built from scratch using vanilla HTML, CSS, and JavaScript â€” no frameworks, no build pipeline. It's hosted on Netlify and processes all conversions client-side using open-source libraries.</p>
 
-                <p><a href="../index.html">ðŸ  Back to ConvertPDF</a></p>
-            </div>
+    <h2>Tools I built</h2>
+    <ul>
+      <li><a href="../pages/md2pdf.html">Markdown to PDF</a> â€” with LaTeX math (KaTeX) and code highlighting (Prism)</li>
+      <li><a href="../pages/docx2pdf.html">Word to PDF</a> â€” using Mammoth.js for accurate DOCX rendering</li>
+      <li><a href="../pages/mergepdf.html">Merge PDFs</a> â€” drag-to-reorder, combined with pdf-lib</li>
+      <li><a href="../pages/pdfencrypt.html">Password Protect PDF</a> â€” AES-256 encryption, browser-side</li>
+      <li><a href="../pages/pdf2jpg.html">PDF to JPG</a> â€” page-by-page extraction with resolution control</li>
+      <li><a href="../pages/img2pdf.html">Images to PDF</a> â€” JPG, PNG, WebP supported</li>
+      <li><a href="../pages/web2pdf.html">HTML to PDF</a> â€” with live CSS preview</li>
+      <li><a href="../pages/qrmaker.html">QR Code Generator</a> â€” custom colours, logo overlay, SVG/PNG export</li>
+    </ul>
+
+    <h2>Writing</h2>
+    <p>I write about browser-based tools, PDF privacy, and client-side JavaScript on the <a href="../blog/">ConvertPDF blog</a>.</p>
+  </div>
+</section>
         </div>
     </main>
 
