@@ -5,9 +5,6 @@ async function renderpdf2jpg(container) {
             loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'),
             loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js')
         ]);
-
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
         container.innerHTML = '';
         const area = document.createElement('div');
         area.className = 'area';
@@ -119,6 +116,7 @@ async function renderpdf2jpg(container) {
 
             btn.disabled = true;
             btn.innerHTML = '⏳ Loading PDF...';
+            if (window.showSpinner) showSpinner('Converting PDF to JPG...');
             progressDiv.style.display = 'block';
             progressDiv.innerHTML = 'Loading PDF...';
             progressContainer.style.display = 'block';
@@ -129,7 +127,7 @@ async function renderpdf2jpg(container) {
 
             try {
                 const arrayBuf = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({ data: arrayBuf }).promise;
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuf, disableWorker: true }).promise;
                 const totalPages = pdf.numPages;
                 let pagesToExtract = [];
 
@@ -211,6 +209,7 @@ async function renderpdf2jpg(container) {
                 console.error(e);
             } finally {
                 btn.disabled = false; btn.innerHTML = 'Convert to JPG';
+                if (window.hideSpinner) hideSpinner();
             }
         });
 

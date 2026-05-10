@@ -67,8 +67,11 @@
     }
 
     function ensureMainId() {
+        const existingTarget = document.getElementById('main-content');
+        if (existingTarget) return;
+
         const main = document.querySelector('main');
-        if (main && !main.id) {
+        if (main) {
             main.id = 'main-content';
         }
     }
@@ -233,8 +236,19 @@
         document.body.appendChild(container);
     }
 
+    function ensurePrivacyNote() {
+        const footer = document.querySelector('.site-footer .footer-bottom');
+        if (!footer || footer.querySelector('.privacy-note')) return;
+
+        const note = document.createElement('p');
+        note.className = 'privacy-note';
+        note.textContent = 'We use Google Analytics for anonymous page view counting. No files or personal data are uploaded.';
+        footer.insertBefore(note, footer.firstChild);
+    }
+
     function init() {
         ensureSkipLink();
+        ensurePrivacyNote();
         normalizeGlobalLabels();
         setupHamburger();
         setActiveNavLink();

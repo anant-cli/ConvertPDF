@@ -1,12 +1,37 @@
 // utils.js – shared helper functions
 
+const CDN_INTEGRITY = {
+    'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js': 'sha384-nFoSjZIoH3CCp8W639jJyQkuPHinJ2NHe7on1xvlUA7SuGfJAfvMldrsoAVm6ECz',
+    'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js': 'sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI',
+    'https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js': 'sha384-QsSpx6a0USazT7nK7w8qXDgpSAPhFsb2XtpoLFQ5+X2yFN6hvCKnwEzN8M5FWaJb',
+    'https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js': 'sha384-hIoBPJpTUs74ddyc4bFZSM1TVlQDA60VBbJS0oA934VSz82sBx1X7kSx2ATBDIyd',
+    'https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js': 'sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk',
+    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js': 'sha384-06z5D//U/xpvxZHuUz92xBvq3DqBBFi7Up53HRrbV7Jlv7Yvh/MZ7oenfUe9iCEt',
+    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js': 'sha384-Uq05+JLko69eOiPr39ta9bh7kld5PKZoU+fF7g0EXTAriEollhZ+DrN8Q/Oi8J2Q',
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js': 'sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e',
+    'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js': 'sha384-+mbV2IY1Zk/X1p/nWllGySJSUN8uMs+gUAN10Or95UBH0fpj6GfKgPmgC5EXieXG',
+    'https://cdn.jsdelivr.net/npm/pdf-lib-with-encrypt@1.2.1/dist/pdf-lib.min.js': 'sha384-kLfN3L+t+5ynoVlyBQoP7H06PdFmJ8uhHL/EmxEwqVyjkRHhqbHhufd16fN9Wm81',
+    'https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js': 'sha384-HGmnkDZJy7mRkoARekrrj0VjEFSh9a0Z8qxGri/kTTAJkgR8hqD1lHsYSh3JdzRi',
+    'https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js': 'sha384-WWGzNJbUWCKFUEexCVTZSZUJ64uYV7FqYVMG855l1ammDY4SH6oLEFuNF6exFtIl',
+    'https://cdn.jsdelivr.net/npm/dompurify@3.2.5/dist/purify.min.js': 'sha384-qSFej5dZNviyoPgYJ5+Xk4bEbX8AYddxAHPuzs1aSgRiXxJ3qmyWNaPsRkpv/+x5',
+    'https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css': 'sha384-wcIxkf4k558AjM3Yz3BBFQUbk/zgIYC2R0QpeeYb+TwlBVMrlgLqwRjRtGZiK7ww',
+    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css': 'sha384-wFjoQjtV1y5jVHbt0p35Ui8aV8GVpEZkyF99OXWqP/eNJDU93D3Ugxkoyh6Y2I4A'
+};
+
 // ---------- DOWNLOAD BLOB ----------
 function downloadBlob(blob, filename) {
     const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
+    const objectUrl = URL.createObjectURL(blob);
+    link.href = objectUrl;
     link.download = filename;
+    link.style.display = 'none';
+    document.body.appendChild(link);
     link.click();
-    setTimeout(() => URL.revokeObjectURL(link.href), 100);
+    setTimeout(() => {
+        URL.revokeObjectURL(objectUrl);
+        link.remove();
+        blob = null;
+    }, 60000);
 }
 
 // ---------- SEO HELPERS ----------
@@ -46,8 +71,9 @@ function loadScript(src, integrity) {
         }
         const script = document.createElement('script');
         script.src = src;
-        if (integrity) {
-            script.integrity = integrity;
+        const sri = integrity || CDN_INTEGRITY[src];
+        if (sri) {
+            script.integrity = sri;
             script.crossOrigin = 'anonymous';
         }
         script.onload = () => resolve();
@@ -67,14 +93,37 @@ function loadStylesheet(href, integrity) {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
         link.href = href;
-        if (integrity) {
-            link.integrity = integrity;
+        const sri = integrity || CDN_INTEGRITY[href];
+        if (sri) {
+            link.integrity = sri;
             link.crossOrigin = 'anonymous';
         }
         link.onload = resolve;
         link.onerror = () => reject(new Error(`Failed to load stylesheet: ${href}`));
         document.head.appendChild(link);
     });
+}
+
+// ---------- PROCESSING SPINNER ----------
+function showSpinner(message = 'Processing...') {
+    let spinner = document.getElementById('global-processing-spinner');
+    if (!spinner) {
+        spinner = document.createElement('div');
+        spinner.id = 'global-processing-spinner';
+        spinner.className = 'processing-spinner-overlay';
+        spinner.setAttribute('role', 'status');
+        spinner.setAttribute('aria-live', 'polite');
+        spinner.innerHTML = '<div class="processing-spinner-box"><div class="spinner"></div><p></p></div>';
+        document.body.appendChild(spinner);
+    }
+    const label = spinner.querySelector('p');
+    if (label) label.textContent = message;
+    spinner.hidden = false;
+}
+
+function hideSpinner() {
+    const spinner = document.getElementById('global-processing-spinner');
+    if (spinner) spinner.hidden = true;
 }
 
 

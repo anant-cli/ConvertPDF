@@ -92,6 +92,7 @@ async function renderpdfencrypt(container) {
 
             encryptBtn.disabled = true;
             encryptBtn.innerHTML = '⏳ Encrypting...';
+            if (window.showSpinner) showSpinner('Encrypting PDF...');
 
             try {
                 if (typeof PDFLib === 'undefined') throw new Error('PDF library not loaded. Please refresh the page.');
@@ -147,6 +148,7 @@ async function renderpdfencrypt(container) {
             } finally {
                 encryptBtn.disabled = false;
                 encryptBtn.innerHTML = '🔒 Encrypt & Download';
+                if (window.hideSpinner) hideSpinner();
             }
         });
     } catch (___err) {

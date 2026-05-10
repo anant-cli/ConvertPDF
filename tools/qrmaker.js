@@ -114,6 +114,8 @@ async function renderqrmaker(container) {
             const lines = isBatch ? textValue.split('\n').map(l => l.trim()).filter(l => l) : [textValue];
 
             if (lines.length === 0) return;
+            const shouldShowSpinner = lines.length > 1 || Boolean(qrLogo.files[0]);
+            if (shouldShowSpinner && window.showSpinner) showSpinner('Generating QR codes...');
 
             if (isBatch && lines.length > 1) {
                 qrPreviewTitle.textContent = `Preview (${lines.length} codes)`;
@@ -256,6 +258,8 @@ async function renderqrmaker(container) {
                 qrPreview.innerHTML = `<div style="color:#e74c3c;">Error: ${e.message}</div>`;
                 if (window.showToast) showToast('QR generation failed: ' + e.message, 'error');
                 console.error(e);
+            } finally {
+                if (shouldShowSpinner && window.hideSpinner) hideSpinner();
             }
         }
 
@@ -290,6 +294,7 @@ async function renderqrmaker(container) {
                     downloadBtn.disabled = true;
                     const prevText = downloadBtn.textContent;
                     downloadBtn.textContent = '⏳ Creating ZIP...';
+                    if (window.showSpinner) showSpinner('Creating QR ZIP...');
 
                     const zip = new JSZip();
 
@@ -325,6 +330,8 @@ async function renderqrmaker(container) {
                     console.error("ZIP creation failed", err);
                     if (window.showToast) showToast('Failed to create ZIP: ' + err.message, 'error');
                     downloadBtn.disabled = false;
+                } finally {
+                    if (window.hideSpinner) hideSpinner();
                 }
             } else {
                 // Single download

@@ -3,6 +3,7 @@ async function rendermd2pdf(container) {
     try {
         await Promise.all([
             loadScript('https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js'),
+            loadScript('https://cdn.jsdelivr.net/npm/dompurify@3.2.5/dist/purify.min.js'),
             loadScript('https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js'),
             loadScript('https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js'),
             loadScript('https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js')
@@ -196,7 +197,7 @@ async function rendermd2pdf(container) {
                 return oldCode(code, language, isEscaped);
             };
 
-            const html = marked.parse(processed, { renderer });
+            const html = DOMPurify.sanitize(marked.parse(processed, { renderer }));
 
             const theme = mdDarkTheme.checked ? 'dark' : 'light';
             mdPreviewBox.style.background = theme === 'dark' ? '#0d1117' : 'white';
@@ -254,17 +255,18 @@ async function rendermd2pdf(container) {
                 return;
             }
             printBtn.disabled = true; printBtn.innerHTML = '⏳ Preparing...';
+            if (window.showSpinner) showSpinner('Preparing PDF...');
             try {
                 const processed = preprocessMarkdown(text);
-                const html = marked.parse(processed);
+                const html = DOMPurify.sanitize(marked.parse(processed));
                 const fullHtml = `<!DOCTYPE html>
 <html><head><title>ConvertPDF - Markdown Document</title>${printStyles('print')}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"><\/script>
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"><\/script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"><\/script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"><\/script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" integrity="sha384-wcIxkf4k558AjM3Yz3BBFQUbk/zgIYC2R0QpeeYb+TwlBVMrlgLqwRjRtGZiK7ww" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" integrity="sha384-wFjoQjtV1y5jVHbt0p35Ui8aV8GVpEZkyF99OXWqP/eNJDU93D3Ugxkoyh6Y2I4A" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" integrity="sha384-hIoBPJpTUs74ddyc4bFZSM1TVlQDA60VBbJS0oA934VSz82sBx1X7kSx2ATBDIyd" crossorigin="anonymous"><\/script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"><\/script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha384-06z5D//U/xpvxZHuUz92xBvq3DqBBFi7Up53HRrbV7Jlv7Yvh/MZ7oenfUe9iCEt" crossorigin="anonymous"><\/script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha384-Uq05+JLko69eOiPr39ta9bh7kld5PKZoU+fF7g0EXTAriEollhZ+DrN8Q/Oi8J2Q" crossorigin="anonymous"><\/script>
 <style>
 @page { size: ${sizeSelect.value} ${orientSelect.value}; }
 @media print { body { margin: 2.54cm; } }
@@ -306,6 +308,8 @@ async function rendermd2pdf(container) {
                 else alert('Error: ' + e.message);
                 printBtn.disabled = false;
                 printBtn.innerHTML = '🖨️ Generate PDF';
+            } finally {
+                if (window.hideSpinner) hideSpinner();
             }
         });
     } catch (___err) {

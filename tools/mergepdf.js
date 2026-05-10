@@ -162,6 +162,7 @@ async function rendermergepdf(container) {
             mergeBtn.innerHTML = '⏳ Merging...';
             progressContainer.style.display = 'block';
             progressBar.style.width = '0%';
+            if (window.showSpinner) showSpinner('Merging PDFs...');
 
             try {
                 const { PDFDocument } = PDFLib;
@@ -197,6 +198,7 @@ async function rendermergepdf(container) {
             } finally {
                 mergeBtn.disabled = filesArray.length < 2;
                 mergeBtn.innerHTML = '🔗 Merge & download';
+                if (window.hideSpinner) hideSpinner();
                 setTimeout(() => {
                     progressContainer.style.display = 'none';
                     progressBar.style.width = '0%';
