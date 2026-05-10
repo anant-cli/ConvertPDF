@@ -71,4 +71,23 @@
   <url><loc>https://convert-pdf-tool.netlify.app/author/anant.html</loc>
     <lastmod>2026-05-01</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
 
+<url>
+  <loc>https://convert-pdf-tool.netlify.app/blog/pdf-vs-docx-which-format.html</loc>
+  <lastmod>2026-05-10</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://convert-pdf-tool.netlify.app/blog/convertpdf-vs-ilovepdf-vs-smallpdf.html</loc>
+  <lastmod>2026-05-10</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://convert-pdf-tool.netlify.app/blog/how-to-protect-confidential-pdf.html</loc>
+  <lastmod>2026-05-10</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.8</priority>
+</url>
+
 </urlset>
