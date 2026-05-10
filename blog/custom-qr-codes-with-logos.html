@@ -164,6 +164,32 @@
                 </section>
 
                 <section>
+                    <h2>The Science of QR Code Error Correction</h2>
+                    <p>
+                        The ability of a QR code to remain scannable even when partially obscured is not magic; it's a
+                        result of sophisticated mathematical algorithms known as Reed-Solomon error correction. This is
+                        the same technology used to ensure that CDs and DVDs can play correctly even if they have small
+                        scratches on their surface. When a QR code is generated, the input data is combined with
+                        mathematical formulas that create extra "check bits." These bits are strategically placed
+                        throughout the code's grid.
+                    </p>
+                    <p>
+                        When a scanner reads a QR code, it doesn't just look for the data; it also looks for these check
+                        bits. If some of the data modules are missing or unreadable (perhaps because you've placed a
+                        logo over them), the scanner can use the check bits to reconstruct the missing information.
+                        This is why Level H error correction is so powerful: it provides enough redundant information to
+                        rebuild up to 30% of the entire code from scratch.
+                    </p>
+                    <p>
+                        However, it's important to remember that error correction is a finite resource. Every pixel of
+                        your logo "consumes" some of that correction capacity. If your logo is too large, or if the
+                        QR code is also physically damaged (like a torn poster), the combined loss of data might exceed the
+                        correction limit, rendering the code unreadable. This is why we always emphasize conservative
+                        logo sizing and thorough testing across different devices and lighting conditions.
+                    </p>
+                </section>
+
+                <section>
                     <h2>Choosing the Right Colors</h2>
                     <p>
                         Custom colors transform a utilitarian QR code into a branded asset. However, color choices must

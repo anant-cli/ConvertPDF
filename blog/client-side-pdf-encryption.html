@@ -284,8 +284,29 @@
                     </p>
                 </section>
 
-                <section>
-                    <h2>Conclusion</h2>
+                <section><h2>The Sovereignty of Memory: Understanding Browser Sandboxing</h2>
+                <p>To truly appreciate the security of client-side encryption, we must understand the concept of the
+                    "browser sandbox." Modern web browsers like Chrome, Firefox, and Safari are designed to be hostile
+                    environments for malicious code. When you open a website, the browser creates a restricted
+                    "sandbox"—a virtual container that isolates that website's code from the rest of your operating
+                    system. This isolation ensures that even if a website's JavaScript is flawed or malicious, it cannot
+                    access your files, your passwords, or your system settings without your explicit permission.</p>
+                <p>When you use ConvertPDF to encrypt a document, the entire operation takes place within this
+                    highly secure sandbox. The <code>pdf-lib</code> library and the Web Crypto API operate only on the
+                    data that you have specifically provided by selecting a file or typing a password. This data exists
+                    in the browser's "volatile memory" (RAM), which is much harder for an external attacker to access
+                    than data stored on a physical disk. Unlike a cloud server, where your data might sit on a hard
+                    drive for hours or days, browser memory is transient; as soon as you close the tab, the sandbox is
+                    destroyed, and the memory is wiped clean by the operating system.</p>
+                <p>This "sovereignty of memory" is a powerful security principle. It means that the most sensitive part
+                    of your document's lifecycle—the moment it's unencrypted and vulnerable—happens in the most
+                    protected and transient environment possible. By leveraging the built-in security features of
+                    modern browsers, we can provide a level of protection that even the most expensive enterprise
+                    cloud services struggle to match. At ConvertPDF, we believe that your browser shouldn't just be
+                    a window to the web; it should be a powerful, private workstation that empowers you to handle
+                    your most sensitive information with absolute confidence.</p></section>
+
+                <section><h2>Conclusion</h2>
                     <p>
                         When it comes to encrypting sensitive PDFs, the location of the encryption operation matters as
                         much as the encryption algorithm itself. Server-side encryption introduces unnecessary risks,
