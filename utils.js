@@ -193,11 +193,13 @@ function updateProgressBar(progressPercent, barId) {
 
 // ---------- FILE SIZE FORMATTER ----------
 function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
+    const n = Number(bytes);
+    if (!Number.isFinite(n) || n < 0) return '0 Bytes';
+    if (n === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    const i = Math.min(sizes.length - 1, Math.floor(Math.log(n) / Math.log(k)));
+    return parseFloat((n / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
 // ---------- DRAG AND DROP HELPER ----------

@@ -36,8 +36,22 @@
     <lastmod>2026-05-06</lastmod><changefreq>monthly</changefreq><priority>0.90</priority></url>
   <url><loc>https://convert-pdf-tool.netlify.app/pages/qrmaker.html</loc>
     <lastmod>2026-05-06</lastmod><changefreq>monthly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://convert-pdf-tool.netlify.app/pages/splitpdf.html</loc>
+    <lastmod>2026-05-11</lastmod><changefreq>monthly</changefreq><priority>0.92</priority></url>
+  <url><loc>https://convert-pdf-tool.netlify.app/pages/rotatepdf.html</loc>
+    <lastmod>2026-05-11</lastmod><changefreq>monthly</changefreq><priority>0.92</priority></url>
+  <url><loc>https://convert-pdf-tool.netlify.app/pages/watermarkpdf.html</loc>
+    <lastmod>2026-05-11</lastmod><changefreq>monthly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://convert-pdf-tool.netlify.app/pages/pagenumbers.html</loc>
+    <lastmod>2026-05-11</lastmod><changefreq>monthly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://convert-pdf-tool.netlify.app/pages/compresspdf.html</loc>
+    <lastmod>2026-05-11</lastmod><changefreq>monthly</changefreq><priority>0.92</priority></url>
+  <url><loc>https://convert-pdf-tool.netlify.app/pages/signpdf.html</loc>
+    <lastmod>2026-05-11</lastmod><changefreq>monthly</changefreq><priority>0.88</priority></url>
 
   <!-- Blog -->
+  <url><loc>https://convert-pdf-tool.netlify.app/blog/index.html</loc>
+    <lastmod>2026-05-11</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://convert-pdf-tool.netlify.app/blog/</loc>
     <lastmod>2026-05-06</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://convert-pdf-tool.netlify.app/blog/about-convertpdf.html</loc>

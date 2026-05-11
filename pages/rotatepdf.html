@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="/analytics-head.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
@@ -97,6 +98,58 @@
                         <div class="seo-meta-card"><strong>Input:</strong> PDF with misoriented pages from scanning or importing.</div>
                         <div class="seo-meta-card"><strong>Output:</strong> corrected PDF with properly aligned pages.</div>
                     </div>
+
+                    <h3>Scanners, phones, and mixed orientations</h3>
+                    <p>
+                        Flatbed scanners often save every page upright even when the paper was fed sideways.
+                        Phone capture apps auto-rotate based on the gyroscope, but PDF viewers may ignore that hint when embedding.
+                        The result is a single PDF where page 4 is fine while page 5 is sideways—classic after a batch scan of receipts or lab notebooks.
+                        Selective rotation fixes only the offenders instead of re-scanning the whole stack.
+                    </p>
+                    <p>
+                        Mixed portrait and landscape pages show up in board decks where someone pasted a wide spreadsheet.
+                        Rotating the spreadsheet page 90° can make it readable again without rebuilding the slide master.
+                        If you rotate for print, remember duplex printers assume a consistent long edge; preview in your viewer before sending a 200-page job.
+                    </p>
+
+                    <h3>Degrees that matter in real life</h3>
+                    <p>
+                        A quarter turn (90°) fixes most feeder mistakes.
+                        180° is less common but appears when someone scanned the back of a double-sided sheet upside-down relative to the front.
+                        270° is simply the other quarter-turn direction; use whichever gets readable text in fewer clicks.
+                        Doing two 90° passes equals 180°, but one direct choice keeps intermediate states out of your download folder.
+                    </p>
+
+                    <h3>Preview habits that prevent mistakes</h3>
+                    <p>
+                        Zoom to 100% width and skim every rotated page, especially where small print or barcodes sit near margins.
+                        Barcodes rotated wrong still look “fine” on screen until a logistics scanner rejects the shipment.
+                        If you rotate only selected pages, double-check the page list against the printed index in the document—PDF viewers sometimes reorder thumbnails visually while keeping internal order intact.
+                    </p>
+
+                    <h3>After rotation: what people do next</h3>
+                    <p>
+                        Many users run <a href="mergepdf.html">merge</a> to stitch corrected segments back into a single submission packet.
+                        Others add <a href="pagenumbers.html">page numbers</a> once orientation is stable so footers line up with margins.
+                        For anything leaving the company, <a href="pdfencrypt.html">password protection</a> or watermarking often follows rotation because those steps assume text already sits upright for readers.
+                    </p>
+                    <p>
+                        Some desktop viewers show pages upright while the underlying PDF still stores a 90° transform; if another tool later “fixes” what it thinks is wrong, you can get double-rotated pages.
+                        Exporting from ConvertPDF rewrites the orientation you chose so the bytes match what collaborators see.
+                    </p>
+
+                    <h3>Print shops and binderies</h3>
+                    <p>
+                        Kinkos-style operators often impose “long-edge binding” rules: if your text runs sideways relative to the staple line, the shop may rotate again on their RIP and undo your careful work.
+                        Export a fresh PDF after rotation, flatten if your viewer offers it, and mention binding direction in the work order email.
+                        Architects sending 24×36 sheets as PDF should confirm whether the page box is landscape or portrait before anyone plots—paper costs add up fast when a batch is wrong.
+                    </p>
+                    <p>
+                        Large blueprint PDFs also stress laptop RAM; rotate in chunks if the tab starts stuttering, then merge again when everything lines up with the title block.
+                    </p>
+                    <p>
+                        Tablet PDF readers sometimes honor EXIF rotation from embedded photos while ignoring PDF rotation flags—if a page still looks wrong after export, open it in a second viewer before you blame the tool.
+                    </p>
 
                     <h3>Frequently Asked Questions</h3>
                     <h4>Is Rotate PDF suitable for professional work?</h4>

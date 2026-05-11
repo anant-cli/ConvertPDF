@@ -2,15 +2,7 @@
 <html lang="en">
 
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-8RV1Y8FVZM"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-8RV1Y8FVZM');
-</script>
+<script src="/analytics-head.js"></script>
 
 
 
@@ -252,6 +244,12 @@
                         <strong>Proofread the preview.</strong> Always check the rendered preview before downloading.
                         LaTeX syntax errors are much easier to spot in the preview than in raw Markdown text.
                     </p>
+                    <p>
+                        <strong>Bibliography hand-off.</strong> If your venue still wants BibTeX, keep references as
+                        plain Markdown links or bracketed keys in the draft, then paste the final formatted bibliography
+                        from your reference manager into the PDF stage. KaTeX will not magically compile a <code>.bib</code>
+                        file; pretending otherwise wastes the night before a deadline.
+                    </p>
                 </section>
 
                 <section>
@@ -283,19 +281,13 @@
                 <p>When you write a research paper in Markdown, you're not just creating a document; you're creating a
                     "living" record of your work. Because Markdown is plain text, it can be easily integrated with
                     computational notebooks like Jupyter or RStudio, allowing you to interleave your code, your
-                    data, and your narrative in a single, executable file. This ensure that your results are not just
+                    data, and your narrative in a single, executable file. This ensures that your results are not just
                     reported, but are directly traceable to the underlying data and analysis. When it's time to
                     share your work, converting that Markdown file to a professional PDF with ConvertPDF ensures that
                     your findings are presented in a high-quality, universally accessible format without compromising the
                     underlying transparency of your process.</p>
-                <p>Furthermore, the use of browser-based tools for this conversion aligns with the goal of
-                    democratizing research. Not every researcher has access to expensive desktop software or
-                    high-powered servers. By providing professional-grade conversion tools that run on any device with a
-                    web browser, we are helping to level the playing field for scholars around the world. At
-                    ConvertPDF, we believe that the tools of science should be as open as the science itself, and we're
-                    committed to supporting the academic community in its journey toward a more transparent and
-                    collaborative future. Your research belongs to the world, and we're here to help you share it
-                    with the clarity and professionalism it deserves.</p></section>
+                <p>Browser-based conversion also fits grant seasons when lab machines cannot install random LaTeX bundles. A Chromebook on a department guest network can still render a clean PDF if the math is not pathological. Keep figures web-sized before embedding so KaTeX paths stay fast; nobody waits patiently during a defense if the preview hangs.</p>
+                <p>Peer reviewers sometimes want both the PDF and the source Markdown appendix; zip them locally instead of emailing through a converter you cannot name.</p></section>
 
                 <section><h2>Conclusion</h2>
                     <p>
@@ -309,6 +301,7 @@
                         Ready to try it? Head over to our <a href="../pages/md2pdf.html">Markdown to PDF converter</a>
                         and transform your next research paper in seconds.
                     </p>
+                    <p>Print one physical page before you submit if the journal still cares about margins on dead trees; screen pixels lie about line breaks more often than we admit.</p>
                 </section>
 
                 <div class="cta-box">

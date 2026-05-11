@@ -140,6 +140,62 @@
         });
     }
 
+    const CONSENT_STORAGE_KEY = 'convertpdf_consent_v1';
+
+    function applyConsentChoice(choice) {
+        if (typeof window.gtag !== 'function') return;
+        if (choice === 'all') {
+            window.gtag('consent', 'update', {
+                ad_storage: 'granted',
+                ad_user_data: 'granted',
+                ad_personalization: 'granted',
+                analytics_storage: 'granted'
+            });
+        } else {
+            window.gtag('consent', 'update', {
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied',
+                analytics_storage: 'granted'
+            });
+        }
+    }
+
+    function setupCookieConsent() {
+        if (document.getElementById('cookie-consent-root')) return;
+        try {
+            var stored = localStorage.getItem(CONSENT_STORAGE_KEY);
+            if (stored === 'all' || stored === 'essential') {
+                applyConsentChoice(stored === 'all' ? 'all' : 'essential');
+                return;
+            }
+        } catch (ignore) { /* private mode */ }
+
+        var root = document.createElement('div');
+        root.id = 'cookie-consent-root';
+        root.className = 'cookie-consent-root';
+        root.innerHTML =
+            '<div class="cookie-consent-inner" role="dialog" aria-labelledby="cookie-consent-title">' +
+            '<p id="cookie-consent-title" class="cookie-consent-title">Cookies and privacy</p>' +
+            '<p class="cookie-consent-text">We use essential cookies for basic functionality, Google Analytics for anonymous traffic statistics, and (where enabled) marketing cookies for advertising. Your documents are processed in your browser and are not uploaded. Read our <a href="/privacy.html">Privacy Policy</a>.</p>' +
+            '<div class="cookie-consent-actions">' +
+            '<button type="button" class="button cookie-btn-accept" id="cookie-consent-accept">Accept optional cookies</button>' +
+            '<button type="button" class="button secondary cookie-btn-ess" id="cookie-consent-essential">Essential only</button>' +
+            '</div></div>';
+        document.body.appendChild(root);
+
+        document.getElementById('cookie-consent-accept').addEventListener('click', function () {
+            try { localStorage.setItem(CONSENT_STORAGE_KEY, 'all'); } catch (e) { /* ignore */ }
+            applyConsentChoice('all');
+            root.remove();
+        });
+        document.getElementById('cookie-consent-essential').addEventListener('click', function () {
+            try { localStorage.setItem(CONSENT_STORAGE_KEY, 'essential'); } catch (e) { /* ignore */ }
+            applyConsentChoice('essential');
+            root.remove();
+        });
+    }
+
 
     // --- Premium UI Enhancements ---
     function initPremiumUI() {
@@ -154,34 +210,22 @@
         
         document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
 
-        // 2. Custom Cursor
-        if (window.matchMedia("(pointer: fine)").matches) {
+        // 2. Custom cursor (desktop only; skipped when user prefers reduced motion)
+        if (window.matchMedia('(pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             const cursor = document.createElement('div');
             cursor.className = 'custom-cursor';
             document.body.appendChild(cursor);
 
-            let cursorX = 0, cursorY = 0;
-            let targetX = 0, targetY = 0;
+            document.addEventListener('mousemove', function (e) {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            }, { passive: true });
 
-            document.addEventListener('mousemove', function(e) {
-                targetX = e.clientX;
-                targetY = e.clientY;
-            });
+            const addHover = function () { cursor.classList.add('hover'); };
+            const removeHover = function () { cursor.classList.remove('hover'); };
 
-            function renderCursor() {
-                cursorX += (targetX - cursorX) * 0.2;
-                cursorY += (targetY - cursorY) * 0.2;
-                cursor.style.transform = 'translate(' + cursorX + 'px, ' + cursorY + 'px)';
-                requestAnimationFrame(renderCursor);
-            }
-            requestAnimationFrame(renderCursor);
-
-            const addHover = function() { cursor.classList.add('hover'); };
-            const removeHover = function() { cursor.classList.remove('hover'); };
-
-            // Apply hover to links/buttons but wait a bit for dynamic elements
-            setTimeout(function() {
-                document.querySelectorAll('a, button, .tool-card').forEach(function(el) {
+            setTimeout(function () {
+                document.querySelectorAll('a, button, .tool-card').forEach(function (el) {
                     el.addEventListener('mouseenter', addHover);
                     el.addEventListener('mouseleave', removeHover);
                 });
@@ -189,7 +233,9 @@
         }
 
         // 3. 3D Tilt & Spotlight for Tool Cards
+        const allowMotion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         setTimeout(function() {
+            if (allowMotion) {
             document.querySelectorAll('.tool-card').forEach(function(card) {
                 card.addEventListener('mousemove', function(e) {
                     const rect = card.getBoundingClientRect();
@@ -211,8 +257,10 @@
                     card.style.transform = '';
                 });
             });
+            }
 
             // 4. Magnetic Buttons
+            if (allowMotion) {
             document.querySelectorAll('.button, .download-btn').forEach(function(btn) {
                 btn.addEventListener('mousemove', function(e) {
                     const rect = btn.getBoundingClientRect();
@@ -224,6 +272,7 @@
                     btn.style.transform = '';
                 });
             });
+            }
         }, 500); // wait for dynamic tool cards
     }
 
@@ -242,11 +291,12 @@
 
         const note = document.createElement('p');
         note.className = 'privacy-note';
-        note.textContent = 'We use Google Analytics for anonymous page view counting. No files or personal data are uploaded.';
+        note.textContent = 'We use Google Analytics for anonymous traffic. Optional ads may appear if you accept marketing cookies in the banner. Your documents are never uploaded.';
         footer.insertBefore(note, footer.firstChild);
     }
 
     function init() {
+        setupCookieConsent();
         ensureSkipLink();
         ensurePrivacyNote();
         normalizeGlobalLabels();

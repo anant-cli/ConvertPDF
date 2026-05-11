@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="/analytics-head.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
@@ -107,6 +108,56 @@
                     <p>
                         ConvertPDF focuses on local processing for speed and privacy. The split results remain in standard PDF format, compatible with modern PDF viewers and document workflows.
                         That makes this tool a good fit for sensitive materials, internal reviews, and any workflow where data should remain on the device.
+                    </p>
+
+                    <h3>Everyday situations where splitting beats workarounds</h3>
+                    <p>
+                        Legal teams often receive one giant exhibit PDF but only need to circulate three pages to counsel.
+                        Educators bundle reading packets once a year, then discover they only want the appendix online.
+                        HR sends onboarding PDFs as a single download; new hires only need the policy pages that apply to them.
+                        In those cases, re-exporting from Word or printing selected pages is slow, error-prone, and sometimes impossible if you no longer have the source file.
+                        A splitter keeps you inside the PDF you already have. You pick indices, export, and move on. Nobody else needs credentials to the system that originally produced the report.
+                    </p>
+                    <p>
+                        Product and design teams archive research PDFs where only a few pages hold specs.
+                        Field technicians carry operator manuals on tablets; splitting the troubleshooting chapter cuts scroll fatigue on-site.
+                        Researchers reuse figures from published articles under fair dealing or fair use rules and still want a clean artifact of just the cited pages for a journal submission.
+                        The pattern is the same: the big PDF is authoritative, but the distribution unit is smaller.
+                    </p>
+
+                    <h3>How page ranges are read</h3>
+                    <p>
+                        Tools that accept text ranges usually expect one-based page numbers, meaning the first page is 1, not 0.
+                        If you ask for <code>1-3,5</code>, you receive those four distinct pages in order.
+                        Ranges can usually be combined with commas without spaces; spacing rules differ between software, so always glance at the hint text on the page before hitting export.
+                        When you want every page as its own file, pick the “all pages” style option instead of trying to list 1,2,3… by hand.
+                    </p>
+                    <p>
+                        After splitting, reconnecting pieces is common: drag selected PDFs into the merge tool when you need a new combined order.
+                        Some people split first purely to annotate or stamp one chapter, then merge back so signatures or watermarks only touch the pages that needed them.
+                        Browser memory is the bottleneck on enormous files, so if rotation or another edit already feels sluggish, split into halves, process each half, and merge again.
+                    </p>
+
+                    <h3>ZIP output and filenames</h3>
+                    <p>
+                        When you request many small PDFs at once, browsers typically download a ZIP archive so you are not clicking through twenty separate save dialogs.
+                        Extract locally before attaching to email or uploading to a document system you trust.
+                        Rename outputs immediately; courts, procurement portals, and academic dropboxes reject cryptic default names quicker than you would expect.
+                        Because the archive builds on your laptop, the filenames stay exactly what the tool generated—no hidden cloud rename step in the middle.
+                    </p>
+
+                    <h3>What stays local—and what is still your responsibility</h3>
+                    <p>
+                        Client-side splitting means the bytes of the PDF never traverse ConvertPDF’s hosting as part of the conversion job.
+                        Screen sharing, browser extensions, corporate SSL inspection, or compromised Wi-Fi can still expose what you view; that is true of any software, native or web-based.
+                        Keep OS patches current, lock your workstation when you step away, and prefer HTTPS everywhere.
+                        If you need a formal chain-of-custody, pair technical hygiene with process: hash files after export, log who received each slice, and store originals read-only.
+                    </p>
+                    <p>
+                        When a court or procurement portal caps attachments, splitting first lets you upload Part A and Part B separately while citing both control numbers in your cover letter—still without handing the full bundle to a third-party converter.
+                    </p>
+                    <p>
+                        Rename slices as soon as they land in Downloads; “split-part-7.pdf” is nobody’s friend during a deposition prep call at midnight.
                     </p>
 
                     <h3>Frequently Asked Questions</h3>

@@ -2,15 +2,7 @@
 <html lang="en">
 
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-8RV1Y8FVZM"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-8RV1Y8FVZM');
-</script>
+<script src="/analytics-head.js"></script>
 
 
 
@@ -271,19 +263,18 @@
                     like the author's name, the software used to create the file, and even the internal directory
                     structure of the creator's computer. If you simply copy and paste an image, you might unknowingly be
                     sharing this sensitive information with the world.</p>
-                <p>Furthermore, PDFs often contain multiple layers of information that aren't immediately visible. For
-                    instance, an image might have been cropped within the PDF, but the full-size original might still be
-                    embedded in the file's data. A naive extraction tool might pull out the entire original image,
-                    revealing parts of the photo that were never intended for public view. This "data leakage" is a
-                    common issue in professional document management and can lead to embarrassing or even legal
-                    complications for brands and individuals alike.</p>
-                <p>Using a sophisticated conversion tool like ConvertPDF helps mitigate these risks. By rendering the
-                    PDF page into a fresh JPG or PNG file, we effectively "flatten" the digital shadow. The resulting
-                    image contains only the pixels that were visible on the page, with all hidden layers and sensitive
-                    metadata stripped away. This ensures that your social media posts are not just high-quality, but also
-                    clean and secure. In the age of digital transparency, knowing exactly what you're sharing is as
-                    important as how it looks, and ConvertPDF provides the peace of mind that your brand's digital
-                    footprint remains exactly as you intended.</p></section>
+                <p>PDFs often stack layers you never see on screen. An image cropped in layout can still carry the full
+                    raster in the file; a sloppy extractor may dump the whole XObject, not the framed view. That kind of
+                    leakage shows up in audits when a “harmless” chart suddenly includes margin notes from the art
+                    department.</p>
+                <p>Client-side render-to-bitmap workflows give you the pixels on screen, not the buried XObject surprise hiding under a crop box. That is the practical fix when you cannot trust upstream authors to sanitize files before distribution.</p>
+                <p>Rendering each page to a fresh JPG or PNG through the browser flattens what you see: visible pixels,
+                    without dragging along hidden layers or stale EXIF from a five-year-old camera roll. That is the
+                    outcome social teams need when the PDF came from a vendor PDF, not from your art director.</p>
+
+                <section><h2>Crop boxes marketers actually hit</h2>
+                <p>Instagram still punishes ultra-wide assets; LinkedIn carousels want 1080×1080 unless you enjoy fuzzy edges. After extraction, run your usual design template—ConvertPDF hands off a clean bitmap, not a magic social scheduler.</p>
+                <p>Keep the PDF page number in the filename so legal can find the source paragraph if a follower claims the chart was “misleading.”</p></section>
 
                 <section><h2>Conclusion</h2>
                     <p>
@@ -296,6 +287,7 @@
                         Ready to extract images from your PDFs? Try our <a href="../pages/pdf2jpg.html">PDF to JPG
                             converter</a> - it's free, fast, and completely private.
                     </p>
+                    <p>When in doubt, compare histograms before and after export—unexpected spikes sometimes mean an ICC profile you still need to strip in Photoshop.</p>
                 </section>
 
                 <div class="cta-box">

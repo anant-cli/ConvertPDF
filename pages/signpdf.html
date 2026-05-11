@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="/analytics-head.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
@@ -97,6 +98,63 @@
                         <div class="seo-meta-card"><strong>Input:</strong> PDF document needing signatures.</div>
                         <div class="seo-meta-card"><strong>Output:</strong> signed PDF ready for distribution.</div>
                     </div>
+
+                    <h3>Visual signatures versus trusted digital IDs</h3>
+                    <p>
+                        This tool draws pixels—typed names or stylus strokes—onto the page layer you see.
+                        That is enough for internal sign-offs, tenant notices, and school permission slips where everyone understands the ritual.
+                        It is not the same as a PKI-backed signature that proves issuer identity, timestamp, and non-repudiation to a court or tax authority.
+                        When in doubt, ask the receiving party what they accept before you rely on any browser-based method.
+                    </p>
+                    <p>
+                        Ink signatures photograph cleanly if you scan at 300 dpi and place them once; repeating the bitmap on every page without vectorizing can bloat file size, so export after you are satisfied with placement.
+                    </p>
+
+                    <h3>Placement discipline</h3>
+                    <p>
+                        Signature lines rarely sit dead center; match the anchor blocks your template already reserves so nothing covers paragraph text.
+                        Multi-page contracts sometimes need initials on each page—duplicate placements thoughtfully rather than stretching one giant image across spreads.
+                        If you sign first and compress later, verify anti-aliasing did not soften small strokes beyond recognition.
+                    </p>
+
+                    <h3>Recordkeeping habits</h3>
+                    <p>
+                        Keep the unsigned PDF alongside the signed export; diff tools cannot help if you overwrite the only copy.
+                        Filename tags like <code>_signed_2026-05-11</code> save arguments later about which version went to the counterparty.
+                        Email the signed PDF to yourself over TLS as a cheap timestamped backup if you do not yet use a document vault.
+                    </p>
+
+                    <h3>What usually happens next</h3>
+                    <p>
+                        After signing, people <a href="pdfencrypt.html">encrypt</a>, <a href="compresspdf.html">compress</a>, or <a href="mergepdf.html">merge</a> with cover letters.
+                        If you still need tracked changes, keep the DOCX authoritative and treat the PDF as the presentation layer only.
+                    </p>
+                    <p>
+                        For international deals, confirm whether a blue-ink scan is acceptable or whether local law demands qualified certificates; the answer changes the tool you should reach for before you celebrate a closed round.
+                    </p>
+
+                    <h3>Witnessing and initials culture</h3>
+                    <p>
+                        Some jurisdictions want wet signatures on paper first, then scan; others accept typed names on PDF if the underlying contract permits.
+                        Initials on every page deter page-swapping fraud in paper rooms; digitally, flattening after signing stops casual copy-paste of your stamp onto a different contract body.
+                    </p>
+                    <p>
+                        If you coordinate signatures across time zones, agree on a single PDF revision hash in Slack before anyone signs—nothing worse than two VPs signing different byte streams on the same morning.
+                    </p>
+
+                    <h3>Lost passwords on signed files</h3>
+                    <p>
+                        Signing then encrypting with a user password you forget is worse than never signing: nobody can help without the key material you chose.
+                        Store passwords in a vault, not sticky notes; rotate them when staff leave.
+                        If you only need to stop casual snooping, owner-password restrictions without opening encryption can be easier to recover from—ask IT which pattern your org standardizes on before you click OK.
+                    </p>
+                    <p>
+                        Timestamp screenshots of the signed PDF in your ticket system if ops disputes which build went to production—cheap evidence when Slack threads scroll away.
+                    </p>
+                    <p>
+                        If counsel later demands certificate-based signatures, keep the visually signed PDF as an intermediate artifact and re-execute in the approved platform rather than arguing the pixels were “good enough.”
+                    </p>
+                    <p>Store the unsigned parent PDF read-only so you can always produce a fresh signing pass if terms change overnight.</p>
 
                     <h3>Frequently Asked Questions</h3>
                     <h4>Is Sign PDF suitable for professional work?</h4>

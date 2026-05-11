@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="/analytics-head.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
@@ -97,6 +98,64 @@
                         <div class="seo-meta-card"><strong>Input:</strong> PDF document without page numbers.</div>
                         <div class="seo-meta-card"><strong>Output:</strong> numbered PDF ready for professional use.</div>
                     </div>
+
+                    <h3>Numbering conventions people actually argue about</h3>
+                    <p>
+                        Front matter in books traditionally uses roman numerals while body pages use arabic digits starting at 1.
+                        Court filings sometimes demand consecutive arabic numbers across the entire PDF including exhibits—always read the standing order.
+                        Academic theses may want the title page unnumbered but counted; that is a layout decision, not something a quick tool guesses for you, so set the starting index deliberately.
+                    </p>
+                    <p>
+                        Slide decks exported to PDF often want “Page X of Y” in the corner; static “Page X” is easier and still helps reviewers during markup marathons.
+                        Meeting packets benefit from centered footers so two-up printing still shows numbers after folding.
+                    </p>
+
+                    <h3>Positioning tips</h3>
+                    <p>
+                        Bottom-center is the default mental model because printed binders hide lower corners under thumbs.
+                        Top-right works when footnotes eat the bottom margin.
+                        If you number landscape pages, preview both orientations; what clears the margin in portrait may collide with charts when rotated.
+                    </p>
+
+                    <h3>Accessibility and reflow</h3>
+                    <p>
+                        Screen readers announce page breaks based on structure tags, not the visual digit you drew.
+                        Page numbers still help sighted collaborators during phone reviews (“jump to page 37”).
+                        Do not rely on numbering alone for legal references—cite section headings too when precision matters.
+                    </p>
+
+                    <h3>Downstream tools</h3>
+                    <p>
+                        After numbering, teams often <a href="mergepdf.html">merge</a> chapters, <a href="watermarkpdf.html">watermark</a> drafts, or <a href="pdfencrypt.html">lock</a> distribution copies.
+                        If pagination shifts because you inserted a cover page, regenerate numbers instead of hand-editing one page in Illustrator—consistency beats speed here.
+                    </p>
+                    <p>
+                        Some style guides want the first physical page blank but still counted; others want the table of contents in roman numerals separate from body pagination—plan those segments before you automate numbering across the whole file.
+                    </p>
+
+                    <h3>Machine-readable page labels</h3>
+                    <p>
+                        Tagged PDFs expose page labels to assistive tech separately from the visual digit; most lightweight numbering tools adjust the visual layer only.
+                        If you must satisfy WCAG plus court formatting, test with Acrobat’s Read Out Loud and a screen reader after numbering.
+                        Jumps in sequence (“… 12, 14”) confuse everyone—fix source merges before you stamp digits on top.
+                    </p>
+                    <p>
+                        Bates numbering for discovery is a different beast: dedicated legal software increments per page globally across productions; use this tool for informal bundles, not for stamped Bates unless counsel confirms the output meets their spec.
+                    </p>
+
+                    <h3>Slip sheets and covers</h3>
+                    <p>
+                        Inserting a color cover after numbering shifts every footer unless you regenerate.
+                        Some teams number only the body PDF and keep covers as a separate file in the binder pocket—old-school, but it avoids re-export churn when marketing refreshes the cover art weekly.
+                        If you insist on one merged file, automate numbering last in the pipeline, after merge and rotation, so the count matches what approvers already reviewed.
+                    </p>
+                    <p>
+                        Conference proceedings sometimes restart page numbers per paper inside one PDF; that pattern is painful to automate blindly—split per paper, number, then merge if you truly need a single upload file.
+                    </p>
+                    <p>
+                        Odd/even headers in Word often assume facing pages; when you flatten to PDF, verify both sides still read correctly before you bake numbers in.
+                    </p>
+                    <p>Regenerate instead of patching a single page by hand—manual edits are where numbering quietly drifts out of sync.</p>
 
                     <h3>Frequently Asked Questions</h3>
                     <h4>Is Add Page Numbers suitable for professional work?</h4>

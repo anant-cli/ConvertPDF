@@ -27,9 +27,24 @@ if (grid) {
         const card = document.createElement('a');
         card.href = t.url;
         card.className = 'tool-card';
-        card.innerHTML = `<div class="tool-icon">${t.icon}</div>
-                          <div class="tool-name">${t.name}</div>
-                          <div class="tool-desc">${t.desc}</div>`;
+        card.setAttribute('aria-label', t.name + ': ' + t.desc);
+
+        const icon = document.createElement('div');
+        icon.className = 'tool-icon';
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = t.icon;
+
+        const name = document.createElement('div');
+        name.className = 'tool-name';
+        name.textContent = t.name;
+
+        const desc = document.createElement('div');
+        desc.className = 'tool-desc';
+        desc.textContent = t.desc;
+
+        card.appendChild(icon);
+        card.appendChild(name);
+        card.appendChild(desc);
         grid.appendChild(card);
     });
 }

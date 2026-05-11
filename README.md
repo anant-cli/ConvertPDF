@@ -63,6 +63,47 @@ Want to contribute or run ConvertPDF on your own machine? It's easy!
 
 ---
 
+## Content length targets (editorial)
+
+These thresholds keep long-form pages useful for readers and comparable to serious tool sites. Count **visible body text** (ignore scripts/styles). Skip expanding a page that already meets its tier.
+
+| Tier | Minimum words | Applies to |
+|------|----------------|------------|
+| Blog articles | **1500+** | `blog/*.html` except `blog/index.html` |
+| Tool pages | **1000+** | `pages/*.html` |
+| Other site pages | **800+** | Home, About, Contact, Privacy, Terms, `all-tools.html`, `404.html`, author hub, etc. |
+
+Copy should match the **specific tool or topic** on that URL. Avoid generic filler, stacked transitions (“Furthermore…”, “In conclusion…”), and claims the product cannot support.
+
+To approximate visible word counts locally (strips `script`/`style` and tags, then splits on whitespace):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/wordcount.ps1
+```
+
+Results are written to `scripts/wordcount-out.txt`.
+
+---
+
+## Discoverability (competing with big PDF brands)
+
+Incumbent sites win on backlinks and age; you win on **clarity and trust**. Keep pages fast (static HTML, no upload pipeline to invent), explain **limits** honestly (e.g. KaTeX vs full TeX), and link related tools and blog posts so crawlers and humans see a coherent site—not isolated landing pages. Many templates already ship FAQ or Article JSON-LD; keep titles and descriptions aligned with what each URL actually does.
+
+---
+
+## AdSense-ready (without pasting tags everywhere)
+
+“AdSense-ready” means policy and technical groundwork, **not** embedding the AdSense script on every HTML file.
+
+- **Privacy and terms:** Clear pages (`privacy.html`, `terms.html`) describing processing, cookies/consent, and third parties.
+- **Consent defaults:** `analytics-head.js` loads GA4 with Consent Mode defaults that **deny** ad-related storage until you wire a real consent banner update (see `components.js` for the site chrome).
+- **CSP and ad domains:** `netlify.toml` already allows Google ad/Doubleclick endpoints so that, **after** Google approves the site, you can add **one** global loader or a small number of placement containers—prefer a single include or shared partial rather than duplicating snippets per page.
+- **`ads.txt`:** Present at repo root for when you connect a publisher account; keep it accurate to your seller IDs.
+
+Do **not** duplicate auto-ad or unit code across dozens of static files; centralize changes and keep the default experience fast and readable.
+
+---
+
 ## 🤝 Contributing
 
 We welcome contributions! ConvertPDF is an open-source project driven by the community. 
