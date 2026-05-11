@@ -147,6 +147,7 @@ async function rendertxt2docx(container) {
                 return;
             }
             convertBtn.disabled = true; convertBtn.innerHTML = '⏳ Converting...';
+            if (window.showSpinner) showSpinner('Converting text to DOCX...');
             try {
                 const { Document, Packer, Paragraph, TextRun, HeadingLevel } = docx;
                 const lines = textToConvert.split('\n');
@@ -193,6 +194,7 @@ async function rendertxt2docx(container) {
                 console.error(e);
             } finally {
                 convertBtn.disabled = false; convertBtn.innerHTML = '📝 → 📘 Convert to DOCX';
+                if (window.hideSpinner) hideSpinner();
             }
         });
 

@@ -158,6 +158,7 @@ function renderweb2pdf(container) {
         const css = cssSnippet.value;
 
         printBtn.disabled = true; printBtn.innerHTML = '⏳ Preparing...';
+        if (window.showSpinner) showSpinner('Preparing PDF...');
 
         const fullHtml = `<!DOCTYPE html><html><head><title>ConvertPDF - HTML Document</title>
 <style>
@@ -172,9 +173,10 @@ ${css}
             if (window.showToast) showToast('Pop‑up blocked by browser.', 'error');
             else alert('Pop‑up blocked');
             printBtn.disabled = false; printBtn.innerHTML = '🖨️ Generate PDF';
+            if (window.hideSpinner) hideSpinner();
             return;
         }
         win.document.write(fullHtml); win.document.close();
-        setTimeout(() => { printBtn.disabled = false; printBtn.innerHTML = '🖨️ Generate PDF'; }, 2000);
+        setTimeout(() => { printBtn.disabled = false; printBtn.innerHTML = '🖨️ Generate PDF'; if (window.hideSpinner) hideSpinner(); }, 2000);
     });
 }

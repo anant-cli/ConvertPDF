@@ -94,6 +94,7 @@ async function renderdocx2pdf(container) {
             docxSize.textContent = typeof formatFileSize === 'function' ? formatFileSize(f.size) : f.size + " bytes";
 
             previewDiv.innerHTML = '<div style="text-align:center; padding: 2rem;"><span style="font-size: 2rem;">⌛</span><br>Converting DOCX to HTML for preview...</div>';
+            if (window.showSpinner) showSpinner('Converting DOCX preview...');
 
             try {
                 const buf = await f.arrayBuffer();
@@ -110,6 +111,8 @@ async function renderdocx2pdf(container) {
             } catch (e) {
                 previewDiv.innerHTML = `<div style="color:#e74c3c; padding:1rem; border:1px solid #fadbd8; background:rgba(248,113,113,0.08); border-radius:8px;">Error converting file: ${e.message}</div>`;
                 if (window.showToast) showToast('Failed to read DOCX file.', 'error');
+            } finally {
+                if (window.hideSpinner) hideSpinner();
             }
         });
 
@@ -122,6 +125,7 @@ async function renderdocx2pdf(container) {
             }
 
             printBtn.disabled = true; printBtn.innerHTML = '⏳ Preparing...';
+            if (window.showSpinner) showSpinner('Preparing PDF...');
 
             try {
                 const html = window.currentDocxHtml;
@@ -145,6 +149,8 @@ async function renderdocx2pdf(container) {
                 else alert('Error: ' + e.message);
                 printBtn.disabled = false;
                 printBtn.innerHTML = '🖨️ Print / Save as PDF';
+            } finally {
+                if (window.hideSpinner) hideSpinner();
             }
         });
     } catch (___err) {

@@ -169,6 +169,7 @@ async function renderimg2pdf(container) {
             }
             convertBtn.disabled = true;
             convertBtn.innerHTML = '⏳ Generating PDF...';
+            if (window.showSpinner) showSpinner('Generating PDF...');
             progressContainer.style.display = 'block';
             progressBar.style.width = '0%';
             previewBox.style.display = 'block';
@@ -253,6 +254,8 @@ async function renderimg2pdf(container) {
                 convertBtn.disabled = false;
                 convertBtn.innerHTML = '📸→📁 Generate PDF';
                 progressContainer.style.display = 'none';
+            } finally {
+                if (window.hideSpinner) hideSpinner();
             }
         });
 

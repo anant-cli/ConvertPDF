@@ -106,6 +106,7 @@ function renderimg2png(container) {
 
         conv.disabled = true;
         conv.innerHTML = '⏳ Converting...';
+        if (window.showSpinner) showSpinner('Converting image...');
 
         const reader = new FileReader();
         reader.onload = e => {
@@ -146,6 +147,7 @@ function renderimg2png(container) {
 
                     conv.disabled = false;
                     conv.innerHTML = 'Convert to PNG';
+                    if (window.hideSpinner) hideSpinner();
 
                     if (window.showToast) showToast('Converted to PNG successfully!');
                 }, 'image/png');
