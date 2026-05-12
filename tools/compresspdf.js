@@ -14,8 +14,9 @@ async function rendercompresspdf(container) {
         area.innerHTML = `
         <h3>🗜️ Compress PDF</h3>
         <p class="tool-description">
-            Reduce PDF file size using basic compression techniques. Best results with text-heavy PDFs.
-            Results vary - this tool uses safe, client-side optimization methods.
+            Rewrites PDF internals to reduce file size. Works best on <strong>text-heavy PDFs</strong> &mdash; typical reduction is 5&ndash;30%.
+            <strong>Image-heavy PDFs will see little or no reduction</strong> because embedded images are already compressed.
+            This tool does not re-encode or remove images &mdash; it cleans redundant objects and tightens PDF streams only.
             After compression, you can also <a href="pdfencrypt.html" target="_self">password protect your PDF</a>.
         </p>
         <div class="faq-section">
