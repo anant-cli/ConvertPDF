@@ -5,7 +5,6 @@
  */
 (function () {
     'use strict';
-    const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1']);
 
     function setupHamburger() {
         const nav = document.querySelector('.main-nav');
@@ -49,19 +48,67 @@
         });
     }
 
-    function setActiveNavLink() {
+    /**
+     * Consolidates label normalization and active link detection to reduce DOM traversals.
+     */
+    function initNavigation() {
         const path = window.location.pathname;
         const filename = path.split('/').pop() || 'index.html';
+        const navMap = {
+            'index.html': '🏠 Home',
+            'all-tools.html': '🛠️ All Tools',
+            'blog': '📰 Blog',
+            'about.html': 'ℹ️ About',
+            'contact.html': '📞 Contact',
+            'privacy.html': '🔒 Privacy',
+            'terms.html': '📜 Terms'
+        };
 
-        document.querySelectorAll('.main-nav a').forEach(function (link) {
+        const navLinks = document.querySelectorAll('.main-nav a');
+        navLinks.forEach(function (link) {
+            // 1. Normalize Labels
+            const href = link.getAttribute('href') || '';
+            const lower = href.toLowerCase();
+            const cleanHref = href.split('/').pop() || 'index.html';
+            
+            if (lower.endsWith('index.html')) link.textContent = navMap['index.html'];
+            else if (lower.endsWith('all-tools.html')) link.textContent = navMap['all-tools.html'];
+            else if (lower.includes('blog/')) link.textContent = navMap.blog;
+            else if (lower.endsWith('about.html')) link.textContent = navMap['about.html'];
+            else if (lower.endsWith('contact.html')) link.textContent = navMap['contact.html'];
+            else if (lower.endsWith('privacy.html')) link.textContent = navMap['privacy.html'];
+            else if (lower.endsWith('terms.html')) link.textContent = navMap['terms.html'];
+
+            // 2. Set Active State
             link.classList.remove('active');
-            const href = (link.getAttribute('href') || '').split('/').pop();
-            if (
-                href === filename ||
-                (filename === '' && href === 'index.html') ||
-                (filename === 'index.html' && href === 'index.html')
-            ) {
+            if (cleanHref === filename || (filename === 'index.html' && cleanHref === 'index.html')) {
                 link.classList.add('active');
+            }
+        });
+
+        // Other UI normalization
+        const logo = document.querySelector('.logo a');
+        if (logo) {
+            logo.textContent = '📄 ConvertPDF';
+            if (!logo.getAttribute('title')) {
+                logo.setAttribute('title', 'ConvertPDF - Home');
+            }
+        }
+
+        document.querySelectorAll('.back-btn').forEach(function (btn) {
+            if (/back to home/i.test(btn.textContent)) {
+                btn.textContent = '🏠 Back to Home';
+            }
+        });
+
+        document.querySelectorAll('.social-links a').forEach(function (a) {
+            const title = (a.getAttribute('title') || '').toLowerCase();
+            if (title.includes('github')) {
+                a.textContent = '🐙';
+                a.setAttribute('aria-label', 'GitHub');
+            } else if (title.includes('email')) {
+                a.textContent = '✉️';
+                a.setAttribute('aria-label', 'Email');
             }
         });
     }
@@ -86,58 +133,6 @@
         skip.href = '#main-content';
         skip.textContent = 'Skip to main content';
         document.body.insertBefore(skip, document.body.firstChild);
-    }
-
-    function normalizeGlobalLabels() {
-        const navMap = {
-            'index.html': '🏠 Home',
-            'all-tools.html': '🛠️ All Tools',
-            'blog': '📰 Blog',
-            'about.html': 'ℹ️ About',
-            'contact.html': '📞 Contact',
-            'privacy.html': '🔒 Privacy',
-            'terms.html': '📜 Terms'
-        };
-
-        document.querySelectorAll('.main-nav a').forEach(function (a) {
-            const href = a.getAttribute('href') || '';
-            const lower = href.toLowerCase();
-            if (lower.endsWith('index.html')) a.textContent = navMap['index.html'];
-            else if (lower.endsWith('all-tools.html')) a.textContent = navMap['all-tools.html'];
-            else if (lower.includes('blog/')) a.textContent = navMap.blog;
-            else if (lower.endsWith('about.html')) a.textContent = navMap['about.html'];
-            else if (lower.endsWith('contact.html')) a.textContent = navMap['contact.html'];
-            else if (lower.endsWith('privacy.html')) a.textContent = navMap['privacy.html'];
-            else if (lower.endsWith('terms.html')) a.textContent = navMap['terms.html'];
-        });
-
-        const logo = document.querySelector('.logo a');
-        if (logo) {
-            logo.textContent = '📄 ConvertPDF';
-            if (!logo.getAttribute('title')) {
-                logo.setAttribute('title', 'ConvertPDF - Home');
-            }
-        }
-
-        document.querySelectorAll('.back-btn').forEach(function (btn) {
-            if (/back to home/i.test(btn.textContent)) {
-                btn.textContent = '🏠 Back to Home';
-            }
-        });
-
-        document.querySelectorAll('.social-links a').forEach(function (a) {
-            const title = (a.getAttribute('title') || '').toLowerCase();
-            if (title.includes('github')) {
-                a.textContent = '🐙';
-                a.setAttribute('aria-label', 'GitHub');
-            } else if (title.includes('email')) {
-                a.textContent = '✉️';
-                a.setAttribute('aria-label', 'Email');
-            } else if (title.includes('twitter')) {
-                a.textContent = '🐦';
-                a.setAttribute('aria-label', 'Twitter (coming soon)');
-            }
-        });
     }
 
     const CONSENT_STORAGE_KEY = 'convertpdf_consent_v1';
@@ -210,8 +205,11 @@
         
         document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
 
-        // 2. Custom cursor (desktop only; skipped when user prefers reduced motion)
-        if (window.matchMedia('(pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        // 2. Custom cursor & Interactive effects
+        const isDesktop = window.matchMedia('(pointer: fine)').matches;
+        const allowMotion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (isDesktop && allowMotion) {
             const cursor = document.createElement('div');
             cursor.className = 'custom-cursor';
             document.body.appendChild(cursor);
@@ -224,56 +222,82 @@
             const addHover = function () { cursor.classList.add('hover'); };
             const removeHover = function () { cursor.classList.remove('hover'); };
 
-            setTimeout(function () {
-                document.querySelectorAll('a, button, .tool-card').forEach(function (el) {
+            /**
+             * Attaches listeners to interactive elements, including those added dynamically.
+             */
+            const attachInteractiveListeners = function(root) {
+                const elements = root.querySelectorAll('a, button, .tool-card');
+                elements.forEach(function (el) {
                     el.addEventListener('mouseenter', addHover);
                     el.addEventListener('mouseleave', removeHover);
+                    
+                    // 3D Tilt for tool cards
+                    if (el.classList.contains('tool-card')) {
+                        el.addEventListener('mousemove', handleCardTilt);
+                        el.addEventListener('mouseleave', resetCardTilt);
+                    }
+                    
+                    // Magnetic effect for buttons
+                    if (el.classList.contains('button') || el.classList.contains('download-btn')) {
+                        el.addEventListener('mousemove', handleButtonMagnet);
+                        el.addEventListener('mouseleave', resetButtonMagnet);
+                    }
                 });
-            }, 500);
+            };
+
+            function handleCardTilt(e) {
+                const card = e.currentTarget;
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                card.style.setProperty('--mouse-x', x + 'px');
+                card.style.setProperty('--mouse-y', y + 'px');
+
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -10;
+                const rotateY = ((x - centerX) / centerX) * 10;
+                
+                card.style.transform = 'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) scale3d(1.02, 1.02, 1.02)';
+            }
+
+            function resetCardTilt(e) {
+                e.currentTarget.style.transform = '';
+            }
+
+            function handleButtonMagnet(e) {
+                const btn = e.currentTarget;
+                const rect = btn.getBoundingClientRect();
+                const x = (e.clientX - rect.left - rect.width / 2) * 0.3;
+                const y = (e.clientY - rect.top - rect.height / 2) * 0.3;
+                btn.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+            }
+
+            function resetButtonMagnet(e) {
+                e.currentTarget.style.transform = '';
+            }
+
+            // Initial attachment
+            attachInteractiveListeners(document);
+
+            // MutationObserver for dynamic content (like tool grids)
+            const dynamicObserver = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.nodeType === 1) { // Element node
+                            attachInteractiveListeners(node);
+                            if (node.matches('a, button, .tool-card')) {
+                                node.addEventListener('mouseenter', addHover);
+                                node.addEventListener('mouseleave', removeHover);
+                            }
+                        }
+                    });
+                });
+            });
+
+            dynamicObserver.observe(document.body, { childList: true, subtree: true });
         }
-
-        // 3. 3D Tilt & Spotlight for Tool Cards
-        const allowMotion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        setTimeout(function() {
-            if (allowMotion) {
-            document.querySelectorAll('.tool-card').forEach(function(card) {
-                card.addEventListener('mousemove', function(e) {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    
-                    card.style.setProperty('--mouse-x', x + 'px');
-                    card.style.setProperty('--mouse-y', y + 'px');
-
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    const rotateX = ((y - centerY) / centerY) * -10;
-                    const rotateY = ((x - centerX) / centerX) * 10;
-                    
-                    card.style.transform = 'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) scale3d(1.02, 1.02, 1.02)';
-                });
-
-                card.addEventListener('mouseleave', function() {
-                    card.style.transform = '';
-                });
-            });
-            }
-
-            // 4. Magnetic Buttons
-            if (allowMotion) {
-            document.querySelectorAll('.button, .download-btn').forEach(function(btn) {
-                btn.addEventListener('mousemove', function(e) {
-                    const rect = btn.getBoundingClientRect();
-                    const x = (e.clientX - rect.left - rect.width / 2) * 0.3;
-                    const y = (e.clientY - rect.top - rect.height / 2) * 0.3;
-                    btn.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-                });
-                btn.addEventListener('mouseleave', function() {
-                    btn.style.transform = '';
-                });
-            });
-            }
-        }, 500); // wait for dynamic tool cards
     }
 
     function ensureToastContainer() {
@@ -292,6 +316,7 @@
         const note = document.createElement('p');
         note.className = 'privacy-note';
         note.textContent = 'We use Google Analytics for anonymous traffic. Optional ads may appear if you accept marketing cookies in the banner. Your documents are never uploaded.';
+        // Insert at the beginning to keep copyright at the bottom
         footer.insertBefore(note, footer.firstChild);
     }
 
@@ -299,9 +324,8 @@
         setupCookieConsent();
         ensureSkipLink();
         ensurePrivacyNote();
-        normalizeGlobalLabels();
+        initNavigation();
         setupHamburger();
-        setActiveNavLink();
         ensureToastContainer();
         initPremiumUI();
     }

@@ -1,4 +1,4 @@
-﻿// txt2docx.js
+// txt2docx.js
 async function rendertxt2docx(container) {
     try {
         await loadScript('https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js');
@@ -153,8 +153,15 @@ async function rendertxt2docx(container) {
                 const lines = textToConvert.split('\n');
                 const children = [];
                 for (let line of lines) {
+                    const originalLine = line;
                     line = line.trim();
-                    if (!line) continue;
+                    if (!line && originalLine.length === 0) {
+                        children.push(new Paragraph({
+                            children: [new TextRun({ text: "" })],
+                            spacing: { after: 120 }
+                        }));
+                        continue;
+                    }
                     if (txtDetectHeadings.checked) {
                         const headingMatch = line.match(/^(#{1,6})\s+(.*)$/);
                         if (headingMatch) {

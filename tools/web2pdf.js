@@ -1,4 +1,4 @@
-﻿// web2pdf.js
+// web2pdf.js
 function renderweb2pdf(container) {
     container.innerHTML = '';
     const area = document.createElement('div');
@@ -124,7 +124,9 @@ function renderweb2pdf(container) {
         `;
 
         const blob = new Blob([content], { type: 'text/html' });
+        const oldUrl = previewIframe.src;
         previewIframe.src = URL.createObjectURL(blob);
+        if (oldUrl.startsWith('blob:')) URL.revokeObjectURL(oldUrl);
     }
 
     // Debounce helper

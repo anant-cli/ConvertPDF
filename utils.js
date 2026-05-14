@@ -30,7 +30,6 @@ function downloadBlob(blob, filename) {
     setTimeout(() => {
         URL.revokeObjectURL(objectUrl);
         link.remove();
-        blob = null;
     }, 60000);
 }
 
@@ -66,6 +65,8 @@ function loadScript(src, integrity) {
     return new Promise((resolve, reject) => {
         const existing = document.querySelector(`script[src="${src}"]`);
         if (existing) {
+            // NOTE: If script is already in DOM, we resolve immediately. 
+            // We do not re-verify SRI for scripts already present.
             resolve();
             return;
         }
@@ -175,6 +176,8 @@ function updatePasswordStrengthMeter(password, meterBarId, textId) {
     const colors = ['#e74c3c', '#e67e22', '#f1c40f', '#2ecc71', '#27ae60', '#27ae60'];
     const labels = ['', 'Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
 
+    // Strength ranges from 0 to 5. Arrays above (widths, colors, labels) 
+    // are 0-indexed to match this range exactly.
     strength = Math.min(strength, 5);
     bar.style.width = widths[strength];
     bar.style.background = colors[strength];

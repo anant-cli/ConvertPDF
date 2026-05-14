@@ -157,14 +157,17 @@ async function renderpagenumbers(container) {
                             label = `${pageNum}`;
                     }
 
+                    const font = await currentPdf.embedFont(PDFLib.StandardFonts.Helvetica);
+                    const textWidth = font.widthOfTextAtSize(label, fontSize);
+
                     let x, y;
                     switch (position) {
                         case 'bottom-center':
-                            x = width / 2;
+                            x = (width - textWidth) / 2;
                             y = 30;
                             break;
                         case 'bottom-right':
-                            x = width - 50;
+                            x = width - textWidth - 50;
                             y = 30;
                             break;
                         case 'bottom-left':
@@ -172,13 +175,13 @@ async function renderpagenumbers(container) {
                             y = 30;
                             break;
                         case 'top-center':
-                            x = width / 2;
-                            y = height - 30;
+                            x = (width - textWidth) / 2;
+                            y = height - 30 - fontSize;
                             break;
                     }
 
                     page.drawText(label, {
-                        x, y, size: fontSize, color: PDFLib.rgb(0.4, 0.4, 0.4)
+                        x, y, size: fontSize, font, color: PDFLib.rgb(0.4, 0.4, 0.4)
                     });
 
                     progressBar.style.width = `${((i + 1) / pages.length) * 100}%`;

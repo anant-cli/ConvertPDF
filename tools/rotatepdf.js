@@ -214,7 +214,9 @@ async function renderrotatepdf(container) {
                 let processed = 0;
                 for (const pageNum of selectedPages) {
                     const pageIndex = pageNum - 1;
-                    pages[pageIndex].setRotation(PDFLib.degrees(angle));
+                    const page = pages[pageIndex];
+                    const currentRotation = page.getRotation().angle;
+                    page.setRotation(PDFLib.degrees((currentRotation + angle) % 360));
                     processed++;
                     progressBar.style.width = `${(processed / selectedPages.size) * 100}%`;
                 }
