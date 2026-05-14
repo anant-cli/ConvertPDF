@@ -1,4 +1,4 @@
-// img2pdf.js
+﻿// img2pdf.js
 async function renderimg2pdf(container) {
     try {
         await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js');
@@ -78,16 +78,7 @@ async function renderimg2pdf(container) {
             setupDropZone('imgPdfDropZone', 'imgFiles');
         }
 
-        function cleanupThumbnails() {
-            previewList.querySelectorAll('img').forEach(img => {
-                if (img.src.startsWith('blob:')) {
-                    URL.revokeObjectURL(img.src);
-                }
-            });
-        }
-
         function renderPreviewList() {
-            cleanupThumbnails();
             previewList.innerHTML = '';
             filesArray.forEach((file, index) => {
                 const item = document.createElement('div');

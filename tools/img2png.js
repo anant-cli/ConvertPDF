@@ -1,4 +1,4 @@
-// img2png.js
+﻿// img2png.js
 function renderimg2png(container) {
     container.innerHTML = '';
     const area = document.createElement('div');
@@ -136,12 +136,10 @@ function renderimg2png(container) {
                 ctx.drawImage(img, 0, 0, targetW, targetH);
 
                 canvas.toBlob(blob => {
-                    if (pngBlob) URL.revokeObjectURL(imgPrev.src);
                     pngBlob = blob;
                     dPng.disabled = false;
 
-                    const url = URL.createObjectURL(blob);
-                    imgPrev.src = url;
+                    imgPrev.src = canvas.toDataURL('image/png');
                     imgPrev.style.display = 'block';
                     placeholder.style.display = 'none';
 

@@ -1,4 +1,4 @@
-// qrmaker.js
+﻿// qrmaker.js
 async function renderqrmaker(container) {
     try {
         await loadScript('https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js');
@@ -90,16 +90,9 @@ async function renderqrmaker(container) {
         function loadImage(file) {
             return new Promise((resolve, reject) => {
                 const img = new Image();
-                const url = URL.createObjectURL(file);
-                img.onload = () => {
-                    resolve(img);
-                    URL.revokeObjectURL(url);
-                };
-                img.onerror = (err) => {
-                    URL.revokeObjectURL(url);
-                    reject(err);
-                };
-                img.src = url;
+                img.onload = () => resolve(img);
+                img.onerror = reject;
+                img.src = URL.createObjectURL(file);
             });
         }
 

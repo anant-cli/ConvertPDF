@@ -114,9 +114,6 @@ async function rendersplitpdf(container) {
             try {
                 const arrayBuf = await file.arrayBuffer();
                 const pdfDoc = await PDFLib.PDFDocument.load(arrayBuf, { ignoreEncryption: true });
-                if (pdfDoc.isEncrypted) {
-                    if (window.showToast) showToast('This PDF is encrypted. Some features may be restricted.', 'warning');
-                }
                 currentTotalPages = pdfDoc.getPageCount();
                 updateStats(file, currentTotalPages);
             } catch (err) {

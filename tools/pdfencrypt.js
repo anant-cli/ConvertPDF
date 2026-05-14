@@ -1,4 +1,4 @@
-// pdfencrypt.js - Using official pdf-lib
+﻿// pdfencrypt.js - Using official pdf-lib
 async function renderpdfencrypt(container) {
     try {
         await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib-with-encrypt@1.2.1/dist/pdf-lib.min.js');
@@ -88,7 +88,7 @@ async function renderpdfencrypt(container) {
             if (!file) { alert('Please select a PDF file.'); return; }
             if (!pwd) { alert('Please enter a user password.'); return; }
             if (pwd !== confirm) { alert('User passwords do not match.'); return; }
-            if (pwd.length < 8) { alert('User password must be at least 8 characters to ensure adequate security.'); return; }
+            if (pwd.length < 6) { alert('User password must be at least 6 characters.'); return; }
 
             encryptBtn.disabled = true;
             encryptBtn.innerHTML = '⏳ Encrypting...';

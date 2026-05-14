@@ -87,7 +87,6 @@ svg {
 }
 
 /* ── Root noise texture overlay ── */
-/* Note: Renders at z-index 0. .app-container and other main layers must have z-index >= 1 to appear above it. */
 body::before {
     content: '';
     position: fixed;
@@ -188,7 +187,7 @@ code {
     padding: clamp(1rem, 2.5vw, 2rem);
     position: relative;
     z-index: 1;
-    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 /* ═══════════════════════════════════════════

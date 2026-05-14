@@ -37,8 +37,6 @@
             return;
         }
 
-        // Lookup the render function in the global window object.
-        // NOTE: This pattern requires tool render functions to be globally accessible.
         const renderFunc = window[renderFuncName];
         if (typeof renderFunc === 'function') {
             renderFunc(container);

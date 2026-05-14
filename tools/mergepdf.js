@@ -89,15 +89,13 @@ async function rendermergepdf(container) {
                 const fileSize = typeof formatFileSize === 'function' ? formatFileSize(file.size) : Math.round(file.size / 1024) + ' KB';
 
                 li.innerHTML = `
-                <span class="file-name"></span> <sm style="color:var(--text-muted); font-size:0.8em;">(${fileSize})</sm>
+                <span class="file-name">${file.name} <sm style="color:var(--text-muted); font-size:0.8em;">(${fileSize})</sm></span>
                 <div class="file-actions">
                     <button class="move-up" ${index === 0 ? 'disabled' : ''} title="Move Up">↑</button>
                     <button class="move-down" ${index === filesArray.length - 1 ? 'disabled' : ''} title="Move Down">↓</button>
                     <button class="remove-file" style="color:#e74c3c; border-color:rgba(248,113,113,0.25); background:rgba(248,113,113,0.08);" title="Remove">❌</button>
                 </div>
             `;
-                li.querySelector('.file-name').textContent = file.name;
-
                 li.querySelector('.move-up')?.addEventListener('click', (e) => {
                     e.stopPropagation();
                     if (index > 0) {
@@ -177,14 +175,7 @@ async function rendermergepdf(container) {
                     progressBar.style.width = `${(i / filesArray.length) * 100}%`;
 
                     const buf = await f.arrayBuffer();
-                    let pdf;
-                    try {
-                        pdf = await PDFDocument.load(buf);
-                    } catch (e) {
-                        // If load fails (likely encryption), try with ignoreEncryption but warn
-                        if (window.showToast) showToast(`File "${f.name}" might be encrypted. Merging may result in blank pages.`, 'warning');
-                        pdf = await PDFDocument.load(buf, { ignoreEncryption: true });
-                    }
+                    const pdf = await PDFDocument.load(buf, { ignoreEncryption: true }); // handle pass protected
                     const copied = await merged.copyPages(pdf, pdf.getPageIndices());
                     copied.forEach(p => merged.addPage(p));
                     totalPages += pdf.getPageCount();

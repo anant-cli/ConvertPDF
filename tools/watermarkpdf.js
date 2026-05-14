@@ -237,16 +237,12 @@ async function renderwatermarkpdf(container) {
                 const b = parseInt(colorHex.slice(5, 7), 16) / 255;
                 const color = PDFLib.rgb(r, g, b);
 
-                const font = await currentPdf.embedFont(PDFLib.StandardFonts.HelveticaBold);
                 const pages = currentPdf.getPages();
                 const pagesToProcess = allPages ? pages : [pages[0]];
 
                 for (let i = 0; i < pagesToProcess.length; i++) {
                     const page = pagesToProcess[i];
                     const { width, height } = page.getSize();
-
-                    const textWidth = font.widthOfTextAtSize(text, fontSize);
-                    const textHeight = fontSize; // Approximate
 
                     let x, y, rotate = 0;
                     switch (position) {
@@ -256,26 +252,25 @@ async function renderwatermarkpdf(container) {
                             rotate = PDFLib.degrees(45);
                             break;
                         case 'top-left':
-                            x = 50;
-                            y = height - fontSize - 50;
+                            x = fontSize;
+                            y = fontSize;
                             break;
                         case 'top-right':
-                            x = width - textWidth - 50;
-                            y = height - fontSize - 50;
+                            x = width - fontSize;
+                            y = fontSize;
                             break;
                         case 'bottom-left':
-                            x = 50;
-                            y = 50;
+                            x = fontSize;
+                            y = height - fontSize;
                             break;
                         case 'bottom-right':
-                            x = width - textWidth - 50;
-                            y = 50;
+                            x = width - fontSize;
+                            y = height - fontSize;
                             break;
                     }
 
                     page.drawText(text, {
-                        x, y, size: fontSize, font, color, opacity, rotate,
-                        ...(position === 'center' ? { x: x - (textWidth / 2) * Math.cos(rotate.angle * Math.PI / 180) + (textHeight / 2) * Math.sin(rotate.angle * Math.PI / 180), y: y - (textWidth / 2) * Math.sin(rotate.angle * Math.PI / 180) - (textHeight / 2) * Math.cos(rotate.angle * Math.PI / 180) } : {})
+                        x, y, size: fontSize, color, opacity, rotate
                     });
 
                     progressBar.style.width = `${((i + 1) / pagesToProcess.length) * 100}%`;
