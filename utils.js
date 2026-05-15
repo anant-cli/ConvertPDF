@@ -1,4 +1,4 @@
-// utils.js – shared helper functions
+﻿// utils.js – shared helper functions
 
 const CDN_INTEGRITY = {
     'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js': 'sha384-nFoSjZIoH3CCp8W639jJyQkuPHinJ2NHe7on1xvlUA7SuGfJAfvMldrsoAVm6ECz',
@@ -116,11 +116,20 @@ const rateLimiter = {
 };
 window.rateLimiter = rateLimiter;
 
-function trackEvent(category, action, label) {
-    if (typeof window.gtag === 'function') {
-        window.gtag('event', action, {
-            event_category: category,
-            event_label: label
+function trackEvent(category, action, label, value) {
+    if (typeof window.gtag !== 'function') return;
+    window.gtag('event', action, {
+        event_category: category,
+        event_label: label,
+        value: value || 0
+    });
+    // Track file conversions as GA4 conversion events (important for AdSense approval signal)
+    if (action === 'download' || action === 'convert' || action === 'encrypt' || action === 'merge') {
+        window.gtag('event', 'generate_lead', {
+            event_category: 'Tool',
+            event_label: label,
+            currency: 'USD',
+            value: 0
         });
     }
 }

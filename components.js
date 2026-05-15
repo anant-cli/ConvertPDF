@@ -1,4 +1,4 @@
-/**
+﻿/**
  * components.js - shared UI and trust enhancements for ConvertPDF
  * Adds: mobile nav, active link detection, accessibility helpers, cookie consent banner,
  * and symbol normalization for consistent user experience.
@@ -142,21 +142,15 @@
     const CONSENT_STORAGE_KEY = 'convertpdf_consent_v1';
 
     function applyConsentChoice(choice) {
-        if (typeof window.gtag !== 'function') return;
-        if (choice === 'all') {
-            window.gtag('consent', 'update', {
-                ad_storage: 'granted',
-                ad_user_data: 'granted',
-                ad_personalization: 'granted',
-                analytics_storage: 'granted'
-            });
-        } else {
-            window.gtag('consent', 'update', {
-                ad_storage: 'denied',
-                ad_user_data: 'denied',
-                ad_personalization: 'denied',
-                analytics_storage: 'granted'
-            });
+        if (typeof window.__updateAdConsent === 'function') {
+            window.__updateAdConsent(choice);
+        } else if (typeof window.gtag === 'function') {
+            // fallback if analytics-head.js not yet loaded
+            if (choice === 'all') {
+                window.gtag('consent', 'update', { ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted', analytics_storage: 'granted' });
+            } else {
+                window.gtag('consent', 'update', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'granted' });
+            }
         }
     }
 
@@ -173,25 +167,34 @@
         var root = document.createElement('div');
         root.id = 'cookie-consent-root';
         root.className = 'cookie-consent-root';
+        root.setAttribute('role', 'dialog');
+        root.setAttribute('aria-labelledby', 'cookie-consent-title');
+        root.setAttribute('aria-modal', 'true');
         root.innerHTML =
-            '<div class="cookie-consent-inner" role="dialog" aria-labelledby="cookie-consent-title">' +
-            '<p id="cookie-consent-title" class="cookie-consent-title">Cookies and privacy</p>' +
-            '<p class="cookie-consent-text">We use essential cookies for basic functionality, Google Analytics for anonymous traffic statistics, and (where enabled) marketing cookies for advertising. Your documents are processed in your browser and are not uploaded. Read our <a href="/privacy.html">Privacy Policy</a>.</p>' +
+            '<div class="cookie-consent-inner">' +
+            '<p id="cookie-consent-title" class="cookie-consent-title">Cookies &amp; Privacy</p>' +
+            '<p class="cookie-consent-text">We use essential cookies to keep the site working, Google Analytics for anonymous traffic statistics, and (if you accept) advertising cookies for Google AdSense ads that help fund free access. Your documents are processed entirely in your browser and never uploaded. <a href="/privacy.html">Privacy Policy</a></p>' +
             '<div class="cookie-consent-actions">' +
-            '<button type="button" class="button cookie-btn-accept" id="cookie-consent-accept">Accept optional cookies</button>' +
+            '<button type="button" class="button cookie-btn-accept" id="cookie-consent-accept">Accept all</button>' +
             '<button type="button" class="button secondary cookie-btn-ess" id="cookie-consent-essential">Essential only</button>' +
+            '<button type="button" class="button secondary cookie-btn-reject" id="cookie-consent-reject">Reject all</button>' +
             '</div></div>';
         document.body.appendChild(root);
 
-        document.getElementById('cookie-consent-accept').addEventListener('click', function () {
-            try { localStorage.setItem(CONSENT_STORAGE_KEY, 'all'); } catch (e) { /* ignore */ }
-            applyConsentChoice('all');
+        function handleConsent(choice) {
+            try { localStorage.setItem(CONSENT_STORAGE_KEY, choice); } catch (e) { /* ignore */ }
+            if (typeof window.__updateAdConsent === 'function') window.__updateAdConsent(choice);
             root.remove();
+        }
+
+        document.getElementById('cookie-consent-accept').addEventListener('click', function () {
+            handleConsent('all');
         });
         document.getElementById('cookie-consent-essential').addEventListener('click', function () {
-            try { localStorage.setItem(CONSENT_STORAGE_KEY, 'essential'); } catch (e) { /* ignore */ }
-            applyConsentChoice('essential');
-            root.remove();
+            handleConsent('essential');
+        });
+        document.getElementById('cookie-consent-reject').addEventListener('click', function () {
+            handleConsent('essential');
         });
     }
 

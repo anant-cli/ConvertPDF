@@ -266,6 +266,9 @@ async function renderimg2pdf(container) {
         });
     } catch (___err) {
         console.error('renderimg2pdf error:', ___err);
-        container.innerHTML = '<div class="warning">⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.</div>';
+        const warn = document.createElement('div');
+        warn.className = 'warning';
+        warn.textContent = '⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.';
+        container.replaceChildren(warn);
     }
 }

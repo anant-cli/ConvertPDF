@@ -1,4 +1,4 @@
-async function rendersplitpdf(container) {
+﻿async function rendersplitpdf(container) {
     try {
         await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js');
 
@@ -219,6 +219,9 @@ async function rendersplitpdf(container) {
         });
     } catch (___err) {
         console.error('rendersplitpdf error:', ___err);
-        container.innerHTML = '<div class="warning">⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.</div>';
+        const warn = document.createElement('div');
+        warn.className = 'warning';
+        warn.textContent = '⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.';
+        container.replaceChildren(warn);
     }
 }

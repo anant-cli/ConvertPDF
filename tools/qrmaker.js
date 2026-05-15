@@ -1,4 +1,4 @@
-﻿// qrmaker.js
+// qrmaker.js
 async function renderqrmaker(container) {
     try {
         await loadScript('https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js');
@@ -255,7 +255,7 @@ async function renderqrmaker(container) {
 
                 downloadBtn.disabled = false;
             } catch (e) {
-                qrPreview.innerHTML = `<div style="color:#e74c3c;">Error: ${e.message}</div>`;
+                qrPreview.textContent = `Error: ${e.message}`;
                 if (window.showToast) showToast('QR generation failed: ' + e.message, 'error');
                 console.error(e);
             } finally {
@@ -348,6 +348,9 @@ async function renderqrmaker(container) {
         });
     } catch (___err) {
         console.error('renderqrmaker error:', ___err);
-        container.innerHTML = '<div class="warning">⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.</div>';
+        const warn = document.createElement('div');
+        warn.className = 'warning';
+        warn.textContent = '⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.';
+        container.replaceChildren(warn);
     }
 }

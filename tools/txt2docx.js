@@ -201,6 +201,9 @@ async function rendertxt2docx(container) {
         downloadBtn.addEventListener('click', () => { if (currentDocxBlob) downloadBlob(currentDocxBlob, 'text-to-word.docx'); });
     } catch (___err) {
         console.error('rendertxt2docx error:', ___err);
-        container.innerHTML = '<div class="warning">⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.</div>';
+        const warn = document.createElement('div');
+        warn.className = 'warning';
+        warn.textContent = '⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.';
+        container.replaceChildren(warn);
     }
 }

@@ -1,4 +1,4 @@
-// mergepdf.js
+﻿// mergepdf.js
 async function rendermergepdf(container) {
     try {
         await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js');
@@ -207,6 +207,9 @@ async function rendermergepdf(container) {
         });
     } catch (___err) {
         console.error('rendermergepdf error:', ___err);
-        container.innerHTML = '<div class="warning">⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.</div>';
+        const warn = document.createElement('div');
+        warn.className = 'warning';
+        warn.textContent = '⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.';
+        container.replaceChildren(warn);
     }
 }

@@ -1,5 +1,5 @@
 ﻿// web2pdf.js
-function renderweb2pdf(container) {
+async function renderweb2pdf(container) {
     container.innerHTML = '';
     const area = document.createElement('div');
     area.className = 'area';
@@ -49,7 +49,7 @@ function renderweb2pdf(container) {
             <div>
                 <div class="preview-title" style="margin-bottom: 0.5rem; font-weight: 600; color: var(--text-primary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">Live Preview</div>
                 <div class="preview-box" id="htmlPreviewBox" style="width: 100%; min-height: 600px; padding: 0; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; box-shadow: var(--shadow-sm); background: #fff;">
-                    <iframe id="htmlRenderPreview" style="width: 100%; height: 100%; min-height: 600px; border: none;"></iframe>
+                    <iframe id="htmlRenderPreview" sandbox="allow-scripts" style="width: 100%; height: 100%; min-height: 600px; border: none;"></iframe>
                 </div>
             </div>
 
@@ -127,14 +127,7 @@ function renderweb2pdf(container) {
         previewIframe.src = URL.createObjectURL(blob);
     }
 
-    // Debounce helper
-    let timeoutId;
-    function debounce(func, delay) {
-        return function () {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => func.apply(this, arguments), delay);
-        };
-    }
+    // Using global debounce from utils.js
 
     htmlTemplate.addEventListener('change', () => {
         const tmpl = templates[htmlTemplate.value];

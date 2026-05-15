@@ -1,13 +1,13 @@
-// tools/loader.js – Automatically renders the correct tool
+﻿// tools/loader.js â€“ Automatically renders the correct tool
 (function() {
     'use strict';
 
     function showToolError(container, message) {
-        container.innerHTML = `
-            <div class="warning" role="alert">
-                ${message}
-            </div>
-        `;
+        const warn = document.createElement('div');
+        warn.className = 'warning';
+        warn.setAttribute('role', 'alert');
+        warn.textContent = message;
+        container.replaceChildren(warn);
     }
 
     function getToolNameFromPath() {

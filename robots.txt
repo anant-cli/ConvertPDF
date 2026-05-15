@@ -1,6 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /google6a140702be548477.html
 Disallow: /404.html
 
 Sitemap: https://convert-pdf-tool.netlify.app/sitemap.xml

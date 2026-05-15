@@ -296,7 +296,7 @@ async function renderwatermarkpdf(container) {
                 }, 2000);
 
             } catch (e) {
-                progressDiv.innerHTML = `Error: ${e.message}`;
+                progressDiv.textContent = `Error: ${e.message}`;
                 if (window.showToast) showToast('Failed to add watermark: ' + e.message, 'error');
                 console.error(e);
             } finally {
@@ -306,6 +306,9 @@ async function renderwatermarkpdf(container) {
         });
     } catch (___err) {
         console.error('renderwatermarkpdf error:', ___err);
-        container.innerHTML = '<div class="warning">⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.</div>';
+        const warn = document.createElement('div');
+        warn.className = 'warning';
+        warn.textContent = '⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.';
+        container.replaceChildren(warn);
     }
 }

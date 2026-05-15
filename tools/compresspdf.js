@@ -1,7 +1,7 @@
 // compresspdf.js
 async function rendercompresspdf(container) {
     try {
-        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js');
+        await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js');
 
         container.innerHTML = '';
         const area = document.createElement('div');
@@ -177,7 +177,7 @@ async function rendercompresspdf(container) {
                 }, 2000);
 
             } catch (e) {
-                progressDiv.innerHTML = `Error: ${e.message}`;
+                progressDiv.textContent = `Error: ${e.message}`;
                 if (window.showToast) showToast('Failed to compress PDF: ' + e.message, 'error');
                 console.error(e);
             } finally {
@@ -187,6 +187,9 @@ async function rendercompresspdf(container) {
         });
     } catch (___err) {
         console.error('rendercompresspdf error:', ___err);
-        container.innerHTML = '<div class="warning">⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.</div>';
+        const warn = document.createElement('div');
+        warn.className = 'warning';
+        warn.textContent = '⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.';
+        container.replaceChildren(warn);
     }
 }

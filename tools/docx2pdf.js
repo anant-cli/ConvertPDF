@@ -1,4 +1,4 @@
-﻿// docx2pdf.js
+// docx2pdf.js
 async function renderdocx2pdf(container) {
     try {
         await loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js');
@@ -109,7 +109,11 @@ async function renderdocx2pdf(container) {
                 previewDiv.innerHTML = docxPrintStyles + `<div class="docx-body">${html}</div>`;
                 window.currentDocxHtml = html;
             } catch (e) {
-                previewDiv.innerHTML = `<div style="color:#e74c3c; padding:1rem; border:1px solid #fadbd8; background:rgba(248,113,113,0.08); border-radius:8px;">Error converting file: ${e.message}</div>`;
+                previewDiv.textContent = '';
+                const errDiv = document.createElement('div');
+                errDiv.style.cssText = 'color:#e74c3c;padding:1rem;border:1px solid #fadbd8;background:rgba(248,113,113,0.08);border-radius:8px;';
+                errDiv.textContent = `Error converting file: ${e.message}`;
+                previewDiv.appendChild(errDiv);
                 if (window.showToast) showToast('Failed to read DOCX file.', 'error');
             } finally {
                 if (window.hideSpinner) hideSpinner();
@@ -155,6 +159,9 @@ async function renderdocx2pdf(container) {
         });
     } catch (___err) {
         console.error('renderdocx2pdf error:', ___err);
-        container.innerHTML = '<div class="warning">⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.</div>';
+        const warn = document.createElement('div');
+        warn.className = 'warning';
+        warn.textContent = '⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.';
+        container.replaceChildren(warn);
     }
 }

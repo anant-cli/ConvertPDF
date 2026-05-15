@@ -1,4 +1,4 @@
-// script.js – tool definitions (used by index.html only)
+﻿// script.js – tool definitions (used by index.html only)
 
 // ---------- TOOL DEFINITIONS ----------
 const tools = [

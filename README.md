@@ -1,4 +1,4 @@
-# ConvertPDF - Free, Private, Client-Side PDF Toolkit
+﻿# ConvertPDF - Free, Private, Client-Side PDF Toolkit
 
 Convert PDFs, documents, and images entirely in your browser. No upload pipeline, no account, and no server-side document processing.
 

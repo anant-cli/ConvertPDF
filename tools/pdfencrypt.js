@@ -1,4 +1,4 @@
-// pdfencrypt.js - Using official pdf-lib
+﻿// pdfencrypt.js - Using official pdf-lib
 async function renderpdfencrypt(container) {
     try {
         await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib-with-encrypt@1.2.1/dist/pdf-lib.min.js');
@@ -97,9 +97,14 @@ async function renderpdfencrypt(container) {
             if (!pwd) { showToast('Please enter a user password.', 'warning'); return; }
             if (pwd !== confirm) { showToast('User passwords do not match.', 'error'); return; }
             if (pwd.length < 8) { showToast('User password must be at least 8 characters.', 'error'); return; }
+            
             if (!/[A-Z]/.test(pwd) || !/[a-z]/.test(pwd) || !/[0-9]/.test(pwd)) {
-                showToast('Tip: stronger passwords use uppercase, lowercase, and numbers.', 'warning');
+                if (!window.sessionStorage.getItem('passwordStrengthTipShown')) {
+                    showToast('Tip: stronger passwords use uppercase, lowercase, and numbers.', 'warning');
+                    window.sessionStorage.setItem('passwordStrengthTipShown', 'true');
+                }
             }
+
             if (window.rateLimiter && !rateLimiter.canProceed('pdfencrypt', 2000)) {
                 showToast('Please wait a moment before encrypting again.', 'warning');
                 return;
@@ -178,10 +183,13 @@ async function renderpdfencrypt(container) {
     } catch (___err) {
         console.error('renderpdfencrypt error:', ___err);
         const isLibraryError = ___err.message && ___err.message.includes('Failed to load script');
-        container.innerHTML = `<div class="warning">
-            ⚠️ ${isLibraryError
-                ? 'The encryption library failed to load. This may be a network issue — please check your connection and refresh the page.'
-                : 'Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.'}
-        </div>`;
+        const warn = document.createElement('div');
+        warn.className = 'warning';
+        if (isLibraryError) {
+            warn.textContent = '⚠️ The encryption library failed to load. This may be a network issue — please check your connection and refresh the page.';
+        } else {
+            warn.textContent = '⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.';
+        }
+        container.replaceChildren(warn);
     }
 }

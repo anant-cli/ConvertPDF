@@ -240,7 +240,7 @@ async function renderrotatepdf(container) {
                 }, 2000);
 
             } catch (e) {
-                progressDiv.innerHTML = `Error: ${e.message}`;
+                progressDiv.textContent = `Error: ${e.message}`;
                 if (window.showToast) showToast('Failed to rotate PDF: ' + e.message, 'error');
                 console.error(e);
             } finally {
@@ -250,6 +250,9 @@ async function renderrotatepdf(container) {
         });
     } catch (___err) {
         console.error('renderrotatepdf error:', ___err);
-        container.innerHTML = '<div class="warning">⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.</div>';
+        const warn = document.createElement('div');
+        warn.className = 'warning';
+        warn.textContent = '⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.';
+        container.replaceChildren(warn);
     }
 }
