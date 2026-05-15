@@ -1,4 +1,4 @@
-﻿// pdfencrypt.js - Using official pdf-lib
+// pdfencrypt.js - Using official pdf-lib
 async function renderpdfencrypt(container) {
     try {
         await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib-with-encrypt@1.2.1/dist/pdf-lib.min.js');
@@ -21,6 +21,7 @@ async function renderpdfencrypt(container) {
             <div id="pdfDropZone" class="drop-zone" style="padding: 1.5rem; border-width: 1px;">
                 <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📄➕🔐</div>
                 <p style="font-size: 0.9rem;">Select PDF to encrypt</p>
+                <label class="sr-only" for="pdfToEncrypt">Select PDF to encrypt</label>
                 <input type="file" id="pdfToEncrypt" accept=".pdf" style="display: none;">
             </div>
 
@@ -85,10 +86,24 @@ async function renderpdfencrypt(container) {
             const confirm = pdfConfirm.value;
             const ownerPwd = pdfOwnerPassword.value || pwd;
 
-            if (!file) { alert('Please select a PDF file.'); return; }
-            if (!pwd) { alert('Please enter a user password.'); return; }
-            if (pwd !== confirm) { alert('User passwords do not match.'); return; }
-            if (pwd.length < 6) { alert('User password must be at least 6 characters.'); return; }
+            if (!file) { showToast('Please select a PDF file.', 'warning'); return; }
+            const validation = validateFile(file, {
+                extensions: ['.pdf'],
+                mimeTypes: ['application/pdf'],
+                maxSize: 100 * 1024 * 1024,
+                label: 'PDF file'
+            });
+            if (!validation.valid) { showToast(validation.message, 'error'); return; }
+            if (!pwd) { showToast('Please enter a user password.', 'warning'); return; }
+            if (pwd !== confirm) { showToast('User passwords do not match.', 'error'); return; }
+            if (pwd.length < 8) { showToast('User password must be at least 8 characters.', 'error'); return; }
+            if (!/[A-Z]/.test(pwd) || !/[a-z]/.test(pwd) || !/[0-9]/.test(pwd)) {
+                showToast('Tip: stronger passwords use uppercase, lowercase, and numbers.', 'warning');
+            }
+            if (window.rateLimiter && !rateLimiter.canProceed('pdfencrypt', 2000)) {
+                showToast('Please wait a moment before encrypting again.', 'warning');
+                return;
+            }
 
             encryptBtn.disabled = true;
             encryptBtn.innerHTML = '⏳ Encrypting...';
@@ -99,7 +114,12 @@ async function renderpdfencrypt(container) {
                 const { PDFDocument } = PDFLib;
 
                 // Load the PDF
-                const arrayBuf = await file.arrayBuffer();
+                let arrayBuf;
+                try {
+                    arrayBuf = await file.arrayBuffer();
+                } catch (readErr) {
+                    throw new Error('Unable to read this PDF file. Please try another file.');
+                }
                 let pdfDoc;
                 try {
                     pdfDoc = await PDFDocument.load(arrayBuf, { ignoreEncryption: true });
@@ -107,7 +127,10 @@ async function renderpdfencrypt(container) {
                     if (loadErr.message && loadErr.message.toLowerCase().includes('password')) {
                         throw new Error('This PDF is already encrypted. Please remove the password first.');
                     }
-                    throw new Error('Invalid or corrupted PDF file.');
+                    if (loadErr.message && loadErr.message.toLowerCase().includes('corrupt')) {
+                        throw new Error('This PDF file appears to be corrupted or invalid.');
+                    }
+                    throw new Error('Unable to read PDF file. Please ensure it is a valid PDF.');
                 }
 
                 // Create a new PDF and copy all pages (this is necessary to apply encryption)
@@ -136,6 +159,7 @@ async function renderpdfencrypt(container) {
 
                 const encryptedBytes = await newPdf.save();
                 downloadBlob(new Blob([encryptedBytes]), `protected-${file.name}`);
+                if (window.trackEvent) trackEvent('Tool', 'encrypt', 'pdfencrypt');
 
                 if (window.showToast) showToast('PDF encrypted successfully!');
             } catch (error) {

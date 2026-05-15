@@ -1,6 +1,13 @@
 // md2pdf.js
 async function rendermd2pdf(container) {
     try {
+        container.innerHTML = `
+            <div class="loading-state" role="status" aria-live="polite">
+                <div class="spinner"></div>
+                <p>Loading Markdown converter...</p>
+            </div>
+        `;
+
         await Promise.all([
             loadScript('https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js'),
             loadScript('https://cdn.jsdelivr.net/npm/dompurify@3.2.5/dist/purify.min.js'),
@@ -37,6 +44,7 @@ async function rendermd2pdf(container) {
                 <div style="font-size: 3rem; margin-bottom: 0.5rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">📄</div>
                 <p style="font-size: 1.1rem; font-weight: 500;">Drag & drop your Markdown file</p>
                 <p class="note" style="margin-top: 0;">or click to browse</p>
+                <label class="sr-only" for="mdFile">Select Markdown file</label>
                 <input type="file" id="mdFile" accept=".md,text/markdown" style="display: none;">
             </div>
             
@@ -170,20 +178,16 @@ async function rendermd2pdf(container) {
 
         marked.use({ gfm: true, breaks: true });
 
-        // Debounce function for live preview
-        let timeoutId;
-        function debounce(func, delay) {
-            return function () {
-                clearTimeout(timeoutId);
-                timeoutId = setTimeout(() => func.apply(this, arguments), delay);
-            };
-        }
-
         // Render markdown to preview pane
         function renderPreview() {
             const text = window.currentMarkdown || '';
             if (!text) {
-                mdRendered.innerHTML = '<div style="color: var(--text-muted); padding: 4rem; text-align: center; border: 2px dashed var(--border-subtle); margin: 2rem; border-radius: 12px;">\n                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">📝</div>\n                    Upload a Markdown file or click "Load Sample" to see preview\n                </div>';
+                mdRendered.innerHTML = `
+                    <div style="color: var(--text-muted); padding: 4rem; text-align: center; border: 2px dashed var(--border-subtle); margin: 2rem; border-radius: 12px;">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">Markdown</div>
+                        Upload a Markdown file or click "Load Sample" to see preview
+                    </div>
+                `;
                 return;
             }
             const processed = preprocessMarkdown(text);
@@ -239,10 +243,26 @@ async function rendermd2pdf(container) {
         mdFile.addEventListener('change', async () => {
             const file = mdFile.files[0];
             if (!file) return;
-            const text = await file.text();
-            window.currentMarkdown = text;
-            mdEditor.value = text;
-            renderPreview();
+            const validation = validateFile(file, {
+                extensions: ['.md', '.markdown', '.txt'],
+                mimeTypes: ['text/markdown', 'text/plain'],
+                maxSize: 10 * 1024 * 1024,
+                label: 'Markdown file'
+            });
+            if (!validation.valid) {
+                mdFile.value = '';
+                if (window.showToast) showToast(validation.message, 'error');
+                return;
+            }
+            try {
+                const text = await file.text();
+                window.currentMarkdown = text;
+                mdEditor.value = text;
+                renderPreview();
+                if (window.trackEvent) trackEvent('Tool', 'file_loaded', 'md2pdf');
+            } catch (readErr) {
+                if (window.showToast) showToast('Unable to read this Markdown file. Please try another file.', 'error');
+            }
         });
 
         // No default rendering; preview empty until file upload.
@@ -252,6 +272,10 @@ async function rendermd2pdf(container) {
             if (!text || !text.trim()) {
                 if (window.showToast) showToast('Please upload a Markdown file first.', 'warning');
                 else alert('Please upload a Markdown file first.');
+                return;
+            }
+            if (window.rateLimiter && !rateLimiter.canProceed('md2pdf-print', 2000)) {
+                if (window.showToast) showToast('Please wait a moment before generating another PDF.', 'warning');
                 return;
             }
             printBtn.disabled = true; printBtn.innerHTML = '⏳ Preparing...';
@@ -295,13 +319,14 @@ async function rendermd2pdf(container) {
 <\/script></body></html>`;
                 const win = window.open('', '_blank');
                 if (!win) {
-                    if (window.showToast) showToast('Pop‑up blocked by browser.', 'error');
+                    if (window.showToast) showToast('Please allow popups for this site to generate PDFs.', 'warning');
                     else alert('Pop‑up blocked');
                     printBtn.disabled = false;
                     printBtn.innerHTML = '🖨️ Generate PDF';
                     return;
                 }
                 win.document.write(fullHtml); win.document.close();
+                if (window.trackEvent) trackEvent('Tool', 'convert', 'md2pdf');
                 setTimeout(() => { printBtn.disabled = false; printBtn.innerHTML = '🖨️ Generate PDF'; }, 3000);
             } catch (e) {
                 if (window.showToast) showToast('Error: ' + e.message, 'error');

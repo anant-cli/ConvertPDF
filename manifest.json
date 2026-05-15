@@ -1,0 +1,17 @@
+{
+    "name": "ConvertPDF - Private PDF Tools",
+    "short_name": "ConvertPDF",
+    "description": "Free, private, client-side PDF tools.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0b0f1a",
+    "theme_color": "#4f9eff",
+    "icons": [
+        {
+            "src": "/favicon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

@@ -2,10 +2,17 @@
 (function() {
     'use strict';
 
+    function showToolError(container, message) {
+        container.innerHTML = `
+            <div class="warning" role="alert">
+                ${message}
+            </div>
+        `;
+    }
+
     function getToolNameFromPath() {
         const path = window.location.pathname;
         const filename = path.split('/').pop().replace('.html', '');
-        // Map filename to render function name
         const toolMap = {
             'md2pdf': 'rendermd2pdf',
             'docx2pdf': 'renderdocx2pdf',
@@ -33,15 +40,23 @@
 
         const renderFuncName = getToolNameFromPath();
         if (!renderFuncName) {
-            console.warn('No render function found for this page.');
+            showToolError(container, 'This tool is not available from the current page.');
             return;
         }
 
         const renderFunc = window[renderFuncName];
         if (typeof renderFunc === 'function') {
-            renderFunc(container);
+            container.innerHTML = `
+                <div class="loading-state" role="status" aria-live="polite">
+                    <div class="spinner"></div>
+                    <p>Loading tool...</p>
+                </div>
+            `;
+            Promise.resolve(renderFunc(container)).catch(function () {
+                showToolError(container, 'This tool failed to start. Please refresh the page and try again.');
+            });
         } else {
-            console.error(`Render function ${renderFuncName} not found.`);
+            showToolError(container, 'This tool did not load correctly. Please refresh the page and try again.');
         }
     }
 

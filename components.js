@@ -5,7 +5,6 @@
  */
 (function () {
     'use strict';
-    const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1']);
 
     function setupHamburger() {
         const nav = document.querySelector('.main-nav');
@@ -295,11 +294,59 @@
         footer.insertBefore(note, footer.firstChild);
     }
 
+    function ensureAdSlots() {
+        if (!document.body || document.querySelector('.ad-slot')) return;
+
+        const anchor = document.querySelector('#toolContainer') || document.querySelector('.content-section');
+        if (!anchor || !anchor.parentNode) return;
+
+        const slot = document.createElement('aside');
+        slot.className = 'ad-slot';
+        slot.setAttribute('aria-label', 'Advertisement');
+        slot.hidden = true;
+        slot.innerHTML = '<span>Advertisement</span>';
+
+        anchor.parentNode.insertBefore(slot, anchor.nextSibling);
+    }
+
+    function normalizeFooterDetails() {
+        document.querySelectorAll('.site-footer h4').forEach(function (heading) {
+            if (heading.textContent.trim() === 'Tools') {
+                heading.innerHTML = '&#128736; Tools';
+            }
+        });
+
+        const year = String(new Date().getFullYear());
+        document.querySelectorAll('.footer-bottom p').forEach(function (p) {
+            p.innerHTML = p.innerHTML.replace(/(&copy;|©)\s*\d{4}/, '&copy; ' + year);
+        });
+    }
+
+    function ensurePwaSupport() {
+        if (!document.querySelector('link[rel="manifest"]')) {
+            const manifest = document.createElement('link');
+            manifest.rel = 'manifest';
+            manifest.href = '/manifest.json';
+            document.head.appendChild(manifest);
+        }
+
+        if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/sw.js').catch(function () {
+                    /* Offline support is progressive; keep the app usable if registration fails. */
+                });
+            });
+        }
+    }
+
     function init() {
         setupCookieConsent();
         ensureSkipLink();
         ensurePrivacyNote();
         normalizeGlobalLabels();
+        normalizeFooterDetails();
+        ensurePwaSupport();
+        ensureAdSlots();
         setupHamburger();
         setActiveNavLink();
         ensureToastContainer();

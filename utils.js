@@ -30,8 +30,99 @@ function downloadBlob(blob, filename) {
     setTimeout(() => {
         URL.revokeObjectURL(objectUrl);
         link.remove();
-        blob = null;
-    }, 60000);
+    }, 100);
+}
+
+// ---------- TIMING / VALIDATION HELPERS ----------
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+function validateFile(file, options = {}) {
+    if (!file) return { valid: false, message: 'Please select a file.' };
+
+    const {
+        extensions = [],
+        mimeTypes = [],
+        maxSize = 50 * 1024 * 1024,
+        label = 'file'
+    } = options;
+
+    const name = (file.name || '').toLowerCase();
+    const type = (file.type || '').toLowerCase();
+    const validExtension = extensions.length === 0 || extensions.some(ext => name.endsWith(ext.toLowerCase()));
+    const validMime = mimeTypes.length === 0 || mimeTypes.some(mime => type === mime.toLowerCase());
+
+    if (!validExtension && !validMime) {
+        return { valid: false, message: `Please select a valid ${label}.` };
+    }
+    if (file.size > maxSize) {
+        return { valid: false, message: `${label} is too large. Please use a file under ${formatFileSize(maxSize)}.` };
+    }
+
+    return { valid: true };
+}
+
+function fileMatchesAccept(file, accept) {
+    if (!accept) return true;
+
+    const tokens = accept.split(',').map(token => token.trim().toLowerCase()).filter(Boolean);
+    if (tokens.length === 0) return true;
+
+    const name = (file.name || '').toLowerCase();
+    const type = (file.type || '').toLowerCase();
+
+    return tokens.some(token => {
+        if (token.startsWith('.')) return name.endsWith(token);
+        if (token.endsWith('/*')) return type.startsWith(token.slice(0, -1));
+        return type === token;
+    });
+}
+
+document.addEventListener('change', event => {
+    const input = event.target;
+    if (!input || input.type !== 'file' || !input.files || input.files.length === 0) return;
+
+    const accept = input.getAttribute('accept');
+    if (!accept) return;
+
+    const invalidFile = Array.from(input.files).find(file => !fileMatchesAccept(file, accept));
+    if (!invalidFile) return;
+
+    input.value = '';
+    if (window.showToast) {
+        showToast('Please select a supported file type.', 'error');
+    }
+    event.stopImmediatePropagation();
+}, true);
+
+const rateLimiter = {
+    lastAction: {},
+    canProceed(action, cooldownMs = 1000) {
+        const now = Date.now();
+        const last = this.lastAction[action] || 0;
+        if (now - last < cooldownMs) return false;
+        this.lastAction[action] = now;
+        return true;
+    }
+};
+window.rateLimiter = rateLimiter;
+
+function trackEvent(category, action, label) {
+    if (typeof window.gtag === 'function') {
+        window.gtag('event', action, {
+            event_category: category,
+            event_label: label
+        });
+    }
 }
 
 // ---------- SEO HELPERS ----------
@@ -61,8 +152,17 @@ function loadImage(file) {
     });
 }
 
+const CDN_FALLBACKS = {
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js': 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js',
+    'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js': 'https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js',
+    'https://cdn.jsdelivr.net/npm/dompurify@3.2.5/dist/purify.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.5/purify.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js': 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js',
+    'https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.1/qrcode.min.js'
+};
+
 // ---------- DYNAMIC SCRIPT LOADER (with optional SRI) ----------
-function loadScript(src, integrity) {
+function loadScript(src, integrity, fallbackSrc) {
     return new Promise((resolve, reject) => {
         const existing = document.querySelector(`script[src="${src}"]`);
         if (existing) {
@@ -77,7 +177,15 @@ function loadScript(src, integrity) {
             script.crossOrigin = 'anonymous';
         }
         script.onload = () => resolve();
-        script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+        script.onerror = () => {
+            script.remove();
+            const fallback = fallbackSrc || CDN_FALLBACKS[src];
+            if (fallback) {
+                loadScript(fallback, null, null).then(resolve).catch(reject);
+                return;
+            }
+            reject(new Error(`Failed to load script: ${src}`));
+        };
         document.head.appendChild(script);
     });
 }
@@ -208,6 +316,13 @@ function setupDropZone(dropZoneId, fileInputId) {
     const fileInput = document.getElementById(fileInputId);
 
     if (!dropZone || !fileInput) return;
+
+    if (isMobileDevice()) {
+        const primaryText = dropZone.querySelector('p');
+        if (primaryText && /drag/i.test(primaryText.textContent)) {
+            primaryText.textContent = 'Tap to select your file';
+        }
+    }
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, preventDefaults, false);
