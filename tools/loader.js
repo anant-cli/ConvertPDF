@@ -1,4 +1,4 @@
-﻿// tools/loader.js â€“ Automatically renders the correct tool
+// tools/loader.js – Automatically renders the correct tool
 (function() {
     'use strict';
 

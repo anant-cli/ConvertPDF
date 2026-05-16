@@ -131,25 +131,25 @@ async function rendersignpdf(container) {
             e.preventDefault();
             const touch = e.touches[0];
             const rect = canvas.getBoundingClientRect();
-            startDrawing({ clientX: touch.clientX - rect.left, clientY: touch.clientY - rect.top });
+            startDrawing({ offsetX: touch.clientX - rect.left, offsetY: touch.clientY - rect.top });
         });
         canvas.addEventListener('touchmove', (e) => {
             e.preventDefault();
             const touch = e.touches[0];
             const rect = canvas.getBoundingClientRect();
-            draw({ clientX: touch.clientX - rect.left, clientY: touch.clientY - rect.top });
+            draw({ offsetX: touch.clientX - rect.left, offsetY: touch.clientY - rect.top });
         });
         canvas.addEventListener('touchend', stopDrawing);
 
         function startDrawing(e) {
             isDrawing = true;
             ctx.beginPath();
-            ctx.moveTo(e.clientX, e.clientY);
+            ctx.moveTo(e.offsetX, e.offsetY);
         }
 
         function draw(e) {
             if (!isDrawing) return;
-            ctx.lineTo(e.clientX, e.clientY);
+            ctx.lineTo(e.offsetX, e.offsetY);
             ctx.stroke();
         }
 

@@ -1,5 +1,5 @@
-﻿/**
- * ConvertPDF â€“ Analytics, AdSense Auto Ads, and Consent Mode v2.
+/**
+ * ConvertPDF – Analytics, AdSense Auto Ads, and Consent Mode v2.
  * Loads GA4 + AdSense after Consent Mode defaults are set.
  * GA4 ID: G-8RV1Y8FVZM | AdSense pub: pub-1745874358886453
  */

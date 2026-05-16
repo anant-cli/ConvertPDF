@@ -197,7 +197,8 @@ async function renderrotatepdf(container) {
         });
 
         btn.addEventListener('click', async () => {
-            if (!currentPdf || selectedPages.size === 0) return;
+            const file = inp.files[0];
+            if (!file || selectedPages.size === 0) return;
 
             btn.disabled = true;
             btn.innerHTML = '⏳ Rotating...';
@@ -209,12 +210,15 @@ async function renderrotatepdf(container) {
 
             try {
                 const angle = parseInt(angleSelect.value);
-                const pages = currentPdf.getPages();
+                const arrayBuf = await file.arrayBuffer();
+                const pdfToRotate = await PDFLib.PDFDocument.load(arrayBuf);
+                const pages = pdfToRotate.getPages();
 
                 let processed = 0;
                 for (const pageNum of selectedPages) {
                     const pageIndex = pageNum - 1;
-                    pages[pageIndex].setRotation(PDFLib.degrees(angle));
+                    const existingAngle = pages[pageIndex].getRotation().angle || 0;
+                    pages[pageIndex].setRotation(PDFLib.degrees((existingAngle + angle) % 360));
                     processed++;
                     progressBar.style.width = `${(processed / selectedPages.size) * 100}%`;
                 }
@@ -222,7 +226,7 @@ async function renderrotatepdf(container) {
                 progressBar.style.width = '100%';
                 progressDiv.innerHTML = 'Saving PDF...';
 
-                const pdfBytes = await currentPdf.save();
+                const pdfBytes = await pdfToRotate.save();
                 const blob = new Blob([pdfBytes], { type: 'application/pdf' });
 
                 progressDiv.innerHTML = 'Done!';

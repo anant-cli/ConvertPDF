@@ -1,12 +1,10 @@
-Copyright © 2026 Anant Demanna. All rights reserved.
+Copyright © 2026 ConvertPDF. All rights reserved.
 
-ConvertPDF is a free-to-use web service. You may use this service through
-its official website at https://convert-pdf-tool.netlify.app.
+This service is available for free personal and professional use at
+https://convert-pdf-tool.netlify.app
 
-You may NOT copy, reproduce, distribute, modify, create derivative works
-from, sublicense, or sell any part of this software, its source code, or
-its design without explicit written permission from the copyright holder.
+You may NOT copy, reproduce, distribute, modify, reverse-engineer, or
+create derivative works from this software without explicit written permission.
 
-Third-party open-source libraries used by this service retain their own
-licenses (pdf-lib: MIT, mammoth.js: BSD-2, marked: MIT, KaTeX: MIT,
-Prism.js: MIT, QRCode.js: MIT, docx: MIT, DOMPurify: Apache-2.0/MPL-2.0).
+Third-party open-source libraries (pdf-lib, mammoth.js, marked, KaTeX,
+Prism.js, QRCode.js, docx, DOMPurify) retain their own respective licenses.

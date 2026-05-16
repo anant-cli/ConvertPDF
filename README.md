@@ -1,4 +1,4 @@
-﻿# ConvertPDF - Free, Private, Client-Side PDF Toolkit
+# ConvertPDF - Free, Private, Client-Side PDF Toolkit
 
 Convert PDFs, documents, and images entirely in your browser. No upload pipeline, no account, and no server-side document processing.
 
@@ -98,16 +98,10 @@ Do **not** duplicate auto-ad or unit code across dozens of static files; central
 
 ---
 
-## Contributing
+## Support & Feedback
 
-We welcome contributions! ConvertPDF is an open-source project driven by the community. 
-
-- Found a bug? [Open an issue](https://github.com/anant-cli/ConvertPDF/issues).
-- Have a feature request? Let us know!
-- Want to write code? Submit a pull request. We have issues tagged `good first issue` to help you get started.
+Have questions or feedback? Contact us at convertpdf.contact@gmail.com.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-*Note: The ConvertPDF name and logo are provided for use within this project; please use them respectfully.*
+This project is proprietary. Third-party open-source libraries used within the project retain their respective licenses. See the [LICENSE](LICENSE) file for details.

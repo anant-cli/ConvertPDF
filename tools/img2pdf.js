@@ -1,4 +1,4 @@
-﻿// img2pdf.js
+// img2pdf.js
 async function renderimg2pdf(container) {
     try {
         await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js');
@@ -65,6 +65,7 @@ async function renderimg2pdf(container) {
         let filesArray = [];
 
         clearAllBtn.addEventListener('click', () => {
+            filesArray.forEach(f => { if (f.thumbUrl) URL.revokeObjectURL(f.thumbUrl); });
             filesArray = [];
             renderPreviewList();
             previewBox.style.display = 'none';
@@ -85,10 +86,12 @@ async function renderimg2pdf(container) {
                 item.className = 'file-item';
                 item.style.padding = '0.75rem';
 
-                const thumbUrl = URL.createObjectURL(file);
+                if (!file.thumbUrl) {
+                    file.thumbUrl = URL.createObjectURL(file);
+                }
                 item.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
-                    <img src="${thumbUrl}" class="img-thumbnail" style="width: 50px; height: 50px; border-radius: 8px;">
+                    <img src="${file.thumbUrl}" class="img-thumbnail" style="width: 50px; height: 50px; border-radius: 8px;">
                     <div style="overflow: hidden;">
                         <div style="font-weight: 600; font-size: 0.9rem; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${file.name}</div>
                         <div style="font-size: 0.85rem; color: var(--text-muted);">${formatFileSize(file.size)}</div>
@@ -114,6 +117,9 @@ async function renderimg2pdf(container) {
                 });
 
                 delBtn.addEventListener('click', () => {
+                    if (filesArray[index].thumbUrl) {
+                        URL.revokeObjectURL(filesArray[index].thumbUrl);
+                    }
                     filesArray.splice(index, 1);
                     renderPreviewList();
                     if (typeof DataTransfer === 'function') {

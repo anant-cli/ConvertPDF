@@ -45,6 +45,7 @@ async function renderdocx2pdf(container) {
         <div style="margin:1rem 0;"><label><input type="checkbox" id="detectHeadings" checked> 🔍 Convert # style headings</label></div>
         <div class="preview-box"><div id="docxPreview">preview area</div></div>
         <button id="printDocxBtn" class="secondary">🖨️ Print / Save as PDF</button>
+        <p class="note" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">Note: If the print window doesn't open (often blocked by Safari on iOS), please allow pop-ups for this site.</p>
     `;
 
         const fileIn = document.getElementById('docxFile');
