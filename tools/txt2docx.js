@@ -125,6 +125,7 @@ async function rendertxt2docx(container) {
             if (!file) return;
 
             txtSize.textContent = typeof formatFileSize === 'function' ? formatFileSize(file.size) : file.size + " bytes";
+            if (window.showFileOnDropZone) showFileOnDropZone("txtDocxDropZone", file);
 
             try {
                 const text = await file.text();
@@ -198,7 +199,8 @@ async function rendertxt2docx(container) {
             }
         });
 
-        downloadBtn.addEventListener('click', () => { if (currentDocxBlob) downloadBlob(currentDocxBlob, 'text-to-word.docx'); });
+        downloadBtn.addEventListener('click', () => { if (currentDocxBlob) const txtBase = (txtFile.files[0] ? txtFile.files[0].name.replace(/.[^.]+$/,'') : 'converted');
+        downloadBlob(currentDocxBlob, `${txtBase}.docx`); });
     } catch (___err) {
         console.error('rendertxt2docx error:', ___err);
         const warn = document.createElement('div');

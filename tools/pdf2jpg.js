@@ -86,6 +86,14 @@ async function renderpdf2jpg(container) {
             setupDropZone('pdfJpgDropZone', 'pdf2jpgInput');
         }
 
+        btn.disabled = true;
+        inp.addEventListener("change", () => {
+            const file = inp.files[0];
+            if (!file) return;
+            if (window.showFileOnDropZone) showFileOnDropZone("pdfJpgDropZone", file);
+            btn.disabled = false;
+        });
+
         function parsePageRange(str, totalPages) {
             if (!str) return [];
             const parts = str.split(',');
@@ -216,7 +224,8 @@ async function renderpdf2jpg(container) {
         downloadBtn.addEventListener('click', async () => {
             if (generatedBlobs.length === 0) return;
             if (generatedBlobs.length === 1) {
-                downloadBlob(generatedBlobs[0].blob, `pdf-page-${generatedBlobs[0].pageNum}.jpg`);
+                const pdfBase = inp.files[0] ? inp.files[0].name.replace(/.pdf$/i, '') : 'page';
+                downloadBlob(generatedBlobs[0].blob, `${pdfBase}-page-${generatedBlobs[0].pageNum}.jpg`);
             } else {
                 const zip = new JSZip();
                 generatedBlobs.forEach(({ blob, pageNum }) => zip.file(`page-${pageNum}.jpg`, blob));

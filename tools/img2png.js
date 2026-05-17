@@ -89,6 +89,7 @@ function renderimg2png(container) {
 
         // Show file size
         origSizeSpan.textContent = `Original: ${typeof formatFileSize === 'function' ? formatFileSize(file.size) : file.size + ' bytes'} (${(file.type.split('/')[1] || 'image').toUpperCase()})`;
+        if (window.showFileOnDropZone) showFileOnDropZone("imgPngDropZone", file);
 
         conv.disabled = false;
 

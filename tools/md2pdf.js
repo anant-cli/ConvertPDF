@@ -255,6 +255,7 @@ async function rendermd2pdf(container) {
                 return;
             }
             try {
+            if (window.showFileOnDropZone) showFileOnDropZone("mdPdfDropZone", file);
                 const text = await file.text();
                 window.currentMarkdown = text;
                 mdEditor.value = text;

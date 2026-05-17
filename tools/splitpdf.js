@@ -110,6 +110,7 @@
             const file = splitInput.files[0];
             if (!file) return;
 
+            if (window.showFileOnDropZone) showFileOnDropZone('splitPdfDropZone', file);
             currentFile = file;
             try {
                 const arrayBuf = await file.arrayBuffer();

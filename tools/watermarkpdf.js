@@ -3,7 +3,7 @@ async function renderwatermarkpdf(container) {
     try {
         await Promise.all([
             loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'),
-            loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js')
+            loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js')
         ]);
 
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -102,6 +102,7 @@ async function renderwatermarkpdf(container) {
         const previewDiv = document.getElementById('watermarkPreview');
 
         let currentPdf = null;
+            if (window.showFileOnDropZone) showFileOnDropZone("watermarkPdfDropZone", file);
         let currentPdfJs = null;
 
         // Setup drag and drop
@@ -190,6 +191,7 @@ async function renderwatermarkpdf(container) {
             if (!file) return;
 
             currentPdf = null;
+            if (window.showFileOnDropZone) showFileOnDropZone("watermarkPdfDropZone", file);
             currentPdfJs = null;
             controls.style.display = 'none';
             previewDiv.style.display = 'none';
@@ -285,7 +287,8 @@ async function renderwatermarkpdf(container) {
                 progressDiv.innerHTML = 'Done!';
                 downloadBtn.disabled = false;
 
-                downloadBtn.onclick = () => downloadBlob(blob, 'watermarked.pdf');
+                const wmBase = inp.files[0] ? inp.files[0].name.replace(/.pdf$/i, '') : 'document';
+                downloadBtn.onclick = () => downloadBlob(blob, `${wmBase}-watermarked.pdf`);
 
                 if (window.showToast) showToast(`Successfully added watermark to ${pagesToProcess.length} page(s)`);
 

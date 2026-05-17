@@ -371,3 +371,25 @@ function setupDropZone(dropZoneId, fileInputId) {
         }
     }
 }
+
+// ---------- SHOW FILENAME ON DROP ZONE ----------
+// Call after file input 'change' event to update the drop zone label
+function showFileOnDropZone(dropZoneId, file) {
+    const dropZone = document.getElementById(dropZoneId);
+    if (!dropZone || !file) return;
+    const p = dropZone.querySelector('p');
+    if (p) {
+        p.innerHTML = `<strong>📄 ${file.name}</strong> <span style="color:var(--text-muted);font-size:0.85em;">(${formatFileSize(file.size)})</span>`;
+    }
+    dropZone.style.borderColor = 'var(--accent)';
+    dropZone.style.background = 'rgba(99,102,241,0.07)';
+}
+
+function resetDropZone(dropZoneId, defaultText) {
+    const dropZone = document.getElementById(dropZoneId);
+    if (!dropZone) return;
+    const p = dropZone.querySelector('p');
+    if (p) p.innerHTML = defaultText || 'Drag and drop a file here';
+    dropZone.style.borderColor = '';
+    dropZone.style.background = '';
+}

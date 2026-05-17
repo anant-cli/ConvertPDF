@@ -1,7 +1,7 @@
 // signpdf.js
 async function rendersignpdf(container) {
     try {
-        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js');
+        await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js');
 
         container.innerHTML = '';
         const area = document.createElement('div');
@@ -182,6 +182,7 @@ async function rendersignpdf(container) {
             if (!file) return;
 
             currentFile = file;
+            if (window.showFileOnDropZone) showFileOnDropZone("signPdfDropZone", file);
             options.style.display = 'block';
             downloadBtn.disabled = true;
             btn.disabled = false;
@@ -302,7 +303,8 @@ async function rendersignpdf(container) {
                 const blob = new Blob([signedBytes], { type: 'application/pdf' });
                 downloadBtn.disabled = false;
 
-                downloadBtn.onclick = () => downloadBlob(blob, 'signed.pdf');
+                downloadBtn.onclick = () => const signBase = currentFile.name.replace(/.pdf$/i, '') || 'document';
+                        downloadBtn.onclick = () => downloadBlob(blob, `${signBase}-signed.pdf`);;
 
                 if (window.showToast) showToast('PDF signed successfully!');
 

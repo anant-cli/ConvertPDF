@@ -91,6 +91,7 @@ async function renderdocx2pdf(container) {
             const f = fileIn.files[0];
             if (!f) return;
 
+            if (window.showFileOnDropZone) showFileOnDropZone('docxDropZone', f);
             docxStats.style.display = 'block';
             docxSize.textContent = typeof formatFileSize === 'function' ? formatFileSize(f.size) : f.size + " bytes";
 

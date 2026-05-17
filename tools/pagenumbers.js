@@ -1,7 +1,7 @@
 // pagenumbers.js
 async function renderpagenumbers(container) {
     try {
-        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js');
+        await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js');
 
         container.innerHTML = '';
         const area = document.createElement('div');
@@ -89,6 +89,7 @@ async function renderpagenumbers(container) {
         const downloadBtn = document.getElementById('downloadPageNumbersBtn');
 
         let currentPdf = null;
+            if (window.showFileOnDropZone) showFileOnDropZone("pageNumbersPdfDropZone", file);
 
         // Setup drag and drop
         dropZone.addEventListener('click', () => inp.click());
@@ -193,7 +194,8 @@ async function renderpagenumbers(container) {
                 progressDiv.innerHTML = 'Done!';
                 downloadBtn.disabled = false;
 
-                downloadBtn.onclick = () => downloadBlob(blob, 'numbered-pages.pdf');
+                const pnBase = inp.files[0] ? inp.files[0].name.replace(/.pdf$/i, '') : 'document';
+                downloadBtn.onclick = () => downloadBlob(blob, `${pnBase}-numbered.pdf`);
 
                 if (window.showToast) showToast(`Successfully added page numbers to ${pages.length} pages`);
 

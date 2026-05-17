@@ -147,6 +147,14 @@ async function rendermergepdf(container) {
                 }
                 filesArray = uniqueFiles;
 
+                // Update drop zone label
+                if (filesArray.length > 0) {
+                    const dz = document.getElementById('pdfMergeDropZone');
+                    const p = dz && dz.querySelector('p');
+                    if (p) p.innerHTML = `<strong>📄 ${filesArray.length} file${filesArray.length > 1 ? 's' : ''} selected</strong>`;
+                    if (dz) { dz.style.borderColor = 'var(--accent)'; dz.style.background = 'rgba(99,102,241,0.07)'; }
+                }
+
                 renderFileList();
             }
         });

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'convertpdf-v5';
+const CACHE_NAME = 'convertpdf-v6';
 const AD_DOMAINS = [
     'googlesyndication.com',
     'doubleclick.net',
@@ -18,6 +18,8 @@ const STATIC_ASSETS = [
     '/components.js',
     '/analytics-head.js',
     '/favicon.png',
+    '/icon-192.png',
+    '/icon-512.png',
     '/manifest.json',
     '/tools/loader.js',
     '/pages/compresspdf.html',
@@ -58,6 +60,10 @@ function isAdRequest(url) {
     return AD_DOMAINS.some(domain => url.includes(domain));
 }
 
+function isFontRequest(url) {
+    return url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com');
+}
+
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
@@ -86,6 +92,9 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
     if (event.request.method !== 'GET') return;
     if (isAdRequest(event.request.url)) return;
+    // Let font requests pass through without SW interception
+    // (they are handled by the browser directly per CSP)
+    if (isFontRequest(event.request.url)) return;
 
     event.respondWith(
         caches.open(CACHE_NAME).then(cache => {
@@ -96,7 +105,12 @@ self.addEventListener('fetch', event => {
                     }
                     return networkResponse;
                 }).catch(() => {
-                    // Fail silently, we'll return the cached response if available
+                    // Return a valid offline fallback response
+                    return cachedResponse || new Response('Network error', {
+                        status: 503,
+                        statusText: 'Service Unavailable',
+                        headers: { 'Content-Type': 'text/plain' }
+                    });
                 });
 
                 return cachedResponse || fetchPromise;

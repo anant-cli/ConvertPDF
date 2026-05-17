@@ -3,7 +3,7 @@ async function renderrotatepdf(container) {
     try {
         await Promise.all([
             loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'),
-            loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js')
+            loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js')
         ]);
 
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -173,6 +173,7 @@ async function renderrotatepdf(container) {
             const file = inp.files[0];
             if (!file) return;
 
+            if (window.showFileOnDropZone) showFileOnDropZone('rotatePdfDropZone', file);
             currentPdf = null;
             controls.style.display = 'none';
             btn.disabled = true;
@@ -232,8 +233,8 @@ async function renderrotatepdf(container) {
                 progressDiv.innerHTML = 'Done!';
                 downloadBtn.disabled = false;
 
-                // Store blob for download
-                downloadBtn.onclick = () => downloadBlob(blob, 'rotated-pages.pdf');
+                const baseName = file.name.replace(/\.pdf$/i, '') || 'document';
+                downloadBtn.onclick = () => downloadBlob(blob, `${baseName}-rotated.pdf`);
 
                 if (window.showToast) showToast(`Successfully rotated ${selectedPages.size} pages`);
 

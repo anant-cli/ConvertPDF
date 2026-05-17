@@ -69,6 +69,7 @@ async function renderpdfencrypt(container) {
 
         // Setup drop zone
         pdfDropZone.addEventListener('click', () => pdfFile.click());
+        pdfFile.addEventListener("change", () => { if (pdfFile.files[0] && window.showFileOnDropZone) showFileOnDropZone("pdfDropZone", pdfFile.files[0]); });
         if (typeof setupDropZone === 'function') {
             setupDropZone('pdfDropZone', 'pdfToEncrypt');
         }
@@ -163,7 +164,8 @@ async function renderpdfencrypt(container) {
                 });
 
                 const encryptedBytes = await newPdf.save();
-                downloadBlob(new Blob([encryptedBytes]), `protected-${file.name}`);
+                const encBase = file.name.replace(/.pdf$/i, '');
+                downloadBlob(new Blob([encryptedBytes]), `${encBase}-protected.pdf`);
                 if (window.trackEvent) trackEvent('Tool', 'encrypt', 'pdfencrypt');
 
                 if (window.showToast) showToast('PDF encrypted successfully!');
