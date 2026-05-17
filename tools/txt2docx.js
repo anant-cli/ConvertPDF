@@ -74,8 +74,15 @@ async function rendertxt2docx(container) {
                     <label style="display: flex; align-items: center; gap: 0.5rem; margin-top: auto; cursor: pointer;">
                         <input type="checkbox" id="txtDetectHeadings" checked> <span>Detect <code>#</code> style headings</span>
                     </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" id="txtDetectMarkdown" checked> <span>Detect bold, italic, and lists</span>
+                    </label>
                 </div>
             </div>
+        </div>
+        <div class="preview-box" style="margin-bottom:1.5rem;">
+            <div class="preview-title">Live Preview</div>
+            <div id="txtLivePreview" style="background:#fff; color:#222; border-radius:6px; padding:1rem; min-height:120px; max-height:300px; overflow:auto;"></div>
         </div>
         <button id="convertTxtBtn" class="primary">📝 → 📘 Convert to DOCX</button>
         <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
@@ -92,6 +99,8 @@ async function rendertxt2docx(container) {
         const txtFontSize = document.getElementById('txtFontSize');
         const txtLineSpacing = document.getElementById('txtLineSpacing');
         const txtDetectHeadings = document.getElementById('txtDetectHeadings');
+        const txtDetectMarkdown = document.getElementById('txtDetectMarkdown');
+        const livePreview = document.getElementById('txtLivePreview');
         const convertBtn = document.getElementById('convertTxtBtn');
         const downloadBtn = document.getElementById('downloadDocxBtn');
         let currentDocxBlob = null;
@@ -112,12 +121,107 @@ async function rendertxt2docx(container) {
             convertBtn.disabled = chars === 0;
         }
 
+        function escapeHtml(value) {
+            return value.replace(/[&<>"']/g, ch => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[ch]));
+        }
+
+        function renderInlineMarkdown(text) {
+            return escapeHtml(text)
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>');
+        }
+
+        function updatePreview() {
+            const lines = txtEditor.value.split('\n');
+            if (!txtEditor.value.trim()) {
+                livePreview.innerHTML = '<p style="color:#666;">Preview appears here as you type.</p>';
+                return;
+            }
+
+            const html = [];
+            let listOpen = null;
+            function closeList() {
+                if (listOpen) {
+                    html.push(`</${listOpen}>`);
+                    listOpen = null;
+                }
+            }
+
+            lines.forEach(raw => {
+                const line = raw.trim();
+                if (!line) {
+                    closeList();
+                    return;
+                }
+                if (txtDetectHeadings.checked) {
+                    const heading = line.match(/^(#{1,6})\s+(.*)$/);
+                    if (heading) {
+                        closeList();
+                        const level = Math.min(heading[1].length, 3);
+                        html.push(`<h${level}>${renderInlineMarkdown(heading[2])}</h${level}>`);
+                        return;
+                    }
+                }
+                if (txtDetectMarkdown.checked) {
+                    const bullet = line.match(/^[-*]\s+(.*)$/);
+                    const numbered = line.match(/^\d+[.)]\s+(.*)$/);
+                    if (bullet || numbered) {
+                        const tag = bullet ? 'ul' : 'ol';
+                        if (listOpen !== tag) {
+                            closeList();
+                            html.push(`<${tag}>`);
+                            listOpen = tag;
+                        }
+                        html.push(`<li>${renderInlineMarkdown((bullet || numbered)[1])}</li>`);
+                        return;
+                    }
+                }
+                closeList();
+                html.push(`<p>${txtDetectMarkdown.checked ? renderInlineMarkdown(line) : escapeHtml(line)}</p>`);
+            });
+            closeList();
+            livePreview.innerHTML = html.join('');
+        }
+
+        function makeRunsFromMarkdown(text) {
+            const runs = [];
+            const regex = /(\*\*[^*]+\*\*|\*[^*]+\*)/g;
+            let last = 0;
+            let match;
+            while ((match = regex.exec(text)) !== null) {
+                if (match.index > last) {
+                    runs.push(new docx.TextRun({ text: text.slice(last, match.index), font: txtFont.value, size: parseInt(txtFontSize.value) * 2 }));
+                }
+                const token = match[0];
+                if (token.startsWith('**')) {
+                    runs.push(new docx.TextRun({ text: token.slice(2, -2), bold: true, font: txtFont.value, size: parseInt(txtFontSize.value) * 2 }));
+                } else {
+                    runs.push(new docx.TextRun({ text: token.slice(1, -1), italics: true, font: txtFont.value, size: parseInt(txtFontSize.value) * 2 }));
+                }
+                last = regex.lastIndex;
+            }
+            if (last < text.length) {
+                runs.push(new docx.TextRun({ text: text.slice(last), font: txtFont.value, size: parseInt(txtFontSize.value) * 2 }));
+            }
+            return runs.length ? runs : [new docx.TextRun({ text, font: txtFont.value, size: parseInt(txtFontSize.value) * 2 })];
+        }
+
         txtEditor.addEventListener('input', () => {
             updateStats();
+            updatePreview();
             // Clear size if edited manually
             if (!txtFile.files || txtFile.files.length === 0) {
                 txtSize.textContent = '';
             }
+        });
+        [txtFont, txtFontSize, txtLineSpacing, txtDetectHeadings, txtDetectMarkdown].forEach(control => {
+            control.addEventListener('change', updatePreview);
         });
 
         txtFile.addEventListener('change', async () => {
@@ -131,6 +235,7 @@ async function rendertxt2docx(container) {
                 const text = await file.text();
                 txtEditor.value = text;
                 updateStats();
+                updatePreview();
             } catch (e) {
                 if (window.showToast) showToast('Failed to read file: ' + e.message, 'error');
                 console.error(e);
@@ -139,6 +244,7 @@ async function rendertxt2docx(container) {
 
         // Initialize stats
         updateStats();
+        updatePreview();
 
         convertBtn.addEventListener('click', async () => {
             const textToConvert = txtEditor.value;
@@ -150,7 +256,7 @@ async function rendertxt2docx(container) {
             convertBtn.disabled = true; convertBtn.innerHTML = '⏳ Converting...';
             if (window.showSpinner) showSpinner('Converting text to DOCX...');
             try {
-                const { Document, Packer, Paragraph, TextRun, HeadingLevel } = docx;
+                const { Document, Packer, Paragraph, HeadingLevel } = docx;
                 const lines = textToConvert.split('\n');
                 const children = [];
                 for (let line of lines) {
@@ -179,12 +285,40 @@ async function rendertxt2docx(container) {
                             continue;
                         }
                     }
+                    if (txtDetectMarkdown.checked) {
+                        const bulletMatch = line.match(/^[-*]\s+(.*)$/);
+                        const numberedMatch = line.match(/^\d+[.)]\s+(.*)$/);
+                        if (bulletMatch || numberedMatch) {
+                            children.push(new Paragraph({
+                                children: makeRunsFromMarkdown((bulletMatch || numberedMatch)[1]),
+                                bullet: bulletMatch ? { level: 0 } : undefined,
+                                numbering: numberedMatch ? { reference: 'numbered-list', level: 0 } : undefined,
+                                spacing: { line: Math.round(parseFloat(txtLineSpacing.value) * 240), after: 80 }
+                            }));
+                            continue;
+                        }
+                    }
                     children.push(new Paragraph({
-                        children: [new TextRun({ text: line, font: txtFont.value, size: parseInt(txtFontSize.value) * 2 })],
+                        children: txtDetectMarkdown.checked
+                            ? makeRunsFromMarkdown(line)
+                            : [new docx.TextRun({ text: line, font: txtFont.value, size: parseInt(txtFontSize.value) * 2 })],
                         spacing: { line: Math.round(parseFloat(txtLineSpacing.value) * 240), after: 120 }
                     }));
                 }
-                const doc = new Document({ sections: [{ children }] });
+                const doc = new Document({
+                    numbering: {
+                        config: [{
+                            reference: 'numbered-list',
+                            levels: [{
+                                level: 0,
+                                format: 'decimal',
+                                text: '%1.',
+                                alignment: 'left'
+                            }]
+                        }]
+                    },
+                    sections: [{ children }]
+                });
                 currentDocxBlob = await Packer.toBlob(doc);
                 downloadBtn.disabled = false;
 
@@ -199,8 +333,11 @@ async function rendertxt2docx(container) {
             }
         });
 
-        downloadBtn.addEventListener('click', () => { if (currentDocxBlob) const txtBase = (txtFile.files[0] ? txtFile.files[0].name.replace(/.[^.]+$/,'') : 'converted');
-        downloadBlob(currentDocxBlob, `${txtBase}.docx`); });
+        downloadBtn.addEventListener('click', () => {
+            if (!currentDocxBlob) return;
+            const txtBase = txtFile.files[0] ? txtFile.files[0].name.replace(/\.[^.]+$/, '') : 'converted';
+            downloadBlob(currentDocxBlob, `${txtBase}.docx`);
+        });
     } catch (___err) {
         console.error('rendertxt2docx error:', ___err);
         const warn = document.createElement('div');

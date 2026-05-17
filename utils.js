@@ -15,7 +15,8 @@ const CDN_INTEGRITY = {
     'https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js': 'sha384-WWGzNJbUWCKFUEexCVTZSZUJ64uYV7FqYVMG855l1ammDY4SH6oLEFuNF6exFtIl',
     'https://cdn.jsdelivr.net/npm/dompurify@3.2.5/dist/purify.min.js': 'sha384-qSFej5dZNviyoPgYJ5+Xk4bEbX8AYddxAHPuzs1aSgRiXxJ3qmyWNaPsRkpv/+x5',
     'https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css': 'sha384-wcIxkf4k558AjM3Yz3BBFQUbk/zgIYC2R0QpeeYb+TwlBVMrlgLqwRjRtGZiK7ww',
-    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css': 'sha384-wFjoQjtV1y5jVHbt0p35Ui8aV8GVpEZkyF99OXWqP/eNJDU93D3Ugxkoyh6Y2I4A'
+    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css': 'sha384-wFjoQjtV1y5jVHbt0p35Ui8aV8GVpEZkyF99OXWqP/eNJDU93D3Ugxkoyh6Y2I4A',
+    'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js': 'sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=='
 };
 
 // ---------- DOWNLOAD BLOB ----------
@@ -167,7 +168,8 @@ const CDN_FALLBACKS = {
     'https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js': 'https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js',
     'https://cdn.jsdelivr.net/npm/dompurify@3.2.5/dist/purify.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.5/purify.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js': 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js',
-    'https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.1/qrcode.min.js'
+    'https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.1/qrcode.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js': 'https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js'
 };
 
 // ---------- DYNAMIC SCRIPT LOADER (with optional SRI) ----------

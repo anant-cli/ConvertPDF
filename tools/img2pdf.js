@@ -28,6 +28,7 @@ async function renderimg2pdf(container) {
                 <label>📐 <select id="imgPageSize"><option value="a4">A4</option><option value="letter">Letter</option></select></label>
                 <label>🔄 <select id="imgOrientation"><option value="auto">Auto</option><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></label>
                 <label>📏 <select id="imgMargin"><option value="0">0px</option><option value="20">20px</option><option value="50">50px</option></select></label>
+                <label>Fit <select id="imgFitMode"><option value="fit" selected>Fit to page</option><option value="fill">Fill page</option><option value="original">Original size</option></select></label>
             </div>
             <button id="clearAllBtn" class="secondary" style="min-width: unset; padding: 0.5rem 1rem; margin-left: auto;">🗑️ Clear All</button>
         </div>
@@ -55,6 +56,7 @@ async function renderimg2pdf(container) {
         const sizeSel = document.getElementById('imgPageSize');
         const orientSel = document.getElementById('imgOrientation');
         const marginSel = document.getElementById('imgMargin');
+        const fitModeSel = document.getElementById('imgFitMode');
         const convertBtn = document.getElementById('convertImgBtn');
         const down = document.getElementById('downloadImgPdf');
         const previewBox = document.getElementById('imgPreviewBox');
@@ -85,6 +87,8 @@ async function renderimg2pdf(container) {
                 const item = document.createElement('div');
                 item.className = 'file-item';
                 item.style.padding = '0.75rem';
+                item.draggable = true;
+                item.dataset.index = index;
 
                 if (!file.thumbUrl) {
                     file.thumbUrl = URL.createObjectURL(file);
@@ -105,6 +109,30 @@ async function renderimg2pdf(container) {
             `;
 
                 const [upBtn, downBtn, delBtn] = item.querySelectorAll('button');
+
+                item.addEventListener('dragstart', e => {
+                    e.dataTransfer.setData('text/plain', String(index));
+                    item.style.opacity = '0.6';
+                });
+                item.addEventListener('dragend', () => {
+                    item.style.opacity = '';
+                });
+                item.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    item.style.borderColor = 'var(--accent)';
+                });
+                item.addEventListener('dragleave', () => {
+                    item.style.borderColor = '';
+                });
+                item.addEventListener('drop', e => {
+                    e.preventDefault();
+                    item.style.borderColor = '';
+                    const from = parseInt(e.dataTransfer.getData('text/plain'), 10);
+                    if (Number.isNaN(from) || from === index) return;
+                    const [moved] = filesArray.splice(from, 1);
+                    filesArray.splice(index, 0, moved);
+                    renderPreviewList();
+                });
 
                 if (upBtn) upBtn.addEventListener('click', () => {
                     [filesArray[index - 1], filesArray[index]] = [filesArray[index], filesArray[index - 1]];
@@ -222,7 +250,16 @@ async function renderimg2pdf(container) {
                     const contentW = stdW - (margin * 2);
                     const contentH = stdH - (margin * 2);
 
-                    const scaled = image.scaleToFit(contentW, contentH);
+                    let scaled;
+                    if (fitModeSel.value === 'fill') {
+                        const fillScale = Math.max(contentW / dims.width, contentH / dims.height);
+                        scaled = { width: dims.width * fillScale, height: dims.height * fillScale };
+                    } else if (fitModeSel.value === 'original') {
+                        const ratio = Math.min(1, contentW / dims.width, contentH / dims.height);
+                        scaled = { width: dims.width * ratio, height: dims.height * ratio };
+                    } else {
+                        scaled = image.scaleToFit(contentW, contentH);
+                    }
                     page.drawImage(image, {
                         x: margin + (contentW - scaled.width) / 2,
                         y: margin + (contentH - scaled.height) / 2,

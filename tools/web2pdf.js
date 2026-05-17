@@ -146,12 +146,42 @@ async function renderweb2pdf(container) {
     cssSnippet.value = templates.blank.css;
     updatePreview();
 
-    printBtn.addEventListener('click', () => {
+    printBtn.addEventListener('click', async () => {
         const html = htmlSnippet.value;
         const css = cssSnippet.value;
 
         printBtn.disabled = true; printBtn.innerHTML = '⏳ Preparing...';
         if (window.showSpinner) showSpinner('Preparing PDF...');
+
+        let exportNode = null;
+        try {
+            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
+            exportNode = document.createElement('div');
+            exportNode.style.background = '#ffffff';
+            exportNode.style.color = '#111111';
+            exportNode.style.padding = '0.75in';
+            exportNode.style.width = sizeSel.value === 'letter' ? '8.5in' : '8.27in';
+            exportNode.innerHTML = `<style>${css}</style>${html}`;
+            document.body.appendChild(exportNode);
+            await html2pdf().set({
+                margin: 0,
+                filename: 'html-document.pdf',
+                image: { type: 'jpeg', quality: 0.95 },
+                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+                jsPDF: { unit: 'in', format: sizeSel.value, orientation: orientSel.value },
+                pagebreak: { mode: ['css', 'legacy'] }
+            }).from(exportNode).save();
+            exportNode.remove();
+            if (window.showToast) showToast('PDF downloaded successfully.');
+            printBtn.disabled = false;
+            printBtn.innerHTML = '🖨️ Generate PDF';
+            if (window.hideSpinner) hideSpinner();
+            return;
+        } catch (exportErr) {
+            if (exportNode) exportNode.remove();
+            console.warn('html2pdf export failed, falling back to print:', exportErr);
+            if (window.showToast) showToast('Direct PDF export failed. Opening print fallback.', 'warning');
+        }
 
         const fullHtml = `<!DOCTYPE html><html><head><title>ConvertPDF - HTML Document</title>
 <style>

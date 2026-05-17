@@ -40,17 +40,25 @@ async function renderpdf2jpg(container) {
             <input type="text" id="customRange" placeholder="1-3,5,7-9" style="margin-top:0.5rem; width:100%; max-width:300px;">
         </div>
         
-        <div class="orientation-selector" style="margin-top: 1rem; margin-bottom: 1.5rem;">
-            <label>🖼️ Image Quality: 
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top: 1rem; margin-bottom: 1.5rem;">
+            <div class="input-group">
+                <label for="jpgQuality">🖼️ Image Quality</label>
                 <select id="jpgQuality">
-                    <option value="1.0">Standard (1x)</option>
-                    <option value="2.0" selected>High (2x)</option>
-                    <option value="3.0">Ultra (3x)</option>
+                    <option value="1.0">Standard (1x) — smaller files</option>
+                    <option value="2.0" selected>High (2x) — balanced</option>
+                    <option value="3.0">Ultra (3x) — max quality</option>
                 </select>
-            </label>
+            </div>
+            <div class="input-group">
+                <label for="outputFormat">📁 Output Format</label>
+                <select id="outputFormat">
+                    <option value="jpeg">JPEG (smaller, photos)</option>
+                    <option value="png">PNG (lossless, text/diagrams)</option>
+                </select>
+            </div>
         </div>
 
-        <button id="pdf2jpgBtn" class="primary">Convert to JPG</button>
+        <button id="pdf2jpgBtn" class="primary">Convert to JPEG</button>
         
         <div id="jpgProgressContainer" style="display:none; width: 100%; background: var(--bg-input); border-radius: 4px; margin: 1rem 0;">
           <div id="jpgProgressBar" style="width: 0%; height: 6px; background-color: var(--accent); border-radius: 4px; transition: width 0.2s;"></div>
@@ -73,12 +81,21 @@ async function renderpdf2jpg(container) {
         const progressBar = document.getElementById('jpgProgressBar');
         const previewsDiv = document.getElementById('jpgImagePreviews');
         const qualitySel = document.getElementById('jpgQuality');
+        const formatSel  = document.getElementById('outputFormat');
         const downloadBtn = document.getElementById('downloadJpgBtn');
         const firstRadio = document.querySelector('input[name="pageRange"][value="first"]');
         const allRadio = document.querySelector('input[name="pageRange"][value="all"]');
         const customRadio = document.querySelector('input[name="pageRange"][value="custom"]');
         const customInput = document.getElementById('customRange');
         let generatedBlobs = [];
+
+        function updateFormatLabels() {
+            const fmt = formatSel.value === 'png' ? 'PNG' : 'JPEG';
+            btn.textContent = `Convert to ${fmt}`;
+            downloadBtn.textContent = `⬇ Download ${fmt}${generatedBlobs.length > 1 ? 's' : ''}`;
+        }
+        formatSel.addEventListener('change', updateFormatLabels);
+        updateFormatLabels();
 
         // Setup drag and drop
         dropZone.addEventListener('click', () => inp.click());
@@ -151,8 +168,12 @@ async function renderpdf2jpg(container) {
                     }
                 }
 
-                progressDiv.innerHTML = `Extracting ${pagesToExtract.length} pages...`;
+                progressDiv.innerHTML = `Extracting ${pagesToExtract.length} page${pagesToExtract.length === 1 ? '' : 's'}...`;
                 const scaleMultiplier = parseFloat(qualitySel.value) || 2.0;
+                const fmt = formatSel.value; // 'jpeg' or 'png'
+                // Link scale to JPEG quality
+                const jpegQualityMap = { '1.0': 0.70, '2.0': 0.85, '3.0': 0.95 };
+                const jpegQuality = jpegQualityMap[qualitySel.value] || 0.85;
 
                 for (let i = 0; i < pagesToExtract.length; i++) {
                     const pageNum = pagesToExtract[i];
@@ -165,9 +186,16 @@ async function renderpdf2jpg(container) {
                     canvas.width = viewport.width;
                     canvas.height = viewport.height;
                     const ctx = canvas.getContext('2d');
+                    // White background for JPEG (PNG can be transparent)
+                    if (fmt === 'jpeg') {
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    }
                     await page.render({ canvasContext: ctx, viewport }).promise;
-                    const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.9));
-                    generatedBlobs.push({ blob, pageNum });
+                    const mimeType = fmt === 'png' ? 'image/png' : 'image/jpeg';
+                    const blob = await new Promise(r => canvas.toBlob(r, mimeType, fmt === 'jpeg' ? jpegQuality : undefined));
+                    const pixelDims = `${canvas.width}×${canvas.height}px`;
+                    generatedBlobs.push({ blob, pageNum, pixelDims, fmt });
 
                     // Add to preview area
                     const previewImg = document.createElement('img');
@@ -181,21 +209,23 @@ async function renderpdf2jpg(container) {
                     previewImg.title = `Page ${pageNum}`;
 
                     const card = document.createElement('div');
-                    card.style.position = 'relative';
+                    card.style.cssText = 'position:relative; display:flex; flex-direction:column; gap:4px;';
+
                     const label = document.createElement('div');
-                    label.textContent = `Page ${pageNum}`;
-                    label.style.position = 'absolute';
-                    label.style.bottom = '10px';
-                    label.style.left = '50%';
-                    label.style.transform = 'translateX(-50%)';
-                    label.style.background = 'rgba(0,0,0,0.6)';
-                    label.style.color = 'white';
-                    label.style.padding = '2px 8px';
-                    label.style.borderRadius = '12px';
-                    label.style.fontSize = '0.8rem';
+                    label.textContent = `Page ${pageNum} · ${pixelDims}`;
+                    label.style.cssText = 'position:absolute; bottom:34px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:white; padding:2px 8px; border-radius:12px; font-size:0.75rem; white-space:nowrap;';
+
+                    const ext = fmt === 'png' ? 'png' : 'jpg';
+                    const pdfBase2 = inp.files[0] ? inp.files[0].name.replace(/\.pdf$/i,'') : 'page';
+                    const dlBtn = document.createElement('button');
+                    dlBtn.className = 'secondary';
+                    dlBtn.style.cssText = 'font-size:0.75rem; padding:3px 8px; margin:0;';
+                    dlBtn.textContent = `⬇ page-${pageNum}.${ext}`;
+                    dlBtn.onclick = () => downloadBlob(blob, `${pdfBase2}-page-${pageNum}.${ext}`);
 
                     card.appendChild(previewImg);
                     card.appendChild(label);
+                    card.appendChild(dlBtn);
                     previewsDiv.appendChild(card);
                 }
 
@@ -216,21 +246,24 @@ async function renderpdf2jpg(container) {
                 if (window.showToast) showToast('Failed to extract images: ' + e.message, 'error');
                 console.error(e);
             } finally {
-                btn.disabled = false; btn.innerHTML = 'Convert to JPG';
+                btn.disabled = false;
+                updateFormatLabels();
                 if (window.hideSpinner) hideSpinner();
             }
         });
 
         downloadBtn.addEventListener('click', async () => {
             if (generatedBlobs.length === 0) return;
+            const fmt2 = formatSel.value;
+            const ext = fmt2 === 'png' ? 'png' : 'jpg';
+            const pdfBase = inp.files[0] ? inp.files[0].name.replace(/\.pdf$/i, '') : 'page';
             if (generatedBlobs.length === 1) {
-                const pdfBase = inp.files[0] ? inp.files[0].name.replace(/.pdf$/i, '') : 'page';
-                downloadBlob(generatedBlobs[0].blob, `${pdfBase}-page-${generatedBlobs[0].pageNum}.jpg`);
+                downloadBlob(generatedBlobs[0].blob, `${pdfBase}-page-${generatedBlobs[0].pageNum}.${ext}`);
             } else {
                 const zip = new JSZip();
-                generatedBlobs.forEach(({ blob, pageNum }) => zip.file(`page-${pageNum}.jpg`, blob));
+                generatedBlobs.forEach(({ blob, pageNum }) => zip.file(`page-${pageNum}.${ext}`, blob));
                 const content = await zip.generateAsync({ type: 'blob' });
-                downloadBlob(content, 'pdf-pages.zip');
+                downloadBlob(content, `${pdfBase}-pages.zip`);
             }
         });
     } catch (___err) {

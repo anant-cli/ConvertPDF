@@ -15,7 +15,7 @@ const tools = [
     { id: 'signpdf', name: '✍️ Sign PDF', desc: 'add digital signatures', icon: '✍️', url: 'pages/signpdf.html' },
     { id: 'txt2docx', name: '📄 TXT → DOCX', desc: 'plain text to Word file', icon: '📄', url: 'pages/txt2docx.html' },
     { id: 'pdf2jpg', name: '📸 PDF → JPG', desc: 'extract pages as images', icon: '📸', url: 'pages/pdf2jpg.html' },
-    { id: 'img2png', name: '🎨 Any image → PNG', desc: 'convert to PNG format', icon: '🎨', url: 'pages/img2png.html' },
+    { id: 'img2png', name: '🎨 Image Converter', desc: 'convert images to PNG, JPEG, or WebP', icon: '🎨', url: 'pages/img2png.html' },
     { id: 'web2pdf', name: '🌐 HTML → PDF', desc: 'paste HTML snippet to PDF', icon: '🌐', url: 'pages/web2pdf.html' },
     { id: 'qrmaker', name: '📱 QR Code', desc: 'text/link → QR code PNG/SVG', icon: '📱', url: 'pages/qrmaker.html' }
 ];

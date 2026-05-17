@@ -13,14 +13,14 @@ async function renderwatermarkpdf(container) {
         area.className = 'area';
         container.appendChild(area);
 
-        updateMetaDescription("Add text watermarks to PDF pages. Customize position, font, opacity, and color. 100% private, no uploads.");
+        updateMetaDescription("Add text or image watermarks to PDF pages. Tile mode, opacity control, color picker. 100% private, no uploads.");
         updatePageTitle("PDF Watermark Tool");
 
         area.innerHTML = `
         <h3>💧 PDF Watermark</h3>
         <p class="tool-description">
-            Add text watermarks to your PDF pages. Customize position, font size, opacity, and color.
-            Preview changes before applying. Perfect for branding or document protection.
+            Add text or image watermarks to your PDF pages. Control position, opacity, color, and use tile mode
+            for full-page coverage. Preview changes before applying.
             After watermarking, you can also <a href="pdfencrypt.html" target="_self">password protect your PDF</a>.
         </p>
         <div class="faq-section">
@@ -29,7 +29,12 @@ async function renderwatermarkpdf(container) {
                 <summary>Is my file uploaded to a server?</summary>
                 <p>No! All processing happens locally in your browser. Your files never leave your device.</p>
             </details>
+            <details>
+                <summary>What is Tile mode?</summary>
+                <p>Tile mode repeats the watermark text in a grid across the entire page — ideal for confidential documents.</p>
+            </details>
         </div>
+
         <div id="watermarkPdfDropZone" class="drop-zone" style="border: 2px dashed rgba(255,255,255,0.1); padding: 2rem; text-align: center; border-radius: var(--r-md); background: var(--bg-input); cursor: pointer; transition: all 0.2s ease; margin-bottom: 1rem;">
             <div style="font-size: 2rem; margin-bottom: 1rem;">📄➕⬇️</div>
             <p>Drag and drop a .pdf file here</p>
@@ -38,42 +43,70 @@ async function renderwatermarkpdf(container) {
         </div>
 
         <div id="watermarkControls" style="display: none; margin: 1rem 0;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                <div class="input-group">
-                    <label for="watermarkText">Watermark Text</label>
-                    <input id="watermarkText" type="text" placeholder="CONFIDENTIAL" value="CONFIDENTIAL">
+
+            <div class="input-group" style="margin-bottom:1rem;">
+                <label for="watermarkMode">Watermark Type</label>
+                <select id="watermarkMode">
+                    <option value="text">Text Watermark</option>
+                    <option value="image">Image Watermark (PNG)</option>
+                </select>
+            </div>
+
+            <!-- Text options -->
+            <div id="textWatermarkOptions">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="input-group">
+                        <label for="watermarkText">Watermark Text</label>
+                        <input id="watermarkText" type="text" placeholder="CONFIDENTIAL" value="CONFIDENTIAL">
+                    </div>
+                    <div class="input-group">
+                        <label for="watermarkPosition">Position</label>
+                        <select id="watermarkPosition">
+                            <option value="center">Center Diagonal</option>
+                            <option value="tile">Tile (Full Page Grid)</option>
+                            <option value="top-left">Top Left</option>
+                            <option value="top-right">Top Right</option>
+                            <option value="bottom-left">Bottom Left</option>
+                            <option value="bottom-right">Bottom Right</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="watermarkPosition">Position</label>
-                    <select id="watermarkPosition">
-                        <option value="center">Center Diagonal</option>
-                        <option value="top-left">Top Left</option>
-                        <option value="top-right">Top Right</option>
-                        <option value="bottom-left">Bottom Left</option>
-                        <option value="bottom-right">Bottom Right</option>
-                    </select>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="input-group">
+                        <label for="watermarkFontSize">Font Size: <span id="fontSizeValue">48</span></label>
+                        <input id="watermarkFontSize" type="range" min="12" max="120" value="48">
+                    </div>
+                    <div class="input-group">
+                        <label for="watermarkOpacity">Opacity: <span id="opacityValue">50</span>%</label>
+                        <input id="watermarkOpacity" type="range" min="10" max="100" value="50">
+                    </div>
+                    <div class="input-group">
+                        <label for="watermarkColor">Color</label>
+                        <input id="watermarkColor" type="color" value="#ff0000">
+                    </div>
                 </div>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                <div class="input-group">
-                    <label for="watermarkFontSize">Font Size: <span id="fontSizeValue">48</span></label>
-                    <input id="watermarkFontSize" type="range" min="12" max="120" value="48">
+
+            <!-- Image options -->
+            <div id="imageWatermarkOptions" style="display:none;">
+                <div class="input-group" style="margin-bottom:1rem;">
+                    <label for="watermarkImageInput">Upload PNG Logo/Image</label>
+                    <input type="file" id="watermarkImageInput" accept=".png,image/png" style="color: var(--text-primary);">
+                    <p class="note">PNG with transparency works best. The image will be centered on each page.</p>
                 </div>
                 <div class="input-group">
-                    <label for="watermarkOpacity">Opacity: <span id="opacityValue">50</span>%</label>
-                    <input id="watermarkOpacity" type="range" min="10" max="100" value="50">
-                </div>
-                <div class="input-group">
-                    <label for="watermarkColor">Color</label>
-                    <input id="watermarkColor" type="color" value="#ff0000">
+                    <label for="imageOpacity">Image Opacity: <span id="imageOpacityValue">50</span>%</label>
+                    <input id="imageOpacity" type="range" min="10" max="100" value="50">
                 </div>
             </div>
+
             <div style="margin-bottom: 1rem;">
                 <label><input type="checkbox" id="watermarkAllPages" checked> Apply to all pages</label>
             </div>
-            <div id="watermarkPreview" style="border: 1px solid var(--border); padding: 1rem; margin-bottom: 1rem; display: none;">
-                <h4>Preview (First Page)</h4>
-                <canvas id="previewCanvas" style="max-width: 100%; border: 1px solid var(--border);"></canvas>
+
+            <div id="watermarkPreview" style="border: 1px solid var(--border); padding: 1rem; margin-bottom: 1rem; display: none; border-radius: 6px;">
+                <h4 style="margin-bottom:0.5rem; font-size:0.9rem;">Preview (First Page)</h4>
+                <canvas id="previewCanvas" style="max-width: 100%; border: 1px solid var(--border); border-radius:4px;"></canvas>
             </div>
         </div>
 
@@ -88,7 +121,7 @@ async function renderwatermarkpdf(container) {
         <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1.5rem;">
             <button id="downloadWatermarkBtn" class="download-btn" disabled>⬇ Download Watermarked PDF</button>
         </div>
-    `;
+        `;
 
         const inp = document.getElementById('watermarkPdfInput');
         const dropZone = document.getElementById('watermarkPdfDropZone');
@@ -100,23 +133,43 @@ async function renderwatermarkpdf(container) {
         const downloadBtn = document.getElementById('downloadWatermarkBtn');
         const previewCanvas = document.getElementById('previewCanvas');
         const previewDiv = document.getElementById('watermarkPreview');
+        const modeSel = document.getElementById('watermarkMode');
+        const textOpts = document.getElementById('textWatermarkOptions');
+        const imageOpts = document.getElementById('imageWatermarkOptions');
+        const imageInput = document.getElementById('watermarkImageInput');
 
         let currentPdf = null;
-            if (window.showFileOnDropZone) showFileOnDropZone("watermarkPdfDropZone", file);
         let currentPdfJs = null;
+        let currentFileName = 'document';
+        let watermarkImageBytes = null;
 
-        // Setup drag and drop
-        dropZone.addEventListener('click', () => inp.click());
-        if (typeof setupDropZone === 'function') {
-            setupDropZone('watermarkPdfDropZone', 'watermarkPdfInput');
-        }
+        // Mode toggle
+        modeSel.addEventListener('change', () => {
+            const isImage = modeSel.value === 'image';
+            textOpts.style.display = isImage ? 'none' : 'block';
+            imageOpts.style.display = isImage ? 'block' : 'none';
+            updatePreview();
+        });
 
-        // Update display values
-        document.getElementById('watermarkFontSize').addEventListener('input', (e) => {
+        // Image upload
+        imageInput.addEventListener('change', async () => {
+            const f = imageInput.files[0];
+            if (!f) return;
+            watermarkImageBytes = await f.arrayBuffer();
+            updatePreview();
+        });
+
+        document.getElementById('imageOpacity').addEventListener('input', e => {
+            document.getElementById('imageOpacityValue').textContent = e.target.value;
+            updatePreview();
+        });
+
+        // Slider updates
+        document.getElementById('watermarkFontSize').addEventListener('input', e => {
             document.getElementById('fontSizeValue').textContent = e.target.value;
             updatePreview();
         });
-        document.getElementById('watermarkOpacity').addEventListener('input', (e) => {
+        document.getElementById('watermarkOpacity').addEventListener('input', e => {
             document.getElementById('opacityValue').textContent = e.target.value;
             updatePreview();
         });
@@ -124,9 +177,9 @@ async function renderwatermarkpdf(container) {
         document.getElementById('watermarkPosition').addEventListener('change', updatePreview);
         document.getElementById('watermarkColor').addEventListener('input', updatePreview);
 
+        // ---- FIXED: Canvas preview rotation using save/translate/rotate/restore ----
         async function updatePreview() {
             if (!currentPdfJs) return;
-
             const canvas = previewCanvas;
             const ctx = canvas.getContext('2d');
 
@@ -135,50 +188,72 @@ async function renderwatermarkpdf(container) {
                 const viewport = page.getViewport({ scale: 0.5 });
                 canvas.width = viewport.width;
                 canvas.height = viewport.height;
-
                 await page.render({ canvasContext: ctx, viewport }).promise;
 
-                // Add watermark preview
-                const text = document.getElementById('watermarkText').value || 'CONFIDENTIAL';
-                const fontSize = parseInt(document.getElementById('watermarkFontSize').value);
-                const opacity = parseInt(document.getElementById('watermarkOpacity').value) / 100;
-                const color = document.getElementById('watermarkColor').value;
-                const position = document.getElementById('watermarkPosition').value;
+                if (modeSel.value === 'image' && watermarkImageBytes) {
+                    const blob = new Blob([watermarkImageBytes], { type: 'image/png' });
+                    const url = URL.createObjectURL(blob);
+                    const img = await new Promise((res, rej) => {
+                        const i = new Image();
+                        i.onload = () => res(i);
+                        i.onerror = rej;
+                        i.src = url;
+                    });
+                    const opacity = parseInt(document.getElementById('imageOpacity').value) / 100;
+                    const scale = Math.min(canvas.width * 0.5 / img.width, canvas.height * 0.5 / img.height);
+                    const w = img.width * scale;
+                    const h = img.height * scale;
+                    ctx.save();
+                    ctx.globalAlpha = opacity;
+                    ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+                    ctx.restore();
+                    URL.revokeObjectURL(url);
+                } else {
+                    const text     = document.getElementById('watermarkText').value || 'CONFIDENTIAL';
+                    const fontSize = parseInt(document.getElementById('watermarkFontSize').value) * 0.5;
+                    const opacity  = parseInt(document.getElementById('watermarkOpacity').value) / 100;
+                    const color    = document.getElementById('watermarkColor').value;
+                    const position = document.getElementById('watermarkPosition').value;
 
-                ctx.save();
-                ctx.globalAlpha = opacity;
-                ctx.fillStyle = color;
-                ctx.font = `${fontSize * 0.5}px Arial`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
+                    ctx.save();
+                    ctx.globalAlpha = opacity;
+                    ctx.fillStyle = color;
+                    ctx.font = `${fontSize}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
 
-                let x, y;
-                switch (position) {
-                    case 'center':
-                        x = viewport.width / 2;
-                        y = viewport.height / 2;
-                        ctx.rotate(Math.PI / 4); // 45 degrees
-                        break;
-                    case 'top-left':
-                        x = fontSize * 0.5;
-                        y = fontSize * 0.5;
-                        break;
-                    case 'top-right':
-                        x = viewport.width - fontSize * 0.5;
-                        y = fontSize * 0.5;
-                        break;
-                    case 'bottom-left':
-                        x = fontSize * 0.5;
-                        y = viewport.height - fontSize * 0.5;
-                        break;
-                    case 'bottom-right':
-                        x = viewport.width - fontSize * 0.5;
-                        y = viewport.height - fontSize * 0.5;
-                        break;
+                    if (position === 'center') {
+                        // FIXED: translate to center, then rotate, then draw at (0,0)
+                        ctx.save();
+                        ctx.translate(canvas.width / 2, canvas.height / 2);
+                        ctx.rotate(-Math.PI / 4);
+                        ctx.fillText(text, 0, 0);
+                        ctx.restore();
+                    } else if (position === 'tile') {
+                        const stepX = Math.max(canvas.width / 3, 80);
+                        const stepY = Math.max(canvas.height / 4, 60);
+                        for (let tx = stepX / 2; tx < canvas.width; tx += stepX) {
+                            for (let ty = stepY / 2; ty < canvas.height; ty += stepY) {
+                                ctx.save();
+                                ctx.translate(tx, ty);
+                                ctx.rotate(-Math.PI / 6);
+                                ctx.fillText(text, 0, 0);
+                                ctx.restore();
+                            }
+                        }
+                    } else {
+                        let x, y;
+                        const pad = fontSize;
+                        switch (position) {
+                            case 'top-left':     x = pad; y = pad; break;
+                            case 'top-right':    x = canvas.width - pad; y = pad; break;
+                            case 'bottom-left':  x = pad; y = canvas.height - pad; break;
+                            case 'bottom-right': x = canvas.width - pad; y = canvas.height - pad; break;
+                        }
+                        ctx.fillText(text, x, y);
+                    }
+                    ctx.restore();
                 }
-
-                ctx.fillText(text, x, y);
-                ctx.restore();
 
                 previewDiv.style.display = 'block';
             } catch (e) {
@@ -186,21 +261,27 @@ async function renderwatermarkpdf(container) {
             }
         }
 
+        // Drop zone
+        dropZone.addEventListener('click', () => inp.click());
+        if (typeof setupDropZone === 'function') setupDropZone('watermarkPdfDropZone', 'watermarkPdfInput');
+
         inp.addEventListener('change', async () => {
             const file = inp.files[0];
             if (!file) return;
 
             currentPdf = null;
-            if (window.showFileOnDropZone) showFileOnDropZone("watermarkPdfDropZone", file);
             currentPdfJs = null;
             controls.style.display = 'none';
             previewDiv.style.display = 'none';
             btn.disabled = true;
             downloadBtn.disabled = true;
 
+            if (window.showFileOnDropZone) showFileOnDropZone('watermarkPdfDropZone', file);
+            currentFileName = file.name;
+
             try {
                 const arrayBuf = await file.arrayBuffer();
-                currentPdf = await PDFLib.PDFDocument.load(arrayBuf);
+                currentPdf   = await PDFLib.PDFDocument.load(arrayBuf);
                 currentPdfJs = await pdfjsLib.getDocument({ data: arrayBuf }).promise;
 
                 controls.style.display = 'block';
@@ -226,71 +307,108 @@ async function renderwatermarkpdf(container) {
             downloadBtn.disabled = true;
 
             try {
-                const text = document.getElementById('watermarkText').value || 'CONFIDENTIAL';
-                const fontSize = parseInt(document.getElementById('watermarkFontSize').value);
-                const opacity = parseInt(document.getElementById('watermarkOpacity').value) / 100;
-                const colorHex = document.getElementById('watermarkColor').value;
-                const position = document.getElementById('watermarkPosition').value;
-                const allPages = document.getElementById('watermarkAllPages').checked;
-
-                // Convert hex color to RGB
-                const r = parseInt(colorHex.slice(1, 3), 16) / 255;
-                const g = parseInt(colorHex.slice(3, 5), 16) / 255;
-                const b = parseInt(colorHex.slice(5, 7), 16) / 255;
-                const color = PDFLib.rgb(r, g, b);
-
+                const allPagesChk = document.getElementById('watermarkAllPages').checked;
                 const pages = currentPdf.getPages();
-                const pagesToProcess = allPages ? pages : [pages[0]];
+                const pagesToProcess = allPagesChk ? pages : [pages[0]];
 
-                for (let i = 0; i < pagesToProcess.length; i++) {
-                    const page = pagesToProcess[i];
-                    const { width, height } = page.getSize();
+                if (modeSel.value === 'image') {
+                    // Image watermark
+                    if (!watermarkImageBytes) throw new Error('Please upload a PNG image first.');
+                    const opacity = parseInt(document.getElementById('imageOpacity').value) / 100;
+                    const pngImage = await currentPdf.embedPng(watermarkImageBytes);
 
-                    let x, y, rotate = 0;
-                    switch (position) {
-                        case 'center':
-                            x = width / 2;
-                            y = height / 2;
-                            rotate = PDFLib.degrees(45);
-                            break;
-                        case 'top-left':
-                            x = fontSize;
-                            y = fontSize;
-                            break;
-                        case 'top-right':
-                            x = width - fontSize;
-                            y = fontSize;
-                            break;
-                        case 'bottom-left':
-                            x = fontSize;
-                            y = height - fontSize;
-                            break;
-                        case 'bottom-right':
-                            x = width - fontSize;
-                            y = height - fontSize;
-                            break;
+                    for (let i = 0; i < pagesToProcess.length; i++) {
+                        const page = pagesToProcess[i];
+                        const { width, height } = page.getSize();
+                        const scale = Math.min((width * 0.5) / pngImage.width, (height * 0.5) / pngImage.height);
+                        const imgW = pngImage.width * scale;
+                        const imgH = pngImage.height * scale;
+                        page.drawImage(pngImage, {
+                            x: (width - imgW) / 2,
+                            y: (height - imgH) / 2,
+                            width: imgW,
+                            height: imgH,
+                            opacity
+                        });
+                        progressBar.style.width = `${((i + 1) / pagesToProcess.length) * 100}%`;
                     }
+                } else {
+                    // Text watermark
+                    const text     = document.getElementById('watermarkText').value || 'CONFIDENTIAL';
+                    const fontSize = parseInt(document.getElementById('watermarkFontSize').value);
+                    const opacity  = parseInt(document.getElementById('watermarkOpacity').value) / 100;
+                    const colorHex = document.getElementById('watermarkColor').value;
+                    const position = document.getElementById('watermarkPosition').value;
 
-                    page.drawText(text, {
-                        x, y, size: fontSize, color, opacity, rotate
-                    });
+                    const r = parseInt(colorHex.slice(1, 3), 16) / 255;
+                    const g = parseInt(colorHex.slice(3, 5), 16) / 255;
+                    const b = parseInt(colorHex.slice(5, 7), 16) / 255;
+                    const color = PDFLib.rgb(r, g, b);
 
-                    progressBar.style.width = `${((i + 1) / pagesToProcess.length) * 100}%`;
+                    const font = await currentPdf.embedFont(PDFLib.StandardFonts.Helvetica);
+
+                    for (let i = 0; i < pagesToProcess.length; i++) {
+                        const page = pagesToProcess[i];
+                        const { width, height } = page.getSize();
+
+                        if (position === 'tile') {
+                            // Tile mode — repeat across the page
+                            const textWidth = font.widthOfTextAtSize(text, fontSize);
+                            const cols = Math.ceil(width  / (textWidth + 40)) + 1;
+                            const rows = Math.ceil(height / (fontSize   + 60)) + 1;
+                            const stepX = (width  + 40) / cols;
+                            const stepY = (height + 60) / rows;
+
+                            for (let col = 0; col < cols; col++) {
+                                for (let row = 0; row < rows; row++) {
+                                    page.drawText(text, {
+                                        x: col * stepX,
+                                        y: row * stepY,
+                                        size: fontSize,
+                                        font,
+                                        color,
+                                        opacity,
+                                        rotate: PDFLib.degrees(-30)
+                                    });
+                                }
+                            }
+                        } else {
+                            let x, y, rotate = PDFLib.degrees(0);
+                            const textWidth = font.widthOfTextAtSize(text, fontSize);
+                            const pad = fontSize;
+
+                            switch (position) {
+                                case 'center':
+                                    x = (width - textWidth) / 2;
+                                    y = (height - fontSize) / 2;
+                                    rotate = PDFLib.degrees(45);
+                                    break;
+                                case 'top-left':     x = pad;                       y = height - pad - fontSize; break;
+                                case 'top-right':    x = width - textWidth - pad;   y = height - pad - fontSize; break;
+                                case 'bottom-left':  x = pad;                       y = pad; break;
+                                case 'bottom-right': x = width - textWidth - pad;   y = pad; break;
+                                default:             x = (width - textWidth) / 2;   y = (height - fontSize) / 2;
+                            }
+
+                            page.drawText(text, { x, y, size: fontSize, font, color, opacity, rotate });
+                        }
+
+                        progressBar.style.width = `${((i + 1) / pagesToProcess.length) * 100}%`;
+                    }
                 }
 
-                progressBar.style.width = '100%';
                 progressDiv.innerHTML = 'Saving PDF...';
-
                 const pdfBytes = await currentPdf.save();
                 const blob = new Blob([pdfBytes], { type: 'application/pdf' });
 
+                progressBar.style.width = '100%';
                 progressDiv.innerHTML = 'Done!';
                 downloadBtn.disabled = false;
 
-                const wmBase = inp.files[0] ? inp.files[0].name.replace(/.pdf$/i, '') : 'document';
+                const wmBase = currentFileName.replace(/\.pdf$/i, '') || 'document';
                 downloadBtn.onclick = () => downloadBlob(blob, `${wmBase}-watermarked.pdf`);
 
-                if (window.showToast) showToast(`Successfully added watermark to ${pagesToProcess.length} page(s)`);
+                if (window.showToast) showToast(`Watermark applied to ${pagesToProcess.length} page(s)`);
 
                 setTimeout(() => {
                     progressContainer.style.display = 'none';
@@ -307,6 +425,7 @@ async function renderwatermarkpdf(container) {
                 btn.innerHTML = 'Apply Watermark';
             }
         });
+
     } catch (___err) {
         console.error('renderwatermarkpdf error:', ___err);
         const warn = document.createElement('div');

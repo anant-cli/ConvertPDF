@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /404.html
+Disallow: /.git/
+Crawl-delay: 1
 
 Sitemap: https://convert-pdf-tool.netlify.app/sitemap.xml

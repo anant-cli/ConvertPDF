@@ -8,14 +8,14 @@ async function rendersignpdf(container) {
         area.className = 'area';
         container.appendChild(area);
 
-        updateMetaDescription("Sign PDF documents digitally with text or drawn signatures. 100% private, no uploads.");
+        updateMetaDescription("Sign PDF documents digitally with text or drawn signatures. Choose ink color and font style. 100% private, no uploads.");
         updatePageTitle("PDF Signing Tool");
 
         area.innerHTML = `
         <h3>✍️ Sign PDF</h3>
         <p class="tool-description">
-            Add digital signatures to PDF documents. Choose between typing your name or drawing a signature.
-            Signatures are embedded directly into the PDF using standard PDF annotation features.
+            Add digital signatures to your PDF. Type your name in 3 font styles, or draw a freehand signature.
+            Choose ink color and placement. All processing happens locally — your file never leaves your device.
             After signing, you can also <a href="pdfencrypt.html" target="_self">password protect your PDF</a>.
         </p>
         <div class="faq-section">
@@ -25,12 +25,12 @@ async function rendersignpdf(container) {
                 <p>No! All processing happens locally in your browser. Your files never leave your device.</p>
             </details>
             <details>
-                <summary>What type of signatures can I add?</summary>
-                <p>You can either type your name (rendered as text) or draw a signature using your mouse/touch.</p>
+                <summary>What signature types are available?</summary>
+                <p>Type your name (in Helvetica, Times Roman, or Courier) or draw a freehand signature with mouse or touch.</p>
             </details>
             <details>
                 <summary>Are these legally binding signatures?</summary>
-                <p>These are visual signatures for informal use. For legally binding signatures, use certified digital signature services.</p>
+                <p>These are visual signatures for informal use. For legally binding e-signatures use certified services.</p>
             </details>
         </div>
         <div id="signPdfDropZone" class="drop-zone" style="border: 2px dashed rgba(255,255,255,0.1); padding: 2rem; text-align: center; border-radius: var(--r-md); background: var(--bg-input); cursor: pointer; transition: all 0.2s ease; margin-bottom: 1rem;">
@@ -41,44 +41,65 @@ async function rendersignpdf(container) {
         </div>
 
         <div id="signOptions" style="display:none; margin-bottom: 1rem;">
-            <div class="input-group">
-                <label for="signatureType">Signature Type</label>
-                <select id="signatureType">
-                    <option value="text">Type Name</option>
-                    <option value="draw">Draw Signature</option>
-                </select>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="input-group">
+                    <label for="signatureType">Signature Type</label>
+                    <select id="signatureType">
+                        <option value="text">Type Name</option>
+                        <option value="draw">Draw Signature</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="signatureColor">Ink Color</label>
+                    <select id="signatureColor">
+                        <option value="black">⬛ Black</option>
+                        <option value="blue">🔵 Blue (Ink)</option>
+                        <option value="red">🔴 Red</option>
+                    </select>
+                </div>
             </div>
 
             <div id="textSignatureGroup" class="input-group">
                 <label for="signatureText">Your Name</label>
-                <input type="text" id="signatureText" placeholder="Enter your full name" maxlength="50">
+                <input type="text" id="signatureText" placeholder="Enter your full name" maxlength="60">
+                <div style="margin-top: 0.5rem;">
+                    <label for="signatureFont" style="font-size:0.85rem; color: var(--text-muted);">Font Style</label>
+                    <select id="signatureFont" style="margin-top:0.25rem;">
+                        <option value="Helvetica">Helvetica — Clean &amp; Modern</option>
+                        <option value="TimesRoman">Times Roman — Formal &amp; Traditional</option>
+                        <option value="Courier">Courier — Typewriter Style</option>
+                    </select>
+                </div>
             </div>
 
             <div id="drawSignatureGroup" class="input-group" style="display:none;">
                 <label>Draw your signature below</label>
-                <canvas id="signatureCanvas" width="400" height="200" style="border: 1px solid var(--border); border-radius: 4px; background: white; cursor: crosshair; max-width: 100%;"></canvas>
+                <canvas id="signatureCanvas" width="500" height="150"
+                    style="border: 1px solid var(--border); border-radius: 4px; cursor: crosshair; max-width: 100%; display: block; touch-action: none;"></canvas>
                 <div style="margin-top: 0.5rem;">
                     <button id="clearSignature" class="secondary" type="button">Clear Drawing</button>
                 </div>
             </div>
 
-            <div class="input-group">
-                <label for="signaturePosition">Position on Page</label>
-                <select id="signaturePosition">
-                    <option value="bottom-right">Bottom Right</option>
-                    <option value="bottom-left">Bottom Left</option>
-                    <option value="top-right">Top Right</option>
-                    <option value="top-left">Top Left</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label for="signaturePage">Page to Sign</label>
-                <select id="signaturePage">
-                    <option value="last">Last Page</option>
-                    <option value="first">First Page</option>
-                </select>
-                <p class="note">For multi-page PDFs, you can choose which page to sign.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                <div class="input-group">
+                    <label for="signaturePosition">Position on Page</label>
+                    <select id="signaturePosition">
+                        <option value="bottom-right">Bottom Right</option>
+                        <option value="bottom-left">Bottom Left</option>
+                        <option value="top-right">Top Right</option>
+                        <option value="top-left">Top Left</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="signaturePage">Page to Sign</label>
+                    <select id="signaturePage">
+                        <option value="last">Last Page</option>
+                        <option value="first">First Page</option>
+                        <option value="all">All Pages</option>
+                    </select>
+                    <p class="note">Choose which page(s) receive the signature.</p>
+                </div>
             </div>
         </div>
 
@@ -93,7 +114,7 @@ async function rendersignpdf(container) {
         <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1.5rem;">
             <button id="downloadSignBtn" class="download-btn" disabled>⬇ Download Signed PDF</button>
         </div>
-    `;
+        `;
 
         const inp = document.getElementById('signPdfInput');
         const dropZone = document.getElementById('signPdfDropZone');
@@ -104,6 +125,8 @@ async function rendersignpdf(container) {
         const progressBar = document.getElementById('signProgressBar');
         const downloadBtn = document.getElementById('downloadSignBtn');
         const sigTypeSel = document.getElementById('signatureType');
+        const sigColorSel = document.getElementById('signatureColor');
+        const sigFontSel = document.getElementById('signatureFont');
         const textSigGroup = document.getElementById('textSignatureGroup');
         const drawSigGroup = document.getElementById('drawSignatureGroup');
         const textInput = document.getElementById('signatureText');
@@ -115,102 +138,116 @@ async function rendersignpdf(container) {
         let currentFile = null;
         let isDrawing = false;
         const ctx = canvas.getContext('2d');
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 2;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
 
-        // Setup canvas drawing
-        canvas.addEventListener('mousedown', startDrawing);
-        canvas.addEventListener('mousemove', draw);
-        canvas.addEventListener('mouseup', stopDrawing);
-        canvas.addEventListener('mouseout', stopDrawing);
+        // Canvas color helper
+        function getDrawColor() {
+            const map = { black: '#000000', blue: '#00008B', red: '#CC0000' };
+            return map[sigColorSel.value] || '#000000';
+        }
 
-        // Touch events for mobile
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
+        function setupCtx() {
+            ctx.strokeStyle = getDrawColor();
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+        }
+        setupCtx();
+        sigColorSel.addEventListener('change', setupCtx);
+
+        // Mouse drawing (corrected for canvas scaling)
+        function getPos(e) {
             const rect = canvas.getBoundingClientRect();
-            startDrawing({ offsetX: touch.clientX - rect.left, offsetY: touch.clientY - rect.top });
-        });
-        canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const rect = canvas.getBoundingClientRect();
-            draw({ offsetX: touch.clientX - rect.left, offsetY: touch.clientY - rect.top });
-        });
-        canvas.addEventListener('touchend', stopDrawing);
+            const sx = canvas.width / rect.width;
+            const sy = canvas.height / rect.height;
+            return { x: (e.clientX - rect.left) * sx, y: (e.clientY - rect.top) * sy };
+        }
 
-        function startDrawing(e) {
+        canvas.addEventListener('mousedown', e => {
             isDrawing = true;
+            setupCtx();
             ctx.beginPath();
-            ctx.moveTo(e.offsetX, e.offsetY);
-        }
-
-        function draw(e) {
+            const p = getPos(e);
+            ctx.moveTo(p.x, p.y);
+        });
+        canvas.addEventListener('mousemove', e => {
             if (!isDrawing) return;
-            ctx.lineTo(e.offsetX, e.offsetY);
+            const p = getPos(e);
+            ctx.lineTo(p.x, p.y);
             ctx.stroke();
-        }
-
-        function stopDrawing() {
-            isDrawing = false;
-        }
-
-        clearBtn.addEventListener('click', () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
         });
+        canvas.addEventListener('mouseup', () => isDrawing = false);
+        canvas.addEventListener('mouseleave', () => isDrawing = false);
 
-        // Setup drag and drop
+        // Touch drawing
+        canvas.addEventListener('touchstart', e => {
+            e.preventDefault();
+            isDrawing = true;
+            setupCtx();
+            ctx.beginPath();
+            const rect = canvas.getBoundingClientRect();
+            const sx = canvas.width / rect.width;
+            const sy = canvas.height / rect.height;
+            const t = e.touches[0];
+            ctx.moveTo((t.clientX - rect.left) * sx, (t.clientY - rect.top) * sy);
+        }, { passive: false });
+        canvas.addEventListener('touchmove', e => {
+            e.preventDefault();
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const sx = canvas.width / rect.width;
+            const sy = canvas.height / rect.height;
+            const t = e.touches[0];
+            ctx.lineTo((t.clientX - rect.left) * sx, (t.clientY - rect.top) * sy);
+            ctx.stroke();
+        }, { passive: false });
+        canvas.addEventListener('touchend', () => isDrawing = false);
+
+        clearBtn.addEventListener('click', () => ctx.clearRect(0, 0, canvas.width, canvas.height));
+
+        // Drop zone
         dropZone.addEventListener('click', () => inp.click());
-        if (typeof setupDropZone === 'function') {
-            setupDropZone('signPdfDropZone', 'signPdfInput');
-        }
+        if (typeof setupDropZone === 'function') setupDropZone('signPdfDropZone', 'signPdfInput');
 
+        // Signature type toggle
         sigTypeSel.addEventListener('change', () => {
-            if (sigTypeSel.value === 'text') {
-                textSigGroup.style.display = 'block';
-                drawSigGroup.style.display = 'none';
-            } else {
-                textSigGroup.style.display = 'none';
-                drawSigGroup.style.display = 'block';
-            }
+            const isText = sigTypeSel.value === 'text';
+            textSigGroup.style.display = isText ? 'block' : 'none';
+            drawSigGroup.style.display = isText ? 'none' : 'block';
         });
 
-        inp.addEventListener('change', async () => {
+        // File loaded
+        inp.addEventListener('change', () => {
             const file = inp.files[0];
             if (!file) return;
-
             currentFile = file;
-            if (window.showFileOnDropZone) showFileOnDropZone("signPdfDropZone", file);
+            if (window.showFileOnDropZone) showFileOnDropZone('signPdfDropZone', file);
             options.style.display = 'block';
             downloadBtn.disabled = true;
             btn.disabled = false;
-
-            if (window.showToast) showToast(`Loaded PDF for signing`);
+            if (window.showToast) showToast(`Loaded: ${file.name}`);
         });
 
+        // Sign button
         btn.addEventListener('click', async () => {
             if (!currentFile) return;
 
-            let signatureValid = false;
-            if (sigTypeSel.value === 'text') {
-                signatureValid = textInput.value.trim().length > 0;
-            } else {
-                // Check if canvas has drawing
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                signatureValid = imageData.data.some(pixel => pixel !== 0);
-            }
-
-            if (!signatureValid) {
-                if (window.showToast) showToast('Please provide a signature first', 'error');
+            // Validate
+            if (sigTypeSel.value === 'text' && !textInput.value.trim()) {
+                if (window.showToast) showToast('Please enter your name', 'error');
                 return;
+            }
+            if (sigTypeSel.value === 'draw') {
+                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                if (!imgData.data.some(v => v !== 0)) {
+                    if (window.showToast) showToast('Please draw a signature first', 'error');
+                    return;
+                }
             }
 
             btn.disabled = true;
             btn.innerHTML = '⏳ Signing...';
             progressDiv.style.display = 'block';
-            progressDiv.innerHTML = 'Adding signature...';
+            progressDiv.innerHTML = 'Loading PDF...';
             progressContainer.style.display = 'block';
             progressBar.style.width = '0%';
             downloadBtn.disabled = true;
@@ -218,93 +255,84 @@ async function rendersignpdf(container) {
             try {
                 const arrayBuf = await currentFile.arrayBuffer();
                 const pdfDoc = await PDFLib.PDFDocument.load(arrayBuf);
+                const { StandardFonts } = PDFLib;
+                progressBar.style.width = '30%';
+
+                const pdfColorMap = {
+                    black: PDFLib.rgb(0, 0, 0),
+                    blue:  PDFLib.rgb(0, 0, 0.55),
+                    red:   PDFLib.rgb(0.8, 0, 0)
+                };
+                const sigColor = pdfColorMap[sigColorSel.value] || pdfColorMap.black;
+
+                const allPages = pdfDoc.getPages();
+                let targetPages;
+                if (pageSel.value === 'first') targetPages = [allPages[0]];
+                else if (pageSel.value === 'all') targetPages = allPages;
+                else targetPages = [allPages[allPages.length - 1]];
 
                 progressBar.style.width = '50%';
+                progressDiv.innerHTML = 'Embedding signature...';
 
-                const pages = pdfDoc.getPages();
-                const targetPageIndex = pageSel.value === 'first' ? 0 : pages.length - 1;
-                const page = pages[targetPageIndex];
+                const margin = 40;
+                const fontSize = 22;
 
-                const { width, height } = page.getSize();
+                for (const page of targetPages) {
+                    const { width, height } = page.getSize();
 
-                if (sigTypeSel.value === 'text') {
-                    // Add text signature
-                    const fontSize = 24;
-                    const text = textInput.value.trim();
-                    const textWidth = text.length * fontSize * 0.6; // Rough estimate
+                    if (sigTypeSel.value === 'text') {
+                        const text = textInput.value.trim();
+                        const fontMap = {
+                            'Helvetica':  StandardFonts.Helvetica,
+                            'TimesRoman': StandardFonts.TimesRoman,
+                            'Courier':    StandardFonts.Courier
+                        };
+                        const font = await pdfDoc.embedFont(fontMap[sigFontSel.value] || StandardFonts.Helvetica);
+                        const textWidth  = font.widthOfTextAtSize(text, fontSize);
+                        const textHeight = font.heightAtSize(fontSize);
 
-                    let x, y;
-                    switch (positionSel.value) {
-                        case 'bottom-right':
-                            x = width - textWidth - 50;
-                            y = 100;
-                            break;
-                        case 'bottom-left':
-                            x = 50;
-                            y = 100;
-                            break;
-                        case 'top-right':
-                            x = width - textWidth - 50;
-                            y = height - 50;
-                            break;
-                        case 'top-left':
-                            x = 50;
-                            y = height - 50;
-                            break;
+                        let x, y;
+                        switch (positionSel.value) {
+                            case 'bottom-right': x = width - textWidth - margin;  y = margin; break;
+                            case 'bottom-left':  x = margin;                       y = margin; break;
+                            case 'top-right':    x = width - textWidth - margin;  y = height - textHeight - margin; break;
+                            case 'top-left':     x = margin;                       y = height - textHeight - margin; break;
+                            default:             x = margin;                       y = margin;
+                        }
+                        page.drawText(text, { x, y, size: fontSize, font, color: sigColor });
+
+                    } else {
+                        // Drawn signature — transparent PNG (no white fill)
+                        const dataUrl = canvas.toDataURL('image/png');
+                        const sigBytes = await fetch(dataUrl).then(r => r.arrayBuffer());
+                        const sigEmbed = await pdfDoc.embedPng(sigBytes);
+
+                        const sigW = Math.min(200, width / 3);
+                        const sigH = (sigEmbed.height / sigEmbed.width) * sigW;
+
+                        let x, y;
+                        switch (positionSel.value) {
+                            case 'bottom-right': x = width - sigW - margin;  y = margin; break;
+                            case 'bottom-left':  x = margin;                  y = margin; break;
+                            case 'top-right':    x = width - sigW - margin;  y = height - sigH - margin; break;
+                            case 'top-left':     x = margin;                  y = height - sigH - margin; break;
+                            default:             x = margin;                  y = margin;
+                        }
+                        page.drawImage(sigEmbed, { x, y, width: sigW, height: sigH });
                     }
-
-                    page.drawText(text, {
-                        x,
-                        y,
-                        size: fontSize,
-                        color: PDFLib.rgb(0, 0, 0)
-                    });
-                } else {
-                    // Add drawn signature
-                    const signatureImage = canvas.toDataURL('image/png');
-                    const signatureBytes = await fetch(signatureImage).then(res => res.arrayBuffer());
-                    const signatureImageEmbed = await pdfDoc.embedPng(signatureBytes);
-
-                    const sigWidth = 200;
-                    const sigHeight = (signatureImageEmbed.height / signatureImageEmbed.width) * sigWidth;
-
-                    let x, y;
-                    switch (positionSel.value) {
-                        case 'bottom-right':
-                            x = width - sigWidth - 50;
-                            y = 50;
-                            break;
-                        case 'bottom-left':
-                            x = 50;
-                            y = 50;
-                            break;
-                        case 'top-right':
-                            x = width - sigWidth - 50;
-                            y = height - sigHeight - 50;
-                            break;
-                        case 'top-left':
-                            x = 50;
-                            y = height - sigHeight - 50;
-                            break;
-                    }
-
-                    page.drawImage(signatureImageEmbed, {
-                        x,
-                        y,
-                        width: sigWidth,
-                        height: sigHeight
-                    });
                 }
 
-                progressBar.style.width = '100%';
-                progressDiv.innerHTML = 'Signature added successfully!';
-
+                progressBar.style.width = '90%';
+                progressDiv.innerHTML = 'Saving...';
                 const signedBytes = await pdfDoc.save();
                 const blob = new Blob([signedBytes], { type: 'application/pdf' });
+
+                progressBar.style.width = '100%';
+                progressDiv.innerHTML = 'Signing complete!';
                 downloadBtn.disabled = false;
 
-                downloadBtn.onclick = () => const signBase = currentFile.name.replace(/.pdf$/i, '') || 'document';
-                        downloadBtn.onclick = () => downloadBlob(blob, `${signBase}-signed.pdf`);;
+                const signBase = currentFile.name.replace(/\.pdf$/i, '') || 'document';
+                downloadBtn.onclick = () => downloadBlob(blob, `${signBase}-signed.pdf`);
 
                 if (window.showToast) showToast('PDF signed successfully!');
 
@@ -323,6 +351,7 @@ async function rendersignpdf(container) {
                 btn.innerHTML = 'Sign PDF';
             }
         });
+
     } catch (___err) {
         console.error('rendersignpdf error:', ___err);
         const warn = document.createElement('div');

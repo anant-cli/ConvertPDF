@@ -1,4 +1,4 @@
-﻿async function rendersplitpdf(container) {
+async function rendersplitpdf(container) {
     try {
         await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js');
 
@@ -37,19 +37,32 @@
         <div class="orientation-selector">
             <label><input type="radio" id="splitModeAll" name="splitMode" value="all" checked> Split every page</label>
             <label style="margin-left: 1rem;"><input type="radio" id="splitModeCustom" name="splitMode" value="custom"> Custom range</label>
+            <label style="margin-left: 1rem;"><input type="radio" id="splitModeChunks" name="splitMode" value="chunks"> Chunks of N pages</label>
         </div>
 
-        <div class="input-group">
-            <label for="splitPageRange">Page range</label>
-            <input id="splitPageRange" type="text" placeholder="1-3,5" disabled>
-            <p class="note">Enter ranges like 1-3,5. Leave empty to split all pages.</p>
+        <div id="customRangeGroup" style="display:none;">
+            <div class="input-group">
+                <label for="splitPageRange">Page range</label>
+                <input id="splitPageRange" type="text" placeholder="1-3,5">
+                <p class="note" id="rangeValidation">Enter ranges like 1-3,5.</p>
+            </div>
+        </div>
+
+        <div id="chunksGroup" style="display:none;">
+            <div class="input-group">
+                <label for="splitChunkSize">Pages per chunk</label>
+                <input id="splitChunkSize" type="number" min="1" value="2" placeholder="e.g. 3">
+                <p class="note">Splits the PDF into separate files of N pages each, downloaded as a ZIP.</p>
+            </div>
         </div>
 
         <div id="splitProgressContainer" style="display:none; margin-bottom: 1rem;" class="progress-bar-bg">
             <div id="splitProgressBar" class="progress-bar-fill" style="width: 0%;"></div>
         </div>
 
-        <button id="splitPdfBtn" disabled>⚡ Split & download</button>
+        <div id="splitSummary" class="preview-box" style="display:none; margin-bottom:1rem;"></div>
+
+        <button id="splitPdfBtn" disabled>⚡ Split &amp; download</button>
         `;
 
         const splitInput = document.getElementById('splitPdfInput');
@@ -63,7 +76,13 @@
         const progressBar = document.getElementById('splitProgressBar');
         const allPagesRadio = document.getElementById('splitModeAll');
         const customRangeRadio = document.getElementById('splitModeCustom');
+        const chunksRadio = document.getElementById('splitModeChunks');
         const rangeInput = document.getElementById('splitPageRange');
+        const rangeValidation = document.getElementById('rangeValidation');
+        const chunkSizeInput = document.getElementById('splitChunkSize');
+        const customRangeGroup = document.getElementById('customRangeGroup');
+        const chunksGroup = document.getElementById('chunksGroup');
+        const splitSummary = document.getElementById('splitSummary');
 
         let currentFile = null;
         let currentTotalPages = 0;
@@ -86,6 +105,38 @@
                 }
             }
             return Array.from(pages).sort((a, b) => a - b);
+        }
+
+        function validateRangeInput() {
+            if (!customRangeRadio.checked) {
+                rangeValidation.textContent = 'Enter ranges like 1-3,5.';
+                rangeValidation.style.color = '';
+                return true;
+            }
+            const value = rangeInput.value.trim();
+            const pages = parsePageRange(value, currentTotalPages);
+            if (!value) {
+                rangeValidation.textContent = 'Enter a page range before splitting.';
+                rangeValidation.style.color = '#f59e0b';
+                return false;
+            }
+            if (pages.length === 0) {
+                rangeValidation.textContent = `No valid pages found. Use page numbers from 1 to ${currentTotalPages || '?'}.`;
+                rangeValidation.style.color = '#f87171';
+                return false;
+            }
+            rangeValidation.textContent = `Valid range: ${pages.length} page${pages.length === 1 ? '' : 's'} selected.`;
+            rangeValidation.style.color = '#22c55e';
+            return true;
+        }
+
+        function updateModeUI() {
+            customRangeGroup.style.display = customRangeRadio.checked ? 'block' : 'none';
+            chunksGroup.style.display = chunksRadio.checked ? 'block' : 'none';
+            rangeInput.disabled = !customRangeRadio.checked;
+            chunkSizeInput.disabled = !chunksRadio.checked;
+            splitSummary.style.display = 'none';
+            splitBtn.disabled = !currentFile || (customRangeRadio.checked && !validateRangeInput());
         }
 
         function updateStats(file, totalPages) {
@@ -117,6 +168,7 @@
                 const pdfDoc = await PDFLib.PDFDocument.load(arrayBuf, { ignoreEncryption: true });
                 currentTotalPages = pdfDoc.getPageCount();
                 updateStats(file, currentTotalPages);
+                updateModeUI();
             } catch (err) {
                 currentFile = null;
                 currentTotalPages = 0;
@@ -128,13 +180,23 @@
         });
 
         allPagesRadio.addEventListener('change', () => {
-            rangeInput.disabled = true;
+            updateModeUI();
         });
 
         customRangeRadio.addEventListener('change', () => {
-            rangeInput.disabled = false;
+            updateModeUI();
             rangeInput.focus();
         });
+        chunksRadio.addEventListener('change', updateModeUI);
+        rangeInput.addEventListener('input', () => {
+            validateRangeInput();
+            splitBtn.disabled = !currentFile || !validateRangeInput();
+        });
+        chunkSizeInput.addEventListener('input', () => {
+            splitSummary.style.display = 'none';
+            splitBtn.disabled = !currentFile || Math.max(1, parseInt(chunkSizeInput.value) || 0) < 1;
+        });
+        updateModeUI();
 
         splitBtn.addEventListener('click', async () => {
             if (!currentFile) {
@@ -154,7 +216,43 @@
                 const totalPages = srcPdf.getPageCount();
                 const baseName = currentFile.name.replace(/\.[^/.]+$/, '') || 'split-document';
 
-                if (customRangeRadio.checked) {
+                if (chunksRadio.checked) {
+                    // Split into chunks of N pages
+                    const chunkSize = Math.max(1, parseInt(chunkSizeInput.value) || 2);
+                    const totalPages = srcPdf.getPageCount();
+                    const numChunks = Math.ceil(totalPages / chunkSize);
+                    if (numChunks === 1) {
+                        // Only one chunk — just download the file
+                        const outputBytes = await srcPdf.save({ useObjectStreams: true });
+                        downloadBlob(new Blob([outputBytes], { type: 'application/pdf' }), `${baseName}-part-1.pdf`);
+                        splitSummary.style.display = 'block';
+                        splitSummary.innerHTML = `<strong>Split summary</strong><br>1 chunk created from ${totalPages} page${totalPages === 1 ? '' : 's'}.`;
+                        if (window.showToast) showToast('Only one chunk needed — downloaded as single file.');
+                    } else {
+                        if (typeof JSZip === 'undefined') await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
+                        const zip = new JSZip();
+                        for (let chunk = 0; chunk < numChunks; chunk++) {
+                            const start = chunk * chunkSize;
+                            const end   = Math.min(start + chunkSize, totalPages);
+                            splitBtn.innerHTML = `⏳ Creating part ${chunk + 1} of ${numChunks}...`;
+                            const chunkDoc = await PDFLib.PDFDocument.create();
+                            const indices  = Array.from({ length: end - start }, (_, j) => start + j);
+                            const copied   = await chunkDoc.copyPages(srcPdf, indices);
+                            copied.forEach(p => chunkDoc.addPage(p));
+                            const chunkBytes = await chunkDoc.save({ useObjectStreams: true });
+                            zip.file(`${baseName}-part-${chunk + 1}.pdf`, chunkBytes);
+                            progressBar.style.width = `${((chunk + 1) / numChunks) * 100}%`;
+                        }
+                        splitBtn.innerHTML = '⏳ Creating ZIP...';
+                        const zipBlob = await zip.generateAsync({ type: 'blob' }, meta => {
+                            progressBar.style.width = `${Math.round(meta.percent)}%`;
+                        });
+                        downloadBlob(zipBlob, `${baseName}-chunks.zip`);
+                        splitSummary.style.display = 'block';
+                        splitSummary.innerHTML = `<strong>Split summary</strong><br>${numChunks} PDF chunks created, up to ${chunkSize} page${chunkSize === 1 ? '' : 's'} each.`;
+                        if (window.showToast) showToast(`Split into ${numChunks} chunks of up to ${chunkSize} pages.`);
+                    }
+                } else if (customRangeRadio.checked) {
                     const rawRange = rangeInput.value.trim();
                     const selectedPages = parsePageRange(rawRange, totalPages);
                     if (selectedPages.length === 0) {
@@ -172,6 +270,8 @@
                     const outputBytes = await newDoc.save({ useObjectStreams: true });
                     progressBar.style.width = '100%';
                     downloadBlob(new Blob([outputBytes], { type: 'application/pdf' }), `${baseName}-pages.pdf`);
+                    splitSummary.style.display = 'block';
+                    splitSummary.innerHTML = `<strong>Split summary</strong><br>Created one PDF with ${selectedPages.length} selected page${selectedPages.length === 1 ? '' : 's'}: ${selectedPages.join(', ')}.`;
                     if (window.showToast) showToast(`Successfully created ${selectedPages.length} page${selectedPages.length === 1 ? '' : 's'} from your selection.`);
                 } else {
                     if (totalPages === 1) {
@@ -182,6 +282,8 @@
                         const outputBytes = await singleDoc.save({ useObjectStreams: true });
                         progressBar.style.width = '100%';
                         downloadBlob(new Blob([outputBytes], { type: 'application/pdf' }), `${baseName}-page-1.pdf`);
+                        splitSummary.style.display = 'block';
+                        splitSummary.innerHTML = '<strong>Split summary</strong><br>Created 1 single-page PDF.';
                         if (window.showToast) showToast('Successfully extracted the one page PDF.');
                     } else {
                         if (typeof JSZip === 'undefined') {
@@ -202,6 +304,8 @@
                             progressBar.style.width = `${Math.round(meta.percent)}%`;
                         });
                         downloadBlob(zipBlob, `${baseName}-pages.zip`);
+                        splitSummary.style.display = 'block';
+                        splitSummary.innerHTML = `<strong>Split summary</strong><br>Created ${totalPages} single-page PDFs in a ZIP file.`;
                         if (window.showToast) showToast(`Successfully split ${totalPages} pages into ZIP.`);
                     }
                 }

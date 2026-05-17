@@ -37,16 +37,19 @@ async function renderrotatepdf(container) {
         </div>
 
         <div id="rotateControls" style="display: none; margin: 1rem 0;">
-            <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+            <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem;">
                 <button id="selectAllRotate" class="secondary">Select All</button>
                 <button id="deselectAllRotate" class="secondary">Deselect All</button>
-                <select id="rotationAngle" style="padding: 0.5rem; border-radius: 4px; background: var(--bg-input); color: var(--text); border: 1px solid var(--border);">
+                <button id="rotateCWAll" class="secondary" title="Rotate all pages 90° clockwise">↻ Rotate All CW</button>
+                <button id="rotateCCWAll" class="secondary" title="Rotate all pages 90° counter-clockwise">↺ Rotate All CCW</button>
+                <select id="rotationAngle" style="padding: 0.5rem; border-radius: 4px; background: var(--bg-input); color: var(--text); border: 1px solid var(--border); margin-left: auto;">
                     <option value="90">90° Clockwise</option>
                     <option value="180">180° (Upside Down)</option>
                     <option value="270">270° Counter-Clockwise</option>
                 </select>
             </div>
-            <div id="rotateThumbnails" class="file-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;"></div>
+            <p class="note" style="margin-bottom:0.5rem;">Click a page to toggle selection. Rotation preview updates instantly.</p>
+            <div id="rotateThumbnails" class="file-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; margin-top: 0.5rem;"></div>
         </div>
 
         <button id="rotatePdfBtn" class="primary" disabled>Rotate Selected Pages</button>
@@ -77,6 +80,22 @@ async function renderrotatepdf(container) {
 
         let currentPdf = null;
         let selectedPages = new Set();
+        const pageAngles = new Map(); // track visual rotation per page index
+
+        // Helper: get cumulative visual angle for a page
+        function getPageAngle(pageNum) {
+            return pageAngles.get(pageNum) || 0;
+        }
+
+        function applyThumbTransform(pageNum) {
+            const card = thumbnailsDiv.querySelector(`[data-page-num="${pageNum}"]`);
+            if (!card) return;
+            const canvas = card.querySelector('canvas');
+            if (canvas) canvas.style.transform = `rotate(${getPageAngle(pageNum)}deg)`;
+            const badge = card.querySelector('.angle-badge');
+            const angle = getPageAngle(pageNum);
+            if (badge) badge.textContent = angle ? `${angle}°` : '';
+        }
 
         // Setup drag and drop
         dropZone.addEventListener('click', () => inp.click());
@@ -87,40 +106,42 @@ async function renderrotatepdf(container) {
         function renderThumbnails(pdf, totalPages) {
             thumbnailsDiv.innerHTML = '';
             selectedPages.clear();
+            pageAngles.clear();
 
             for (let i = 1; i <= totalPages; i++) {
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'preview-box';
-                pageDiv.style.position = 'relative';
-                pageDiv.style.cursor = 'pointer';
-                pageDiv.style.border = '2px solid transparent';
-                pageDiv.style.transition = 'border-color 0.2s';
+                pageDiv.style.cssText = 'position:relative; cursor:pointer; border:2px solid transparent; transition:border-color 0.2s; padding:0.5rem;';
+                pageDiv.dataset.pageNum = i;
 
                 const canvas = document.createElement('canvas');
-                canvas.width = 150;
-                canvas.height = 200;
-                canvas.style.width = '100%';
-                canvas.style.height = 'auto';
+                canvas.width = 130;
+                canvas.height = 180;
+                canvas.style.cssText = 'width:100%; height:auto; transition:transform 0.3s ease; display:block;';
+
+                const badge = document.createElement('div');
+                badge.className = 'angle-badge';
+                badge.style.cssText = 'position:absolute; top:6px; left:6px; background:var(--accent); color:#fff; font-size:0.7rem; padding:1px 5px; border-radius:4px; font-weight:700;';
 
                 const label = document.createElement('div');
                 label.textContent = `Page ${i}`;
-                label.style.textAlign = 'center';
-                label.style.marginTop = '0.5rem';
-                label.style.fontSize = '0.9rem';
+                label.style.cssText = 'text-align:center; margin-top:0.4rem; font-size:0.85rem;';
 
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
-                checkbox.style.position = 'absolute';
-                checkbox.style.top = '10px';
-                checkbox.style.right = '10px';
+                checkbox.style.cssText = 'position:absolute; top:8px; right:8px;';
                 checkbox.dataset.page = i;
 
                 checkbox.addEventListener('change', () => {
                     if (checkbox.checked) {
                         selectedPages.add(i);
+                        pageAngles.set(i, parseInt(angleSelect.value));
+                        applyThumbTransform(i);
                         pageDiv.style.borderColor = 'var(--accent)';
                     } else {
                         selectedPages.delete(i);
+                        pageAngles.delete(i);
+                        applyThumbTransform(i);
                         pageDiv.style.borderColor = 'transparent';
                     }
                     updateButtonState();
@@ -134,16 +155,19 @@ async function renderrotatepdf(container) {
                 });
 
                 pageDiv.appendChild(canvas);
+                pageDiv.appendChild(badge);
                 pageDiv.appendChild(label);
                 pageDiv.appendChild(checkbox);
                 thumbnailsDiv.appendChild(pageDiv);
 
                 // Render thumbnail
                 pdf.getPage(i).then(page => {
-                    const viewport = page.getViewport({ scale: 0.3 });
+                    const viewport = page.getViewport({ scale: 0.25 });
                     const ctx = canvas.getContext('2d');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
                     page.render({ canvasContext: ctx, viewport }).promise.catch(err => {
-                        console.error('Error rendering page', i, err);
+                        console.error('Thumbnail error page', i, err);
                     });
                 });
             }
@@ -154,18 +178,48 @@ async function renderrotatepdf(container) {
         }
 
         selectAllBtn.addEventListener('click', () => {
-            const checkboxes = thumbnailsDiv.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(cb => {
+            thumbnailsDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => {
                 cb.checked = true;
                 cb.dispatchEvent(new Event('change'));
             });
         });
 
         deselectAllBtn.addEventListener('click', () => {
-            const checkboxes = thumbnailsDiv.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(cb => {
+            thumbnailsDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => {
                 cb.checked = false;
                 cb.dispatchEvent(new Event('change'));
+            });
+        });
+
+        // Rotate All CW/CCW — apply to all pages AND update visual immediately
+        document.getElementById('rotateCWAll').addEventListener('click', () => {
+            const pages = thumbnailsDiv.querySelectorAll('[data-page-num]');
+            pages.forEach(card => {
+                const pn = parseInt(card.dataset.pageNum);
+                pageAngles.set(pn, (getPageAngle(pn) + 90) % 360);
+                applyThumbTransform(pn);
+                // Mark as selected
+                const cb = card.querySelector('input[type="checkbox"]');
+                if (cb && !cb.checked) { cb.checked = true; cb.dispatchEvent(new Event('change')); }
+            });
+        });
+
+        document.getElementById('rotateCCWAll').addEventListener('click', () => {
+            const pages = thumbnailsDiv.querySelectorAll('[data-page-num]');
+            pages.forEach(card => {
+                const pn = parseInt(card.dataset.pageNum);
+                pageAngles.set(pn, (getPageAngle(pn) + 270) % 360);
+                applyThumbTransform(pn);
+                const cb = card.querySelector('input[type="checkbox"]');
+                if (cb && !cb.checked) { cb.checked = true; cb.dispatchEvent(new Event('change')); }
+            });
+        });
+
+        // When rotation angle changes, update CSS preview for selected pages
+        angleSelect.addEventListener('change', () => {
+            selectedPages.forEach(pn => {
+                pageAngles.set(pn, parseInt(angleSelect.value));
+                applyThumbTransform(pn);
             });
         });
 
@@ -218,8 +272,10 @@ async function renderrotatepdf(container) {
                 let processed = 0;
                 for (const pageNum of selectedPages) {
                     const pageIndex = pageNum - 1;
+                    // Use per-page tracked angle if set, otherwise use selector
+                    const appliedAngle = pageAngles.has(pageNum) ? pageAngles.get(pageNum) : angle;
                     const existingAngle = pages[pageIndex].getRotation().angle || 0;
-                    pages[pageIndex].setRotation(PDFLib.degrees((existingAngle + angle) % 360));
+                    pages[pageIndex].setRotation(PDFLib.degrees((existingAngle + appliedAngle) % 360));
                     processed++;
                     progressBar.style.width = `${(processed / selectedPages.size) * 100}%`;
                 }

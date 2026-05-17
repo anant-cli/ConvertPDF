@@ -135,6 +135,35 @@ async function renderdocx2pdf(container) {
 
             try {
                 const html = window.currentDocxHtml;
+                let exportNode = null;
+                try {
+                    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
+                    exportNode = document.createElement('div');
+                    exportNode.innerHTML = docxPrintStyles + `<div class="docx-body">${html}</div>`;
+                    exportNode.style.background = '#ffffff';
+                    exportNode.style.color = '#2c3e50';
+                    exportNode.style.width = sizeSel.value === 'letter' ? '8.5in' : '8.27in';
+                    exportNode.style.minHeight = sizeSel.value === 'letter' ? '11in' : '11.69in';
+                    exportNode.style.padding = orientSel.value === 'landscape' ? '0.7in' : '0.8in';
+                    document.body.appendChild(exportNode);
+                    await html2pdf().set({
+                        margin: 0,
+                        filename: `${f.name.replace(/\.docx$/i, '') || 'document'}.pdf`,
+                        image: { type: 'jpeg', quality: 0.95 },
+                        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+                        jsPDF: { unit: 'in', format: sizeSel.value, orientation: orientSel.value },
+                        pagebreak: { mode: ['css', 'legacy'] }
+                    }).from(exportNode).save();
+                    exportNode.remove();
+                    if (window.showToast) showToast('PDF downloaded successfully.');
+                    printBtn.disabled = false;
+                    printBtn.innerHTML = '🖨️ Print / Save as PDF';
+                    return;
+                } catch (exportErr) {
+                    if (exportNode) exportNode.remove();
+                    console.warn('html2pdf export failed, falling back to print:', exportErr);
+                    if (window.showToast) showToast('Direct PDF export failed. Opening print fallback.', 'warning');
+                }
                 const fullHtml = `<!DOCTYPE html><html><head><title>${f.name} - Print</title>${docxPrintStyles}
 <style>
 @page { size: ${sizeSel.value} ${orientSel.value}; margin: 2.54cm; }

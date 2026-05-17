@@ -26,6 +26,12 @@ async function renderqrmaker(container) {
             </details>
         </div>
         <div class="qr-controls">
+            <div class="qr-options-grid" style="margin-bottom:1rem;">
+                <div class="qr-option"><label>QR Type:</label><select id="qrType"><option value="text">Text / URL</option><option value="email">Email</option><option value="phone">Phone</option><option value="sms">SMS</option><option value="wifi">WiFi</option><option value="vcard">vCard</option></select></div>
+                <div class="qr-option qr-dynamic" data-type="email" style="display:none;"><label>Email subject:</label><input type="text" id="qrEmailSubject" placeholder="Optional subject"></div>
+                <div class="qr-option qr-dynamic" data-type="sms" style="display:none;"><label>SMS message:</label><input type="text" id="qrSmsBody" placeholder="Optional message"></div>
+                <div class="qr-option qr-dynamic" data-type="wifi" style="display:none;"><label>Security:</label><select id="qrWifiSecurity"><option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="nopass">No password</option></select></div>
+            </div>
             <textarea id="qrText" placeholder="Enter text or URL (one per line for batch generation)" style="width: 100%; min-height: 80px; padding: 0.8rem; border-radius: var(--r-md); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 1rem; font-family: inherit;">https://convert-pdf-tool.netlify.app</textarea>
             
             <div class="qr-options-grid">
@@ -58,6 +64,10 @@ async function renderqrmaker(container) {
     `;
 
         const qrText = document.getElementById('qrText');
+        const qrType = document.getElementById('qrType');
+        const qrEmailSubject = document.getElementById('qrEmailSubject');
+        const qrSmsBody = document.getElementById('qrSmsBody');
+        const qrWifiSecurity = document.getElementById('qrWifiSecurity');
         const qrSize = document.getElementById('qrSize');
         const qrErrorLevel = document.getElementById('qrErrorLevel');
         const qrMargin = document.getElementById('qrMargin');
@@ -76,6 +86,52 @@ async function renderqrmaker(container) {
         let currentSvgString = null;
         let batchDataUrls = [];
         let batchSvgStrings = [];
+
+        function updateTypeFields() {
+            document.querySelectorAll('.qr-dynamic').forEach(el => {
+                el.style.display = el.dataset.type === qrType.value ? 'block' : 'none';
+            });
+            const placeholders = {
+                text: 'Enter text or URL (one per line for batch generation)',
+                email: 'name@example.com',
+                phone: '+15551234567',
+                sms: '+15551234567',
+                wifi: 'Network name|password',
+                vcard: 'Full Name|Company|Phone|Email|Website'
+            };
+            qrText.placeholder = placeholders[qrType.value] || placeholders.text;
+        }
+
+        function escapeWifi(value) {
+            return value.replace(/([\\;,":])/g, '\\$1');
+        }
+
+        function formatQrPayload(raw) {
+            const value = raw.trim();
+            switch (qrType.value) {
+                case 'email': {
+                    const subject = qrEmailSubject.value.trim();
+                    return `mailto:${value}${subject ? `?subject=${encodeURIComponent(subject)}` : ''}`;
+                }
+                case 'phone':
+                    return `tel:${value}`;
+                case 'sms': {
+                    const body = qrSmsBody.value.trim();
+                    return `sms:${value}${body ? `?body=${encodeURIComponent(body)}` : ''}`;
+                }
+                case 'wifi': {
+                    const [ssid = value, password = ''] = value.split('|');
+                    const security = qrWifiSecurity.value;
+                    return `WIFI:T:${security};S:${escapeWifi(ssid.trim())};P:${security === 'nopass' ? '' : escapeWifi(password.trim())};;`;
+                }
+                case 'vcard': {
+                    const [name = value, company = '', phone = '', email = '', website = ''] = value.split('|').map(part => part.trim());
+                    return `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nORG:${company}\nTEL:${phone}\nEMAIL:${email}\nURL:${website}\nEND:VCARD`;
+                }
+                default:
+                    return value;
+            }
+        }
 
         // Debounce function
         let timeoutId;
@@ -139,7 +195,7 @@ async function renderqrmaker(container) {
                 const margin = parseInt(qrMargin.value);
 
                 for (let i = 0; i < lines.length; i++) {
-                    const text = lines[i];
+                    const text = formatQrPayload(lines[i]);
                     if (isBatch) {
                         progressBar.style.width = `${(i / lines.length) * 100}%`;
                     }
@@ -159,7 +215,7 @@ async function renderqrmaker(container) {
                         });
 
                         if (!isBatch) currentSvgString = svg;
-                        batchSvgStrings.push({ text, svg });
+                        batchSvgStrings.push({ text: lines[i], svg });
 
                         if (!isBatch || i < 10) { // Limit preview to 10 in batch
                             const previewWrapper = document.createElement('div');
@@ -175,8 +231,8 @@ async function renderqrmaker(container) {
                             previewWrapper.appendChild(previewDiv);
 
                             if (isBatch) {
-                                const lbl = document.createElement('span');
-                                lbl.textContent = text.length > 15 ? text.substring(0, 15) + '...' : text;
+                            const lbl = document.createElement('span');
+                            lbl.textContent = lines[i].length > 15 ? lines[i].substring(0, 15) + '...' : lines[i];
                                 lbl.style.fontSize = '0.8rem';
                                 lbl.style.color = 'var(--text-muted)';
                                 previewWrapper.appendChild(lbl);
@@ -210,7 +266,7 @@ async function renderqrmaker(container) {
 
                         const dataUrl = canvas.toDataURL('image/png');
                         if (!isBatch) currentQrDataUrl = dataUrl;
-                        batchDataUrls.push({ text, dataUrl });
+                        batchDataUrls.push({ text: lines[i], dataUrl });
 
                         if (!isBatch || i < 10) { // Limit preview to 10 in batch
                             const previewWrapper = document.createElement('div');
@@ -229,7 +285,7 @@ async function renderqrmaker(container) {
 
                             if (isBatch) {
                                 const lbl = document.createElement('span');
-                                lbl.textContent = text.length > 15 ? text.substring(0, 15) + '...' : text;
+                                lbl.textContent = lines[i].length > 15 ? lines[i].substring(0, 15) + '...' : lines[i];
                                 lbl.style.fontSize = '0.8rem';
                                 lbl.style.color = 'var(--text-muted)';
                                 previewWrapper.appendChild(lbl);
@@ -266,6 +322,14 @@ async function renderqrmaker(container) {
         // Bind events for live preview
         const debouncedGenerate = debounce(generateQRCodes, 300);
 
+        qrType.addEventListener('change', () => {
+            updateTypeFields();
+            generateQRCodes();
+        });
+        [qrEmailSubject, qrSmsBody, qrWifiSecurity].forEach(el => {
+            el.addEventListener('input', debouncedGenerate);
+            el.addEventListener('change', debouncedGenerate);
+        });
         qrText.addEventListener('input', debouncedGenerate);
         qrSize.addEventListener('change', generateQRCodes);
         qrErrorLevel.addEventListener('change', generateQRCodes);
@@ -276,6 +340,7 @@ async function renderqrmaker(container) {
         qrFormat.addEventListener('change', generateQRCodes);
         qrBatchMode.addEventListener('change', generateQRCodes);
 
+        updateTypeFields();
         // Initial generation
         generateQRCodes();
 

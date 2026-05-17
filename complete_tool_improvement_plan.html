@@ -1,0 +1,378 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:1rem 0;font-family:var(--font-sans)}
+.tool{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:12px;overflow:hidden}
+.tool-head{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;user-select:none}
+.tool-head:hover{background:var(--color-background-secondary)}
+.tool-icon{font-size:18px}
+.tool-name{font-size:14px;font-weight:500;color:var(--color-text-primary);flex:1}
+.badges{display:flex;gap:5px;flex-wrap:wrap}
+.badge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;white-space:nowrap}
+.b-bug{background:#FCEBEB;color:#A32D2D}
+.b-fix{background:#FAEEDA;color:#854F0B}
+.b-feat{background:#E1F5EE;color:#085041}
+.b-api{background:#EEEDFE;color:#3C3489}
+.chevron{font-size:11px;color:var(--color-text-secondary);transition:transform 0.2s}
+.tool-body{display:none;border-top:0.5px solid var(--color-border-tertiary)}
+.tool-body.open{display:block}
+.section{padding:12px 16px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.section:last-child{border-bottom:none}
+.sec-title{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+.item{display:flex;gap:8px;margin-bottom:6px;font-size:13px;color:var(--color-text-secondary);line-height:1.5;align-items:flex-start}
+.item:last-child{margin-bottom:0}
+.tag{font-size:10px;padding:1px 6px;border-radius:4px;font-weight:500;flex-shrink:0;margin-top:2px}
+code{font-family:var(--font-mono);font-size:11px;background:var(--color-background-secondary);padding:1px 4px;border-radius:3px;color:var(--color-text-primary)}
+.solution{color:var(--color-text-primary)}
+.fix-btn{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:5px 10px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:transparent;cursor:pointer;color:var(--color-text-primary);margin-top:8px}
+.fix-btn:hover{background:var(--color-background-secondary)}
+.lib-note{font-size:12px;color:var(--color-text-secondary);background:var(--color-background-secondary);padding:6px 10px;border-radius:6px;margin-top:8px;font-family:var(--font-mono)}
+</style>
+<div class="wrap">
+<p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:12px">Click any tool to expand the full plan. Every fix is based on the actual code and real browser APIs — nothing predicted.</p>
+
+<!-- COMPRESS PDF -->
+<div class="tool">
+  <div class="tool-head" onclick="toggle(this)">
+    <span class="tool-icon">🗜️</span>
+    <span class="tool-name">Compress PDF</span>
+    <div class="badges"><span class="badge b-bug">Bug</span><span class="badge b-fix">2 fixes</span><span class="badge b-feat">2 features</span></div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="tool-body">
+    <div class="section">
+      <div class="sec-title">Current bugs</div>
+      <div class="item"><span class="tag b-bug">Bug</span><span><code>pdfDoc.save({ useObjectStreams: true })</code> — this only restructures PDF internals. For image-heavy PDFs it gives 0% reduction because embedded images are unchanged. Users see "Compression complete" with 0% saved.</span></div>
+      <div class="item"><span class="tag b-bug">Bug</span><span>"Optimized" vs "Basic" only changes <code>useObjectStreams</code> flag — both produce nearly identical output sizes.</span></div>
+    </div>
+    <div class="section">
+      <div class="sec-title">Real solution</div>
+      <div class="item"><span class="tag b-fix">Fix</span><span class="solution">Load <code>pdf.js</code>, render each page to a canvas at a target DPI (72/96/150), export canvas as JPEG at quality 0.5/0.7/0.85, then embed those JPEG bytes into a new pdf-lib document page-by-page. This is how every real PDF compressor works — you're re-rendering, not re-encoding.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add 3 modes: <strong>Screen (72 DPI, JPEG 0.6)</strong> for email sharing, <strong>Web (96 DPI, JPEG 0.75)</strong> balanced, <strong>Print (150 DPI, JPEG 0.85)</strong> keeps quality. Show estimated size before compressing.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Show a before/after file size comparison bar (visual ratio) not just text numbers.</span></div>
+      <div class="lib-note">Libraries needed: pdf.js (already available) + pdf-lib (already loaded)</div>
+    </div>
+    <div class="section"><button class="fix-btn" onclick="sendPrompt('Fix compresspdf.js with real image compression: use pdf.js to render each page to canvas at 72/96/150 DPI, export as JPEG at 0.6/0.75/0.85 quality, embed into new pdf-lib document. Add Screen/Web/Print modes. Show before/after size comparison bar.')">Fix this tool ↗</button></div>
+  </div>
+</div>
+
+<!-- DOCX TO PDF -->
+<div class="tool">
+  <div class="tool-head" onclick="toggle(this)">
+    <span class="tool-icon">📂</span>
+    <span class="tool-name">DOCX to PDF</span>
+    <div class="badges"><span class="badge b-bug">Critical Bug</span><span class="badge b-fix">1 fix</span><span class="badge b-feat">1 feature</span></div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="tool-body">
+    <div class="section">
+      <div class="sec-title">Current bug</div>
+      <div class="item"><span class="tag b-bug">Bug</span><span>Uses <code>window.open()</code> + <code>window.print()</code> — this is not a PDF converter, it's a print dialog. On iOS Safari popups are blocked by default. On desktop the user has to navigate "Save as PDF" manually. No actual download button.</span></div>
+    </div>
+    <div class="section">
+      <div class="sec-title">Real solution</div>
+      <div class="item"><span class="tag b-fix">Fix</span><span class="solution">Mammoth converts DOCX → HTML (already done). Then use <code>html2canvas</code> to render that HTML div to a canvas, then embed canvas as image into pdf-lib. This gives a real <code>.pdf</code> download with no popups. Load <code>html2canvas</code> from CDN: <code>https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js</code></span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Show word count + estimated page count from Mammoth output before converting.</span></div>
+      <div class="lib-note">html2canvas 1.4.1 — available on cdnjs</div>
+    </div>
+    <div class="section"><button class="fix-btn" onclick="sendPrompt('Fix docx2pdf.js: replace the window.open print approach with html2canvas (from cdnjs 1.4.1) to render the preview div to canvas, then embed into pdf-lib to produce a real downloadable PDF. Add word count display.')">Fix this tool ↗</button></div>
+  </div>
+</div>
+
+<!-- SIGN PDF -->
+<div class="tool">
+  <div class="tool-head" onclick="toggle(this)">
+    <span class="tool-icon">✍️</span>
+    <span class="tool-name">Sign PDF</span>
+    <div class="badges"><span class="badge b-bug">2 Bugs</span><span class="badge b-feat">3 features</span></div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="tool-body">
+    <div class="section">
+      <div class="sec-title">Current bugs</div>
+      <div class="item"><span class="tag b-bug">Bug</span><span>Canvas has <code>background: white</code> in CSS. <code>canvas.toDataURL('image/png')</code> includes that white background. On white PDFs this is invisible; on coloured PDFs it looks broken. Fix: call <code>ctx.clearRect()</code> before drawing, never fill white, so the PNG has a transparent background.</span></div>
+      <div class="item"><span class="tag b-bug">Bug</span><span>Text positioning uses <code>text.length * fontSize * 0.6</code> — this is wrong. pdf-lib draws text left-anchored from x. For bottom-right the x should be <code>width - estimatedTextWidth - margin</code>. The rough formula overflows for long names and misaligns for short ones.</span></div>
+      <div class="item"><span class="tag b-bug">Bug</span><span>Drawn signature check: <code>imageData.data.some(pixel => pixel !== 0)</code> — checks all 4 channels (RGBA). An empty transparent canvas has all zeros so this works, but if user clears with <code>clearRect</code> after drawing, alpha channel gets reset properly. Logic is fine but fragile.</span></div>
+    </div>
+    <div class="section">
+      <div class="sec-title">Real solution</div>
+      <div class="item"><span class="tag b-fix">Fix</span><span class="solution">Remove <code>background: white</code> from canvas style. The canvas 2D context is transparent by default. PNG export will be transparent. In pdf-lib, transparent PNG embeds correctly — only the ink shows.</span></div>
+      <div class="item"><span class="tag b-fix">Fix</span><span class="solution">Use pdf-lib's <code>StandardFonts.Helvetica</code> to embed font, measure text width accurately with <code>font.widthOfTextAtSize(text, size)</code>, then compute x position correctly for all 4 corners.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add signature color picker (black/blue/red ink) — applies to both text and drawn signatures.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add 3 typed signature font styles using pdf-lib StandardFonts: Helvetica (clean), TimesRoman (formal), Courier (typewriter).</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add a live preview: render PDF page 1 via pdf.js, overlay the signature position as a visual preview before downloading.</span></div>
+      <div class="lib-note">pdf-lib StandardFonts + font.widthOfTextAtSize() — no extra library needed</div>
+    </div>
+    <div class="section"><button class="fix-btn" onclick="sendPrompt('Fix signpdf.js: remove white canvas background so PNG exports as transparent, use pdf-lib StandardFonts.Helvetica with font.widthOfTextAtSize() for accurate text positioning, add ink color picker (black/blue/red), add 3 font styles for typed signatures, add live page preview using pdf.js before download')">Fix this tool ↗</button></div>
+  </div>
+</div>
+
+<!-- ADD PAGE NUMBERS -->
+<div class="tool">
+  <div class="tool-head" onclick="toggle(this)">
+    <span class="tool-icon">📄</span>
+    <span class="tool-name">Add Page Numbers</span>
+    <div class="badges"><span class="badge b-bug">Bug</span><span class="badge b-feat">3 features</span></div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="tool-body">
+    <div class="section">
+      <div class="sec-title">Current bug</div>
+      <div class="item"><span class="tag b-bug">Bug</span><span>Bottom-center and top-center use <code>x = width / 2</code> but <code>page.drawText()</code> is left-anchored. So "Page 5 of 12" starts at center, not centered on center. Fix requires computing text width and subtracting half.</span></div>
+    </div>
+    <div class="section">
+      <div class="sec-title">Real solution</div>
+      <div class="item"><span class="tag b-fix">Fix</span><span class="solution">Load <code>StandardFonts.Helvetica</code> via <code>pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica)</code>, then use <code>font.widthOfTextAtSize(label, fontSize)</code> to get exact width. Set <code>x = (width - textWidth) / 2</code> for true centering.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add color picker for page number text (default grey, allow black or custom).</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add "Skip first N pages" — common for cover pages and table of contents. Page numbering starts from page N+1 but counter starts at 1.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add margin/padding control so numbers don't overlap content at page edge.</span></div>
+      <div class="lib-note">PDFLib.StandardFonts — built into pdf-lib, no extra library</div>
+    </div>
+    <div class="section"><button class="fix-btn" onclick="sendPrompt('Fix pagenumbers.js: use PDFLib.StandardFonts.Helvetica with embedFont() and font.widthOfTextAtSize() for accurate center alignment. Add color picker, skip-first-N-pages option, and margin control.')">Fix this tool ↗</button></div>
+  </div>
+</div>
+
+<!-- WATERMARK PDF -->
+<div class="tool">
+  <div class="tool-head" onclick="toggle(this)">
+    <span class="tool-icon">💧</span>
+    <span class="tool-name">Watermark PDF</span>
+    <div class="badges"><span class="badge b-bug">Bug</span><span class="badge b-feat">2 features</span></div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="tool-body">
+    <div class="section">
+      <div class="sec-title">Current bug</div>
+      <div class="item"><span class="tag b-bug">Bug</span><span>Canvas preview rotation: code calls <code>ctx.rotate(Math.PI / 4)</code> then <code>ctx.fillText(x, y)</code> but rotation is around origin (0,0), not around the text center. Result: text renders off-page or in wrong position. Fix needs <code>ctx.save() → ctx.translate(cx, cy) → ctx.rotate(angle) → ctx.fillText(0, 0) → ctx.restore()</code>.</span></div>
+    </div>
+    <div class="section">
+      <div class="sec-title">Real solution</div>
+      <div class="item"><span class="tag b-fix">Fix</span><span class="solution">Correct canvas rotation: <code>ctx.save(); ctx.translate(x, y); ctx.rotate(Math.PI/4); ctx.fillText(text, 0, 0); ctx.restore();</code> — this rotates around the text's own center point.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add image watermark: let user upload a PNG logo. Embed it into pdf-lib with <code>pdfDoc.embedPng()</code>, then <code>page.drawImage()</code> with controllable opacity and position. Real use-case for businesses.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add "Tile" mode: repeat watermark across the whole page in a grid pattern. Compute grid positions based on page size and watermark text width, loop <code>page.drawText()</code> at each grid point.</span></div>
+    </div>
+    <div class="section"><button class="fix-btn" onclick="sendPrompt('Fix watermarkpdf.js: correct canvas rotation using ctx.save/translate/rotate/fillText(0,0)/restore pattern. Add image watermark support via pdfDoc.embedPng() and page.drawImage() with opacity control. Add tile mode that repeats the watermark in a grid across the page.')">Fix this tool ↗</button></div>
+  </div>
+</div>
+
+<!-- SPLIT PDF -->
+<div class="tool">
+  <div class="tool-head" onclick="toggle(this)">
+    <span class="tool-icon">✂️</span>
+    <span class="tool-name">Split PDF</span>
+    <div class="badges"><span class="badge b-fix">1 fix</span><span class="badge b-feat">3 features</span></div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="tool-body">
+    <div class="section">
+      <div class="sec-title">Current problem</div>
+      <div class="item"><span class="tag b-fix">UX</span><span>Custom range input has no live validation. User types "1-3,5" and only finds out it's wrong after clicking Split. Invalid ranges silently fall back to nothing with no error shown inline.</span></div>
+    </div>
+    <div class="section">
+      <div class="sec-title">Real solution</div>
+      <div class="item"><span class="tag b-fix">Fix</span><span class="solution">Add <code>input</code> event listener on range field — parse in real time, show "✅ 4 pages selected" or "❌ Page 99 out of range" inline below the input.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add page thumbnail grid using pdf.js (already available in other tools). Let user click pages visually to select instead of typing ranges. Much better UX — iLovePDF does this.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add "Split into chunks of N pages" mode. E.g. a 30-page report → 3 × 10-page PDFs. Loop: create new PDFDocument, copy pages i to i+N, save, add to zip.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">After splitting, show a summary: "Created 5 files, total X MB" before download starts.</span></div>
+    </div>
+    <div class="section"><button class="fix-btn" onclick="sendPrompt('Improve splitpdf.js: add real-time page range validation with inline feedback, add pdf.js thumbnail grid for visual page selection, add split-into-N-chunks mode, show post-split summary before ZIP download.')">Improve this tool ↗</button></div>
+  </div>
+</div>
+
+<!-- PDF TO JPG -->
+<div class="tool">
+  <div class="tool-head" onclick="toggle(this)">
+    <span class="tool-icon">📸</span>
+    <span class="tool-name">PDF to JPG</span>
+    <div class="badges"><span class="badge b-fix">1 fix</span><span class="badge b-feat">3 features</span></div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="tool-body">
+    <div class="section">
+      <div class="sec-title">Current problems</div>
+      <div class="item"><span class="tag b-fix">UX</span><span>Quality selector uses scale multiplier (1x/2x/3x) but JPEG encoding quality is hardcoded at <code>0.9</code>. User selects "Standard (1x)" expecting smaller files but quality is still 90%.</span></div>
+    </div>
+    <div class="section">
+      <div class="sec-title">Real solution</div>
+      <div class="item"><span class="tag b-fix">Fix</span><span class="solution">Link scale to JPEG quality: 1x → <code>toBlob(r, 'image/jpeg', 0.7)</code>, 2x → <code>0.85</code>, 3x → <code>0.95</code>. Also show output pixel dimensions (canvas.width × canvas.height) in each preview card.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add PNG format option alongside JPG. In the canvas export just switch <code>'image/jpeg'</code> to <code>'image/png'</code> — PNG is lossless, better for text-heavy PDFs.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add individual download button on each preview card: <code>⬇ page-3.jpg</code>. Currently only "Download All" exists — user can't grab a single page without downloading everything.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add background color option for pages with transparency (white vs transparent for PNG).</span></div>
+    </div>
+    <div class="section"><button class="fix-btn" onclick="sendPrompt('Improve pdf2jpg.js: link quality selector to JPEG encoding quality (0.7/0.85/0.95), show output pixel dimensions in preview cards, add PNG format option, add individual per-page download buttons in the preview grid.')">Improve this tool ↗</button></div>
+  </div>
+</div>
+
+<!-- MERGE PDF -->
+<div class="tool">
+  <div class="tool-head" onclick="toggle(this)">
+    <span class="tool-icon">📚</span>
+    <span class="tool-name">Merge PDF</span>
+    <div class="badges"><span class="badge b-feat">3 features</span></div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="tool-body">
+    <div class="section">
+      <div class="sec-title">Real improvements</div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add first-page thumbnail for each file in the list. Use pdf.js <code>pdf.getPage(1)</code> → render to a 60×80 canvas thumbnail — same approach as rotatepdf.js already uses. Gives visual confidence about file order.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Replace ↑↓ buttons with HTML5 drag-and-drop reordering. Add <code>draggable="true"</code> on each list item, handle <code>dragstart / dragover / drop</code> events to reorder <code>filesArray</code>.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Show total page count across all loaded PDFs in the stats bar (currently only shows file count and size). Load each PDF with pdf-lib on add and read <code>pdfDoc.getPageCount()</code>.</span></div>
+    </div>
+    <div class="section"><button class="fix-btn" onclick="sendPrompt('Improve mergepdf.js: add pdf.js first-page thumbnails (60×80) for each file in the list, replace up/down buttons with HTML5 drag-and-drop reordering using draggable/dragover/drop events, show total page count across all files in the stats bar.')">Improve this tool ↗</button></div>
+  </div>
+</div>
+
+<!-- ROTATE PDF -->
+<div class="tool">
+  <div class="tool-head" onclick="toggle(this)">
+    <span class="tool-icon">🔄</span>
+    <span class="tool-name">Rotate PDF</span>
+    <div class="badges"><span class="badge b-fix">1 fix</span><span class="badge b-feat">2 features</span></div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="tool-body">
+    <div class="section">
+      <div class="sec-title">Current problem</div>
+      <div class="item"><span class="tag b-fix">UX</span><span>After rotating, thumbnails don't update visually. User doesn't see the result until they download. Thumbnails are static canvases rendered at load time and never re-rendered.</span></div>
+    </div>
+    <div class="section">
+      <div class="sec-title">Real solution</div>
+      <div class="item"><span class="tag b-fix">Fix</span><span class="solution">After rotation is applied, re-render each rotated page thumbnail using pdf.js: reload the saved PDF bytes back into <code>pdfjsLib.getDocument()</code> and re-render affected pages. Alternatively, apply <code>CSS transform: rotate(Ndeg)</code> to the canvas element immediately on checkbox select — instant visual feedback, no re-render needed.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Per-page rotation angle: add a small select (90/180/270) directly on each thumbnail card so different pages can have different rotations. Store angles in a <code>Map&lt;pageIndex, angle&gt;</code>.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add "Rotate All" quick buttons (↻ 90° All, ↺ 90° All) in the controls bar for common use-case of fixing scanned documents.</span></div>
+    </div>
+    <div class="section"><button class="fix-btn" onclick="sendPrompt('Improve rotatepdf.js: apply CSS transform rotate to thumbnails instantly when selected for visual feedback, add per-page angle selector on each thumbnail card stored in a Map, add Rotate All clockwise/counterclockwise quick buttons.')">Improve this tool ↗</button></div>
+  </div>
+</div>
+
+<!-- PDF ENCRYPT -->
+<div class="tool">
+  <div class="tool-head" onclick="toggle(this)">
+    <span class="tool-icon">🔐</span>
+    <span class="tool-name">PDF Encrypt / Protect</span>
+    <div class="badges"><span class="badge b-feat">3 features</span></div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="tool-body">
+    <div class="section">
+      <div class="sec-title">Real improvements</div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add show/hide toggle on both password fields. Standard pattern: an eye icon button that toggles <code>input.type</code> between <code>'password'</code> and <code>'text'</code>.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add "Remove Password" mode — load encrypted PDF with user password via <code>PDFDocument.load(bytes, { password: enteredPassword })</code>, then save without encryption. This is the #1 feature users look for after encrypting.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">After download, show a permissions summary card: "🔒 Protected · ✅ Print allowed · ❌ Copy blocked · ❌ Modify blocked" — so user can confirm what they set without re-opening the file.</span></div>
+    </div>
+    <div class="section"><button class="fix-btn" onclick="sendPrompt('Improve pdfencrypt.js: add show/hide eye icon toggle on password fields, add a Remove Password mode using PDFDocument.load with password option then save unencrypted, add post-download permissions summary card.')">Improve this tool ↗</button></div>
+  </div>
+</div>
+
+<!-- IMG TO PDF -->
+<div class="tool">
+  <div class="tool-head" onclick="toggle(this)">
+    <span class="tool-icon">🖼️</span>
+    <span class="tool-name">Image to PDF</span>
+    <div class="badges"><span class="badge b-feat">2 features</span></div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="tool-body">
+    <div class="section">
+      <div class="sec-title">Real improvements</div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Replace ↑↓ buttons with HTML5 drag-and-drop reordering on the file list (same as Merge PDF fix). Much more natural when ordering 10+ images.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add "Fit mode" option: <strong>Fit to page</strong> (current, image scales to fit), <strong>Fill page</strong> (image fills entire page, may crop edges), <strong>Original size</strong> (no scaling, image at 1:1 pixel ratio). This is the most requested option for scanned document PDFs.</span></div>
+    </div>
+    <div class="section"><button class="fix-btn" onclick="sendPrompt('Improve img2pdf.js: replace up/down buttons with HTML5 drag-and-drop, add Fit/Fill/Original size modes for how images are placed on the PDF page.')">Improve this tool ↗</button></div>
+  </div>
+</div>
+
+<!-- IMG TO PNG -->
+<div class="tool">
+  <div class="tool-head" onclick="toggle(this)">
+    <span class="tool-icon">🎨</span>
+    <span class="tool-name">Image to PNG</span>
+    <div class="badges"><span class="badge b-feat">3 features</span></div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="tool-body">
+    <div class="section">
+      <div class="sec-title">Real improvements</div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add JPEG and WebP output formats too — rename tool to "Convert Image Format". Use <code>canvas.toBlob(cb, 'image/webp', quality)</code> or <code>'image/jpeg'</code>. WebP output is extremely popular for web use.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add quality slider for JPEG/WebP output (10–100%). Show live file size estimate as user drags slider using canvas blob size.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add background color picker for images with transparency being converted to JPEG (which doesn't support alpha). Currently transparent areas become black — confusing. Let user choose white or custom fill color.</span></div>
+    </div>
+    <div class="section"><button class="fix-btn" onclick="sendPrompt('Improve img2png.js: add JPEG and WebP output formats alongside PNG, add quality slider for JPEG/WebP with live file size estimate, add background color picker for transparent-to-JPEG conversion.')">Improve this tool ↗</button></div>
+  </div>
+</div>
+
+<!-- MD TO PDF / HTML TO PDF -->
+<div class="tool">
+  <div class="tool-head" onclick="toggle(this)">
+    <span class="tool-icon">📝</span>
+    <span class="tool-name">Markdown to PDF &amp; HTML to PDF</span>
+    <div class="badges"><span class="badge b-bug">Bug</span><span class="badge b-feat">2 features</span></div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="tool-body">
+    <div class="section">
+      <div class="sec-title">Current bug</div>
+      <div class="item"><span class="tag b-bug">Bug</span><span>Both use <code>window.open() + window.print()</code>. Same issue as DOCX to PDF — blocked on iOS Safari, requires manual steps on desktop, no actual download button.</span></div>
+    </div>
+    <div class="section">
+      <div class="sec-title">Real solution</div>
+      <div class="item"><span class="tag b-fix">Fix</span><span class="solution">Use <code>html2canvas</code> on the live preview div to render to canvas, then embed in pdf-lib. For md2pdf, the <code>#mdRendered</code> div already has the rendered HTML. For web2pdf, the iframe content can be accessed via <code>iframe.contentDocument.body</code>. Both render cleanly with html2canvas.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">For md2pdf: add "Export as HTML" download button — useful for developers who just want the rendered HTML file.</span></div>
+    </div>
+    <div class="section"><button class="fix-btn" onclick="sendPrompt('Fix md2pdf.js and web2pdf.js: replace window.open/print with html2canvas (cdnjs 1.4.1) rendering the preview div to canvas then embedding in pdf-lib for a real direct PDF download. Add Export as HTML option to md2pdf.')">Fix both tools ↗</button></div>
+  </div>
+</div>
+
+<!-- TXT TO DOCX -->
+<div class="tool">
+  <div class="tool-head" onclick="toggle(this)">
+    <span class="tool-icon">📝</span>
+    <span class="tool-name">TXT to DOCX</span>
+    <div class="badges"><span class="badge b-feat">3 features</span></div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="tool-body">
+    <div class="section">
+      <div class="sec-title">Real improvements</div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add bold/italic markdown detection: <code>**text**</code> → <code>TextRun({ bold: true })</code>, <code>*text*</code> → <code>TextRun({ italics: true })</code>. The <code>docx</code> library already supports these properties on TextRun.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add numbered and bullet list detection: lines starting with <code>1.</code>, <code>2.</code> → <code>docx NumberingLevel</code>, lines starting with <code>-</code> or <code>*</code> → <code>docx BulletLevel</code>. Real list formatting in the DOCX output.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add a live preview panel showing how the document will look — render the text in a styled div with the selected font, size, and spacing so user sees output before downloading.</span></div>
+    </div>
+    <div class="section"><button class="fix-btn" onclick="sendPrompt('Improve txt2docx.js: add bold/italic markdown detection (** and *) mapping to docx TextRun properties, add numbered and bullet list detection mapping to docx NumberingLevel/BulletLevel, add live preview panel showing styled output.')">Improve this tool ↗</button></div>
+  </div>
+</div>
+
+<!-- QR MAKER -->
+<div class="tool">
+  <div class="tool-head" onclick="toggle(this)">
+    <span class="tool-icon">🔳</span>
+    <span class="tool-name">QR Code Maker</span>
+    <div class="badges"><span class="badge b-feat">2 features</span></div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="tool-body">
+    <div class="section">
+      <div class="sec-title">Real improvements</div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add a "Scan test" indicator — after generating, draw the QR on canvas then use <code>jsQR</code> library to attempt to decode the same canvas. Show ✅ Scannable / ❌ Too dense. Prevents users from downloading unreadable QR codes.</span></div>
+      <div class="item"><span class="tag b-feat">Feature</span><span class="solution">Add predefined QR types: URL, Email (<code>mailto:</code>), Phone (<code>tel:</code>), SMS (<code>sms:</code>), WiFi (<code>WIFI:T:WPA;S:name;P:password;;</code>), vCard. Each type shows relevant input fields and auto-formats the QR data string. This is what makes QR tools useful beyond just pasting URLs.</span></div>
+    </div>
+    <div class="section"><button class="fix-btn" onclick="sendPrompt('Improve qrmaker.js: add QR type selector (URL, Email, Phone, SMS, WiFi, vCard) that shows relevant input fields and auto-formats the data string. Add scan test using jsQR library to verify the generated QR is readable before download.')">Improve this tool ↗</button></div>
+  </div>
+</div>
+
+</div>
+<script>
+function toggle(head) {
+  const body = head.nextElementSibling;
+  const ch = head.querySelector('.chevron');
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.tool-body.open').forEach(b => {
+    b.classList.remove('open');
+    b.previousElementSibling.querySelector('.chevron').style.transform = '';
+  });
+  if (!isOpen) {
+    body.classList.add('open');
+    ch.style.transform = 'rotate(180deg)';
+  }
+}
+</script>

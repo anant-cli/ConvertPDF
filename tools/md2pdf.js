@@ -284,6 +284,36 @@ async function rendermd2pdf(container) {
             try {
                 const processed = preprocessMarkdown(text);
                 const html = DOMPurify.sanitize(marked.parse(processed));
+                let exportNode = null;
+                try {
+                    renderPreview();
+                    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
+                    exportNode = document.createElement('div');
+                    exportNode.style.background = mdDarkTheme.checked ? '#0d1117' : '#ffffff';
+                    exportNode.style.color = mdDarkTheme.checked ? '#c9d1d9' : '#24292e';
+                    exportNode.style.padding = '0.75in';
+                    exportNode.style.width = sizeSelect.value === 'letter' ? '8.5in' : '8.27in';
+                    exportNode.innerHTML = mdRendered.innerHTML || (printStyles('light') + `<div class="markdown-body">${html}</div>`);
+                    document.body.appendChild(exportNode);
+                    await html2pdf().set({
+                        margin: 0,
+                        filename: 'markdown-document.pdf',
+                        image: { type: 'jpeg', quality: 0.95 },
+                        html2canvas: { scale: 2, useCORS: true, backgroundColor: mdDarkTheme.checked ? '#0d1117' : '#ffffff' },
+                        jsPDF: { unit: 'in', format: sizeSelect.value, orientation: orientSelect.value },
+                        pagebreak: { mode: ['css', 'legacy'] }
+                    }).from(exportNode).save();
+                    exportNode.remove();
+                    if (window.trackEvent) trackEvent('Tool', 'convert', 'md2pdf');
+                    if (window.showToast) showToast('PDF downloaded successfully.');
+                    printBtn.disabled = false;
+                    printBtn.innerHTML = '🖨️ Generate PDF';
+                    return;
+                } catch (exportErr) {
+                    if (exportNode) exportNode.remove();
+                    console.warn('html2pdf export failed, falling back to print:', exportErr);
+                    if (window.showToast) showToast('Direct PDF export failed. Opening print fallback.', 'warning');
+                }
                 const fullHtml = `<!DOCTYPE html>
 <html><head><title>ConvertPDF - Markdown Document</title>${printStyles('print')}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" integrity="sha384-wcIxkf4k558AjM3Yz3BBFQUbk/zgIYC2R0QpeeYb+TwlBVMrlgLqwRjRtGZiK7ww" crossorigin="anonymous">

@@ -24,7 +24,7 @@ ConvertPDF offers focused browser tools for common document work:
 | **Compress PDF** | Reduce PDF file size. |
 | **TXT to DOCX** | Convert plain text files to Word documents. |
 | **PDF to JPG** | Export PDF pages as JPG images. |
-| **Image to PNG** | Convert common image formats to PNG. |
+| **Image Converter** | Convert images to PNG, JPEG, or WebP. |
 | **HTML to PDF** | Turn HTML snippets into printable PDFs. |
 | **QR Code Generator** | Create QR codes in PNG or SVG format. |
 
