@@ -1,96 +1,218 @@
-﻿// utils.js – shared helper functions
+﻿/**
+ * utils.js – Shared helper functions for ConvertPDF
+ * Production-ready version with enhanced error handling, performance optimizations,
+ * and proper memory management.
+ * @version 2.0.0
+ */
 
-const CDN_INTEGRITY = {
-    'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js': 'sha384-nFoSjZIoH3CCp8W639jJyQkuPHinJ2NHe7on1xvlUA7SuGfJAfvMldrsoAVm6ECz',
-    'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js': 'sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI',
-    'https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js': 'sha384-QsSpx6a0USazT7nK7w8qXDgpSAPhFsb2XtpoLFQ5+X2yFN6hvCKnwEzN8M5FWaJb',
-    'https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js': 'sha384-hIoBPJpTUs74ddyc4bFZSM1TVlQDA60VBbJS0oA934VSz82sBx1X7kSx2ATBDIyd',
-    'https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js': 'sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk',
-    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js': 'sha384-06z5D//U/xpvxZHuUz92xBvq3DqBBFi7Up53HRrbV7Jlv7Yvh/MZ7oenfUe9iCEt',
-    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js': 'sha384-Uq05+JLko69eOiPr39ta9bh7kld5PKZoU+fF7g0EXTAriEollhZ+DrN8Q/Oi8J2Q',
-    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js': 'sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e',
-    'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js': 'sha384-+mbV2IY1Zk/X1p/nWllGySJSUN8uMs+gUAN10Or95UBH0fpj6GfKgPmgC5EXieXG',
-    'https://cdn.jsdelivr.net/npm/pdf-lib-with-encrypt@1.2.1/dist/pdf-lib.min.js': 'sha384-kLfN3L+t+5ynoVlyBQoP7H06PdFmJ8uhHL/EmxEwqVyjkRHhqbHhufd16fN9Wm81',
-    'https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js': 'sha384-HGmnkDZJy7mRkoARekrrj0VjEFSh9a0Z8qxGri/kTTAJkgR8hqD1lHsYSh3JdzRi',
-    'https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js': 'sha384-WWGzNJbUWCKFUEexCVTZSZUJ64uYV7FqYVMG855l1ammDY4SH6oLEFuNF6exFtIl',
-    'https://cdn.jsdelivr.net/npm/dompurify@3.2.5/dist/purify.min.js': 'sha384-qSFej5dZNviyoPgYJ5+Xk4bEbX8AYddxAHPuzs1aSgRiXxJ3qmyWNaPsRkpv/+x5',
-    'https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css': 'sha384-wcIxkf4k558AjM3Yz3BBFQUbk/zgIYC2R0QpeeYb+TwlBVMrlgLqwRjRtGZiK7ww',
-    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css': 'sha384-wFjoQjtV1y5jVHbt0p35Ui8aV8GVpEZkyF99OXWqP/eNJDU93D3Ugxkoyh6Y2I4A',
-    'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js': 'sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=='
+// ==================== CONSTANTS ====================
+
+const CONSTANTS = {
+    MAX_FILE_SIZE: 50 * 1024 * 1024, // 50MB
+    DEBOUNCE_DELAY: 300,
+    TOAST_DURATION: 4000,
+    TOAST_FADE_DURATION: 300,
+    RATE_LIMIT_COOLDOWN: 1000,
+    MEMORY_CLEANUP_DELAY: 100,
 };
 
-// ---------- DOWNLOAD BLOB ----------
+const CDN_INTEGRITY = {
+    'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js': 
+        'sha384-nFoSjZIoH3CCp8W639jJyQkuPHinJ2NHe7on1xvlUA7SuGfJAfvMldrsoAVm6ECz',
+    'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js': 
+        'sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI',
+    'https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js': 
+        'sha384-QsSpx6a0USazT7nK7w8qXDgpSAPhFsb2XtpoLFQ5+X2yFN6hvCKnwEzN8M5FWaJb',
+    'https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js': 
+        'sha384-hIoBPJpTUs74ddyc4bFZSM1TVlQDA60VBbJS0oA934VSz82sBx1X7kSx2ATBDIyd',
+    'https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js': 
+        'sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk',
+    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js': 
+        'sha384-06z5D//U/xpvxZHuUz92xBvq3DqBBFi7Up53HRrbV7Jlv7Yvh/MZ7oenfUe9iCEt',
+    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js': 
+        'sha384-Uq05+JLko69eOiPr39ta9bh7kld5PKZoU+fF7g0EXTAriEollhZ+DrN8Q/Oi8J2Q',
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js': 
+        'sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e',
+    'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js': 
+        'sha384-+mbV2IY1Zk/X1p/nWllGySJSUN8uMs+gUAN10Or95UBH0fpj6GfKgPmgC5EXieXG',
+    'https://cdn.jsdelivr.net/npm/pdf-lib-with-encrypt@1.2.1/dist/pdf-lib.min.js': 
+        'sha384-kLfN3L+t+5ynoVlyBQoP7H06PdFmJ8uhHL/EmxEwqVyjkRHhqbHhufd16fN9Wm81',
+    'https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js': 
+        'sha384-HGmnkDZJy7mRkoARekrrj0VjEFSh9a0Z8qxGri/kTTAJkgR8hqD1lHsYSh3JdzRi',
+    'https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js': 
+        'sha384-WWGzNJbUWCKFUEexCVTZSZUJ64uYV7FqYVMG855l1ammDY4SH6oLEFuNF6exFtIl',
+    'https://cdn.jsdelivr.net/npm/dompurify@3.2.5/dist/purify.min.js': 
+        'sha384-qSFej5dZNviyoPgYJ5+Xk4bEbX8AYddxAHPuzs1aSgRiXxJ3qmyWNaPsRkpv/+x5',
+    'https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css': 
+        'sha384-wcIxkf4k558AjM3Yz3BBFQUbk/zgIYC2R0QpeeYb+TwlBVMrlgLqwRjRtGZiK7ww',
+    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css': 
+        'sha384-wFjoQjtV1y5jVHbt0p35Ui8aV8GVpEZkyF99OXWqP/eNJDU93D3Ugxkoyh6Y2I4A',
+    'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js': 
+        'sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=='
+};
+
+const CDN_FALLBACKS = {
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js': 
+        'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js',
+    'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js': 
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js': 
+        'https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js',
+    'https://cdn.jsdelivr.net/npm/dompurify@3.2.5/dist/purify.min.js': 
+        'https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.5/purify.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js': 
+        'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js',
+    'https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js': 
+        'https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.1/qrcode.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js': 
+        'https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js'
+};
+
+// ==================== FILE OPERATIONS ====================
+
+/**
+ * Downloads a blob as a file with proper memory cleanup
+ * @param {Blob} blob - The blob to download
+ * @param {string} filename - Desired filename
+ */
 function downloadBlob(blob, filename) {
+    if (!blob || !(blob instanceof Blob)) {
+        console.error('Invalid blob provided to downloadBlob');
+        return;
+    }
+    
     const link = document.createElement('a');
     const objectUrl = URL.createObjectURL(blob);
+    
     link.href = objectUrl;
-    link.download = filename;
+    link.download = sanitizeFilename(filename);
     link.style.display = 'none';
     document.body.appendChild(link);
-    link.click();
-    setTimeout(() => {
-        URL.revokeObjectURL(objectUrl);
-        link.remove();
-    }, 100);
+    
+    try {
+        link.click();
+    } catch (e) {
+        console.error('Download failed:', e);
+        showToast('Download failed. Please try again.', 'error');
+    } finally {
+        // Clean up with a small delay to ensure download started
+        setTimeout(() => {
+            URL.revokeObjectURL(objectUrl);
+            link.remove();
+        }, CONSTANTS.MEMORY_CLEANUP_DELAY);
+    }
 }
 
-// ---------- TIMING / VALIDATION HELPERS ----------
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-    };
+/**
+ * Sanitizes filename to prevent path traversal and invalid characters
+ * @param {string} filename - Filename to sanitize
+ * @returns {string} Sanitized filename
+ */
+function sanitizeFilename(filename) {
+    if (typeof filename !== 'string') return 'download';
+    
+    // Remove path components and invalid characters
+    return filename
+        .replace(/[\/\\]/g, '') // Remove slashes
+        .replace(/[<>:"|?*\x00-\x1f]/g, '') // Remove invalid chars
+        .replace(/^\.+/, '') // Remove leading dots
+        .trim() || 'download';
 }
 
-function isMobileDevice() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-}
-
+/**
+ * Validates file against specified criteria
+ * @param {File} file - File to validate
+ * @param {Object} options - Validation options
+ * @returns {Object} Validation result with valid boolean and message
+ */
 function validateFile(file, options = {}) {
-    if (!file) return { valid: false, message: 'Please select a file.' };
+    if (!file || !(file instanceof File)) {
+        return { valid: false, message: 'Please select a valid file.' };
+    }
 
     const {
         extensions = [],
         mimeTypes = [],
-        maxSize = 50 * 1024 * 1024,
+        maxSize = CONSTANTS.MAX_FILE_SIZE,
+        minSize = 0,
         label = 'file'
     } = options;
 
     const name = (file.name || '').toLowerCase();
     const type = (file.type || '').toLowerCase();
-    const validExtension = extensions.length === 0 || extensions.some(ext => name.endsWith(ext.toLowerCase()));
-    const validMime = mimeTypes.length === 0 || mimeTypes.some(mime => type === mime.toLowerCase());
+
+    // Validate extensions
+    const validExtension = extensions.length === 0 || 
+        extensions.some(ext => name.endsWith(ext.toLowerCase()));
+    
+    // Validate MIME types
+    const validMime = mimeTypes.length === 0 || 
+        mimeTypes.some(mime => type === mime.toLowerCase());
 
     if (!validExtension && !validMime) {
-        return { valid: false, message: `Please select a valid ${label}.` };
+        const expectedExts = extensions.length > 0 ? extensions.join(', ') : 'supported formats';
+        return { 
+            valid: false, 
+            message: `Please select a valid ${label} (${expectedExts}).` 
+        };
     }
+
+    // Validate file size
     if (file.size > maxSize) {
-        return { valid: false, message: `${label} is too large. Please use a file under ${formatFileSize(maxSize)}.` };
+        return { 
+            valid: false, 
+            message: `${label} is too large. Maximum size is ${formatFileSize(maxSize)}.` 
+        };
+    }
+
+    if (file.size < minSize) {
+        return { 
+            valid: false, 
+            message: `${label} is too small. Minimum size is ${formatFileSize(minSize)}.` 
+        };
     }
 
     return { valid: true };
 }
 
+/**
+ * Checks if a file matches the accept attribute pattern
+ * @param {File} file - File to check
+ * @param {string} accept - Accept attribute value
+ * @returns {boolean} Whether file matches
+ */
 function fileMatchesAccept(file, accept) {
-    if (!accept) return true;
+    if (!accept || !file) return true;
 
-    const tokens = accept.split(',').map(token => token.trim().toLowerCase()).filter(Boolean);
+    const tokens = accept.split(',')
+        .map(token => token.trim().toLowerCase())
+        .filter(Boolean);
+    
     if (tokens.length === 0) return true;
 
     const name = (file.name || '').toLowerCase();
     const type = (file.type || '').toLowerCase();
 
     return tokens.some(token => {
-        if (token.startsWith('.')) return name.endsWith(token);
-        if (token.endsWith('/*')) return type.startsWith(token.slice(0, -1));
+        if (token.startsWith('.')) {
+            return name.endsWith(token);
+        }
+        if (token.endsWith('/*')) {
+            const prefix = token.slice(0, -1);
+            return type.startsWith(prefix);
+        }
         return type === token;
     });
 }
 
-document.addEventListener('change', event => {
+/**
+ * Global file input validation
+ */
+document.addEventListener('change', (event) => {
     const input = event.target;
-    if (!input || input.type !== 'file' || !input.files || input.files.length === 0) return;
+    if (!input || input.type !== 'file' || !input.files || input.files.length === 0) {
+        return;
+    }
 
     const accept = input.getAttribute('accept');
     if (!accept) return;
@@ -99,155 +221,328 @@ document.addEventListener('change', event => {
     if (!invalidFile) return;
 
     input.value = '';
-    if (window.showToast) {
-        showToast('Please select a supported file type.', 'error');
-    }
+    showToast('Please select a supported file type.', 'error');
     event.stopImmediatePropagation();
 }, true);
 
+// ==================== TIMING & UTILITY FUNCTIONS ====================
+
+/**
+ * Debounces function calls
+ * @param {Function} func - Function to debounce
+ * @param {number} wait - Wait time in milliseconds
+ * @returns {Function} Debounced function
+ */
+function debounce(func, wait = CONSTANTS.DEBOUNCE_DELAY) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func.apply(this, args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+/**
+ * Throttles function calls
+ * @param {Function} func - Function to throttle
+ * @param {number} limit - Time limit in milliseconds
+ * @returns {Function} Throttled function
+ */
+function throttle(func, limit = CONSTANTS.DEBOUNCE_DELAY) {
+    let inThrottle;
+    return function(...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+}
+
+/**
+ * Detects if device is mobile
+ * @returns {boolean} True if mobile device
+ */
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        (window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
+}
+
+/**
+ * Rate limiter for preventing abuse
+ */
 const rateLimiter = {
-    lastAction: {},
-    canProceed(action, cooldownMs = 1000) {
+    lastAction: new Map(),
+    
+    /**
+     * Checks if action can proceed
+     * @param {string} action - Action identifier
+     * @param {number} cooldownMs - Cooldown period in milliseconds
+     * @returns {boolean} Whether action can proceed
+     */
+    canProceed(action, cooldownMs = CONSTANTS.RATE_LIMIT_COOLDOWN) {
         const now = Date.now();
-        const last = this.lastAction[action] || 0;
-        if (now - last < cooldownMs) return false;
-        this.lastAction[action] = now;
+        const last = this.lastAction.get(action) || 0;
+        
+        if (now - last < cooldownMs) {
+            return false;
+        }
+        
+        this.lastAction.set(action, now);
         return true;
+    },
+    
+    /**
+     * Resets rate limit for specific action
+     * @param {string} action - Action identifier
+     */
+    reset(action) {
+        this.lastAction.delete(action);
+    },
+    
+    /**
+     * Clears all rate limits
+     */
+    clearAll() {
+        this.lastAction.clear();
     }
 };
+
 window.rateLimiter = rateLimiter;
 
-function trackEvent(category, action, label, value) {
+// ==================== ANALYTICS ====================
+
+/**
+ * Tracks events with Google Analytics
+ * @param {string} category - Event category
+ * @param {string} action - Event action
+ * @param {string} label - Event label
+ * @param {number} value - Event value
+ */
+function trackEvent(category, action, label, value = 0) {
     if (typeof window.gtag !== 'function') return;
-    window.gtag('event', action, {
-        event_category: category,
-        event_label: label,
-        value: value || 0
-    });
-    // Track file conversions as GA4 conversion events (important for AdSense approval signal)
-    if (action === 'download' || action === 'convert' || action === 'encrypt' || action === 'merge') {
-        window.gtag('event', 'generate_lead', {
-            event_category: 'Tool',
+    
+    try {
+        window.gtag('event', action, {
+            event_category: category,
             event_label: label,
-            currency: 'USD',
-            value: 0
+            value: value
         });
+
+        // Track conversions for important actions
+        const conversionActions = ['download', 'convert', 'encrypt', 'merge', 'compress'];
+        if (conversionActions.includes(action)) {
+            window.gtag('event', 'generate_lead', {
+                event_category: 'Tool',
+                event_label: label,
+                currency: 'USD',
+                value: 0
+            });
+        }
+    } catch (e) {
+        console.warn('Analytics tracking failed:', e);
     }
 }
 
-// ---------- SEO HELPERS ----------
+// ==================== SEO HELPERS ====================
+
+/**
+ * Updates meta description
+ * @param {string} desc - New description
+ */
 function updateMetaDescription(desc) {
+    if (typeof desc !== 'string') return;
+    
     let meta = document.querySelector('meta[name="description"]');
-    if (meta) {
-        meta.setAttribute('content', desc);
+    if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', 'description');
+        document.head.appendChild(meta);
     }
+    meta.setAttribute('content', desc);
 }
 
+/**
+ * Updates page title
+ * @param {string} title - New title
+ */
 function updatePageTitle(title) {
-    document.title = title + " – ConvertPDF";
+    if (typeof title !== 'string') return;
+    document.title = `${title} – ConvertPDF`;
 }
 
-// ---------- LOAD IMAGE FROM FILE ----------
+// ==================== IMAGE LOADING ====================
+
+/**
+ * Loads an image from a file with proper error handling
+ * @param {File} file - Image file
+ * @returns {Promise<HTMLImageElement>} Loaded image
+ */
 function loadImage(file) {
     return new Promise((resolve, reject) => {
+        if (!file || !(file instanceof File)) {
+            reject(new Error('Invalid file provided'));
+            return;
+        }
+
         const reader = new FileReader();
-        reader.onload = e => {
+        
+        reader.onload = (e) => {
             const img = new Image();
-            img.onload = () => resolve(img);
-            img.onerror = reject;
+            
+            img.onload = () => {
+                // Clean up object URL if used
+                if (img.src.startsWith('blob:')) {
+                    URL.revokeObjectURL(img.src);
+                }
+                resolve(img);
+            };
+            
+            img.onerror = () => {
+                if (img.src.startsWith('blob:')) {
+                    URL.revokeObjectURL(img.src);
+                }
+                reject(new Error('Failed to load image'));
+            };
+            
             img.src = e.target.result;
         };
-        reader.onerror = reject;
+        
+        reader.onerror = () => reject(new Error('Failed to read file'));
         reader.readAsDataURL(file);
     });
 }
 
-const CDN_FALLBACKS = {
-    'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js': 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js',
-    'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js': 'https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js',
-    'https://cdn.jsdelivr.net/npm/dompurify@3.2.5/dist/purify.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.5/purify.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js': 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js',
-    'https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.1/qrcode.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js': 'https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js'
-};
+// ==================== DYNAMIC RESOURCE LOADING ====================
 
-// ---------- DYNAMIC SCRIPT LOADER (with optional SRI) ----------
+/**
+ * Loads external script with fallback support
+ * @param {string} src - Script URL
+ * @param {string} integrity - SRI integrity hash
+ * @param {string} fallbackSrc - Fallback URL
+ * @returns {Promise<void>}
+ */
 function loadScript(src, integrity, fallbackSrc) {
     return new Promise((resolve, reject) => {
+        // Check if already loaded
         const existing = document.querySelector(`script[src="${src}"]`);
         if (existing) {
             resolve();
             return;
         }
+
         const script = document.createElement('script');
         script.src = src;
+        
         const sri = integrity || CDN_INTEGRITY[src];
         if (sri) {
             script.integrity = sri;
             script.crossOrigin = 'anonymous';
         }
+
         script.onload = () => resolve();
+        
         script.onerror = () => {
             script.remove();
             const fallback = fallbackSrc || CDN_FALLBACKS[src];
-            if (fallback) {
+            
+            if (fallback && fallback !== src) {
+                console.warn(`Failed to load ${src}, trying fallback: ${fallback}`);
                 loadScript(fallback, null, null).then(resolve).catch(reject);
-                return;
+            } else {
+                reject(new Error(`Failed to load script: ${src}`));
             }
-            reject(new Error(`Failed to load script: ${src}`));
         };
+
         document.head.appendChild(script);
     });
 }
 
-// ---------- DYNAMIC STYLESHEET LOADER (with optional SRI) ----------
+/**
+ * Loads external stylesheet with SRI support
+ * @param {string} href - Stylesheet URL
+ * @param {string} integrity - SRI integrity hash
+ * @returns {Promise<void>}
+ */
 function loadStylesheet(href, integrity) {
     return new Promise((resolve, reject) => {
+        // Check if already loaded
         const existing = document.querySelector(`link[href="${href}"]`);
         if (existing) {
             resolve();
             return;
         }
+
         const link = document.createElement('link');
         link.rel = 'stylesheet';
         link.href = href;
+        
         const sri = integrity || CDN_INTEGRITY[href];
         if (sri) {
             link.integrity = sri;
             link.crossOrigin = 'anonymous';
         }
-        link.onload = resolve;
+
+        link.onload = () => resolve();
         link.onerror = () => reject(new Error(`Failed to load stylesheet: ${href}`));
+        
         document.head.appendChild(link);
     });
 }
 
-// ---------- PROCESSING SPINNER ----------
+// ==================== UI COMPONENTS ====================
+
+/**
+ * Shows processing spinner
+ * @param {string} message - Loading message
+ */
 function showSpinner(message = 'Processing...') {
     let spinner = document.getElementById('global-processing-spinner');
+    
     if (!spinner) {
         spinner = document.createElement('div');
         spinner.id = 'global-processing-spinner';
         spinner.className = 'processing-spinner-overlay';
         spinner.setAttribute('role', 'status');
         spinner.setAttribute('aria-live', 'polite');
-        spinner.innerHTML = '<div class="processing-spinner-box"><div class="spinner"></div><p></p></div>';
+        spinner.innerHTML = `
+            <div class="processing-spinner-box">
+                <div class="spinner"></div>
+                <p></p>
+            </div>
+        `;
         document.body.appendChild(spinner);
     }
+
     const label = spinner.querySelector('p');
-    if (label) label.textContent = message;
+    if (label) {
+        label.textContent = message;
+    }
+    
     spinner.hidden = false;
 }
 
+/**
+ * Hides processing spinner
+ */
 function hideSpinner() {
     const spinner = document.getElementById('global-processing-spinner');
-    if (spinner) spinner.hidden = true;
+    if (spinner) {
+        spinner.hidden = true;
+    }
 }
 
-
-// ---------- TOAST NOTIFICATIONS ----------
+/**
+ * Shows toast notification
+ * @param {string} message - Notification message
+ * @param {string} type - Type: success, error, warning, info
+ */
 function showToast(message, type = 'success') {
+    if (typeof message !== 'string') return;
+
     let container = document.getElementById('toast-container');
     if (!container) {
         container = document.createElement('div');
@@ -257,32 +552,60 @@ function showToast(message, type = 'success') {
         document.body.appendChild(container);
     }
 
-    const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+    const icons = {
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: 'ℹ️'
+    };
+
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.setAttribute('role', 'alert');
     toast.tabIndex = -1;
-    toast.innerHTML = `<span class="toast-icon">${icons[type] || '✅'}</span><span>${message}</span>`;
+    
+    // Sanitize message to prevent XSS
+    const sanitizedMessage = document.createTextNode(message);
+    const messageSpan = document.createElement('span');
+    messageSpan.appendChild(sanitizedMessage);
+    
+    const iconSpan = document.createElement('span');
+    iconSpan.className = 'toast-icon';
+    iconSpan.textContent = icons[type] || icons.success;
+    
+    toast.appendChild(iconSpan);
+    toast.appendChild(messageSpan);
     container.appendChild(toast);
 
-    toast.offsetHeight;
-    toast.classList.add('show');
+    // Trigger animation
+    requestAnimationFrame(() => {
+        toast.classList.add('show');
+    });
 
     // Auto-remove
     setTimeout(() => {
         toast.classList.add('removing');
-        setTimeout(() => toast.remove(), 300);
-    }, 4000);
+        setTimeout(() => toast.remove(), CONSTANTS.TOAST_FADE_DURATION);
+    }, CONSTANTS.TOAST_DURATION);
 }
 
-// ---------- VISUAL HELPERS ----------
+// ==================== VISUAL HELPERS ====================
+
+/**
+ * Updates password strength meter
+ * @param {string} password - Password to check
+ * @param {string} meterBarId - Progress bar element ID
+ * @param {string} textId - Text label element ID
+ */
 function updatePasswordStrengthMeter(password, meterBarId, textId) {
     const bar = document.getElementById(meterBarId);
     const text = document.getElementById(textId);
+    
     if (!bar) return;
 
     let strength = 0;
-    if (password.length > 0) {
+    
+    if (password && password.length > 0) {
         if (password.length >= 8) strength++;
         if (/[a-z]/.test(password)) strength++;
         if (/[A-Z]/.test(password)) strength++;
@@ -290,44 +613,76 @@ function updatePasswordStrengthMeter(password, meterBarId, textId) {
         if (/[^a-zA-Z0-9]/.test(password)) strength++;
     }
 
-    const widths = ['0%', '20%', '40%', '60%', '80%', '100%'];
-    const colors = ['#e74c3c', '#e67e22', '#f1c40f', '#2ecc71', '#27ae60', '#27ae60'];
-    const labels = ['', 'Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+    const config = [
+        { width: '0%', color: '#e74c3c', label: '' },
+        { width: '20%', color: '#e74c3c', label: 'Very Weak' },
+        { width: '40%', color: '#e67e22', label: 'Weak' },
+        { width: '60%', color: '#f1c40f', label: 'Fair' },
+        { width: '80%', color: '#2ecc71', label: 'Good' },
+        { width: '100%', color: '#27ae60', label: 'Strong' }
+    ];
 
     strength = Math.min(strength, 5);
-    bar.style.width = widths[strength];
-    bar.style.background = colors[strength];
+    const { width, color, label } = config[strength];
+    
+    bar.style.width = width;
+    bar.style.background = color;
+    
     if (text) {
-        text.textContent = labels[strength];
-        text.style.color = colors[strength];
+        text.textContent = label;
+        text.style.color = color;
     }
 }
 
+/**
+ * Updates progress bar
+ * @param {number} progressPercent - Progress percentage (0-100)
+ * @param {string} barId - Progress bar element ID
+ */
 function updateProgressBar(progressPercent, barId) {
     const bar = document.getElementById(barId);
     if (bar) {
-        bar.style.width = `${progressPercent}%`;
+        const percent = Math.max(0, Math.min(100, progressPercent));
+        bar.style.width = `${percent}%`;
+        bar.setAttribute('aria-valuenow', percent);
     }
 }
 
-// ---------- FILE SIZE FORMATTER ----------
+/**
+ * Formats file size to human-readable format
+ * @param {number} bytes - File size in bytes
+ * @returns {string} Formatted file size
+ */
 function formatFileSize(bytes) {
     const n = Number(bytes);
+    
     if (!Number.isFinite(n) || n < 0) return '0 Bytes';
     if (n === 0) return '0 Bytes';
+    
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.min(sizes.length - 1, Math.floor(Math.log(n) / Math.log(k)));
+    
     return parseFloat((n / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// ---------- DRAG AND DROP HELPER ----------
+// ==================== DRAG AND DROP ====================
+
+/**
+ * Sets up drag and drop functionality
+ * @param {string} dropZoneId - Drop zone element ID
+ * @param {string} fileInputId - File input element ID
+ */
 function setupDropZone(dropZoneId, fileInputId) {
     const dropZone = document.getElementById(dropZoneId);
     const fileInput = document.getElementById(fileInputId);
 
-    if (!dropZone || !fileInput) return;
+    if (!dropZone || !fileInput) {
+        console.warn(`setupDropZone: Missing elements (${dropZoneId}, ${fileInputId})`);
+        return;
+    }
 
+    // Update text for mobile devices
     if (isMobileDevice()) {
         const primaryText = dropZone.querySelector('p');
         if (primaryText && /drag/i.test(primaryText.textContent)) {
@@ -335,63 +690,137 @@ function setupDropZone(dropZoneId, fileInputId) {
         }
     }
 
+    const preventDefaults = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
+    const highlight = () => dropZone.classList.add('dragover');
+    const unhighlight = () => dropZone.classList.remove('dragover');
+
+    // Prevent default drag behaviors
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, preventDefaults, false);
     });
 
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
+    // Highlight on drag over
     ['dragenter', 'dragover'].forEach(eventName => {
         dropZone.addEventListener(eventName, highlight, false);
     });
 
+    // Remove highlight on drag leave or drop
     ['dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, unhighlight, false);
     });
 
-    function highlight(e) {
-        dropZone.classList.add('dragover'); // Fixed: was 'active'
-    }
-
-    function unhighlight(e) {
-        dropZone.classList.remove('dragover'); // Fixed: was 'active'
-    }
-
-    dropZone.addEventListener('drop', handleDrop, false);
-
-    function handleDrop(e) {
+    // Handle dropped files
+    dropZone.addEventListener('drop', (e) => {
         const dt = e.dataTransfer;
         const files = dt.files;
 
         if (files.length > 0) {
             fileInput.files = files;
-            // Trigger change event manually
             fileInput.dispatchEvent(new Event('change', { bubbles: true }));
         }
-    }
+    }, false);
 }
 
-// ---------- SHOW FILENAME ON DROP ZONE ----------
-// Call after file input 'change' event to update the drop zone label
+/**
+ * Shows filename on drop zone after file selection
+ * @param {string} dropZoneId - Drop zone element ID
+ * @param {File} file - Selected file
+ */
 function showFileOnDropZone(dropZoneId, file) {
     const dropZone = document.getElementById(dropZoneId);
     if (!dropZone || !file) return;
+
     const p = dropZone.querySelector('p');
     if (p) {
-        p.innerHTML = `<strong>📄 ${file.name}</strong> <span style="color:var(--text-muted);font-size:0.85em;">(${formatFileSize(file.size)})</span>`;
+        // Create safe HTML content
+        const strong = document.createElement('strong');
+        strong.textContent = `📄 ${file.name}`;
+        
+        const span = document.createElement('span');
+        span.style.color = 'var(--text-muted)';
+        span.style.fontSize = '0.85em';
+        span.textContent = ` (${formatFileSize(file.size)})`;
+        
+        p.innerHTML = '';
+        p.appendChild(strong);
+        p.appendChild(span);
     }
+
     dropZone.style.borderColor = 'var(--accent)';
     dropZone.style.background = 'rgba(99,102,241,0.07)';
 }
 
-function resetDropZone(dropZoneId, defaultText) {
+/**
+ * Resets drop zone to default state
+ * @param {string} dropZoneId - Drop zone element ID
+ * @param {string} defaultText - Default text to display
+ */
+function resetDropZone(dropZoneId, defaultText = 'Drag and drop a file here') {
     const dropZone = document.getElementById(dropZoneId);
     if (!dropZone) return;
+
     const p = dropZone.querySelector('p');
-    if (p) p.innerHTML = defaultText || 'Drag and drop a file here';
+    if (p) {
+        p.textContent = defaultText;
+    }
+
     dropZone.style.borderColor = '';
     dropZone.style.background = '';
+    dropZone.classList.remove('dragover');
 }
+
+// ==================== MEMORY MANAGEMENT ====================
+
+/**
+ * Cleanup utility for memory management
+ */
+const MemoryManager = {
+    objectUrls: new Set(),
+    
+    /**
+     * Registers an object URL for cleanup
+     * @param {string} url - Object URL
+     */
+    registerObjectUrl(url) {
+        if (typeof url === 'string' && url.startsWith('blob:')) {
+            this.objectUrls.add(url);
+        }
+    },
+    
+    /**
+     * Revokes and removes an object URL
+     * @param {string} url - Object URL
+     */
+    revokeObjectUrl(url) {
+        if (this.objectUrls.has(url)) {
+            URL.revokeObjectURL(url);
+            this.objectUrls.delete(url);
+        }
+    },
+    
+    /**
+     * Cleans up all registered object URLs
+     */
+    cleanup() {
+        this.objectUrls.forEach(url => {
+            try {
+                URL.revokeObjectURL(url);
+            } catch (e) {
+                console.warn('Failed to revoke object URL:', e);
+            }
+        });
+        this.objectUrls.clear();
+    }
+};
+
+// Clean up on page unload
+window.addEventListener('beforeunload', () => {
+    MemoryManager.cleanup();
+});
+
+// Export for global use
+window.MemoryManager = MemoryManager;

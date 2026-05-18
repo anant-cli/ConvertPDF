@@ -18,6 +18,7 @@ const STATIC_ASSETS = [
     '/components.js',
     '/analytics-head.js',
     '/favicon.png',
+    '/favicon.ico',
     '/icon-192.png',
     '/icon-512.png',
     '/manifest.json',

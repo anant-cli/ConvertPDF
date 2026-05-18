@@ -76,6 +76,14 @@ async function rendermergepdf(container) {
             mergeInp.files = dt.files;
         }
 
+        function moveFile(index, direction) {
+            const target = direction === 'up' ? index - 1 : index + 1;
+            if (target < 0 || target >= filesArray.length) return;
+            [filesArray[index], filesArray[target]] = [filesArray[target], filesArray[index]];
+            syncFileInput();
+            renderFileList();
+        }
+
         function updateStats() {
             if (filesArray.length > 0) {
                 mergeStats.style.display = 'block';
@@ -126,6 +134,8 @@ async function rendermergepdf(container) {
                     <img src="${meta.thumbUrl || ''}" alt="" style="width:48px;height:64px;object-fit:contain;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:4px;${meta.thumbUrl ? '' : 'visibility:hidden;'}">
                     <span class="file-name" style="flex:1;">${file.name} <sm style="color:var(--text-muted); font-size:0.8em;">(${fileSize}${meta.pages ? `, ${meta.pages} pages` : ''})</sm></span>
                     <div class="file-actions">
+                        <button class="move-file" data-dir="up" title="Move up">↑</button>
+                        <button class="move-file" data-dir="down" title="Move down">↓</button>
                         <button class="remove-file" style="color:#e74c3c; border-color:rgba(248,113,113,0.25); background:rgba(248,113,113,0.08);" title="Remove">Remove</button>
                     </div>
                 `;
@@ -160,6 +170,15 @@ async function rendermergepdf(container) {
                     syncFileInput();
                     renderFileList();
                 });
+
+                li.querySelectorAll('.move-file').forEach(button => {
+                    button.addEventListener('click', e => {
+                        e.stopPropagation();
+                        const direction = button.dataset.dir;
+                        moveFile(index, direction);
+                    });
+                });
+
                 fileList.appendChild(li);
             });
             updateStats();

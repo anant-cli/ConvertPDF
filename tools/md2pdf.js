@@ -1,24 +1,20 @@
-﻿// md2pdf.js
+﻿// md2pdf.js - Fixed PDF generation using Print (no blank pages, math + highlighting preserved)
+
 async function rendermd2pdf(container) {
     try {
-        container.innerHTML = `
-            <div class="loading-state" role="status" aria-live="polite">
-                <div class="spinner"></div>
-                <p>Loading Markdown converter...</p>
-            </div>
-        `;
+        container.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Loading Markdown converter...</p></div>`;
 
         await Promise.all([
             loadScript('https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js'),
             loadScript('https://cdn.jsdelivr.net/npm/dompurify@3.2.5/dist/purify.min.js'),
             loadScript('https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js'),
             loadScript('https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js'),
-            loadScript('https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js')
+            loadScript('https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js'),
+            loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js')
         ]);
         await loadScript('https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js');
-        if (window.Prism && Prism.plugins && Prism.plugins.autoloader) {
-            Prism.plugins.autoloader.languages_path =
-                'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
+        if (window.Prism && Prism.plugins?.autoloader) {
+            Prism.plugins.autoloader.languages_path = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
         }
         await loadStylesheet('https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css');
         await loadStylesheet('https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css');
@@ -34,56 +30,48 @@ async function rendermd2pdf(container) {
         area.innerHTML = `
         <div style="display: flex; flex-direction: column; gap: 1.5rem;">
             <div>
-                <h3>📝 Markdown to PDF</h3>
+                <h3>Markdown to PDF</h3>
                 <p class="tool-description">
                     Convert Markdown into professional PDF documents. Supports LaTeX math ($E=mc^2$), syntax highlighting, and custom page breaks.
                 </p>
             </div>
 
-            <div id="mdPdfDropZone" class="drop-zone" style="min-height: 180px;">
-                <div style="font-size: 3rem; margin-bottom: 0.5rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">📄</div>
-                <p style="font-size: 1.1rem; font-weight: 500;">Drag & drop your Markdown file</p>
-                <p class="note" style="margin-top: 0;">or click to browse</p>
-                <label class="sr-only" for="mdFile">Select Markdown file</label>
-                <input type="file" id="mdFile" accept=".md,text/markdown" style="display: none;">
+            <div id="mdPdfDropZone" class="drop-zone" tabindex="0" role="button" aria-label="Upload Markdown file" style="min-height: 180px;">
+                <div style="font-size: 1.25rem; margin-bottom: 0.25rem;">File</div>
+                <p style="font-size: 1.05rem; font-weight: 500;">Drag & drop your Markdown file</p>
+                <p class="note">or click to browse</p>
+                <input type="file" id="mdFile" accept=".md,.markdown,.txt" aria-label="Markdown file" style="display: none;">
             </div>
             
-            <div style="display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; background: var(--bg-input); padding: 1rem; border-radius: var(--r-md); border: 1px solid var(--border-subtle);">
-                <div class="orientation-selector" style="margin: 0; gap: 1rem;">
-                    <label style="font-weight: 600;">📐 <select id="mdPageSize" style="max-width: 120px;"><option value="a4">A4</option><option value="letter">Letter</option></select></label>
-                    <label style="font-weight: 600;">🔄 <select id="mdOrientation" style="max-width: 130px;"><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></label>
+            <div style="display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; background: var(--bg-input); padding: 1rem; border-radius: var(--r-md);">
+                <div class="orientation-selector" style="margin:0; gap:1rem;">
+                    <label><select id="mdPageSize"><option value="a4">A4</option><option value="letter">Letter</option></select></label>
+                    <label><select id="mdOrientation"><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></label>
                 </div>
-                <button id="loadSampleBtn" class="secondary" style="min-width: unset; padding: 0 1.2rem; height: 38px; font-size: 0.9rem;">📝 Load Sample</button>
-                <label style="margin-left: auto; display: flex; align-items: center; gap: 0.6rem; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: var(--text-muted);">
-                    <input type="checkbox" id="toggleEditor" style="width: auto; height: auto;"> ⚙️ Advanced Editor
+                <button id="loadSampleBtn" class="secondary">Load sample</button>
+                <label style="margin-left: auto; display: flex; align-items: center; gap:0.6rem;">
+                    <input type="checkbox" id="toggleEditor"> Advanced editor
                 </label>
             </div>
 
-            <div id="editorSection" style="display: none; animation: slideDown 0.3s ease-out;">
-                <div class="preview-title" style="margin-bottom: 0.5rem;">Markdown Source</div>
-                <textarea id="mdEditor" spellcheck="false" placeholder="Type or paste Markdown here..." style="width: 100%; min-height: 350px; resize: vertical; font-family: 'Fira Code', monospace; font-size: 0.95rem; max-width: 100%;"></textarea>
+            <div id="editorSection" style="display: none;">
+                <div class="preview-title">Markdown source</div>
+                <textarea id="mdEditor" spellcheck="false" placeholder="Type or paste Markdown here..." style="width:100%; min-height:350px; font-family: monospace;"></textarea>
             </div>
 
             <div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <div class="preview-title">Live Preview</div>
-                    <label style="font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; color: var(--text-muted);"><input type="checkbox" id="mdDarkTheme" style="width: auto; height: auto;"> 🌙 Dark Mode</label>
+                    <div class="preview-title">Live preview</div>
+                    <label><input type="checkbox" id="mdDarkTheme"> Dark theme</label>
                 </div>
-                <div class="preview-box" id="mdPreviewBox" style="width: 100%; min-height: 600px; padding: 0; overflow-y: auto;">
-                    <div id="mdRendered" style="padding: 0;"></div>
+                <div class="preview-box" id="mdPreviewBox" style="min-height: 600px; overflow-y: auto;">
+                    <div id="mdRendered"></div>
                 </div>
             </div>
 
-            <button id="printMdBtn" class="primary" style="width: 100%; font-size: 1.1rem; height: 54px;">🖨️ Generate PDF</button>
-        </div>
-        
-        <style>
-            @keyframes slideDown {
-                from { opacity: 0; transform: translateY(-10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-        </style>
-        `;
+            <button id="printMdBtn" class="primary" style="width:100%; font-size:1.1rem;">Generate PDF</button>
+            <button id="mdFloatingDownload" class="download-btn floating-action" type="button">Download PDF</button>
+        </div>`;
 
         const mdFile = document.getElementById('mdFile');
         const mdDropZone = document.getElementById('mdPdfDropZone');
@@ -97,15 +85,14 @@ async function rendermd2pdf(container) {
         const sizeSelect = document.getElementById('mdPageSize');
         const orientSelect = document.getElementById('mdOrientation');
         const printBtn = document.getElementById('printMdBtn');
+        const mdFloatingBtn = document.getElementById('mdFloatingDownload');
 
-        const sampleMd = `# Sample Document\n\nThis is a sample **Markdown** document.\n\n## Math Support\n\nInline math: $E = mc^2$\n\nDisplay math:\n$$\\int_a^b f(x)dx = F(b) - F(a)$$\n\n## Syntax Highlighting\n\n\`\`\`javascript\nfunction hello() {\n  console.log("Hello World");\n}\n\`\`\`\n\n## Page Breaks\nUse \\\\newpage or <!-- pagebreak --> to force a new page.`;
+        const sampleMd = `# Sample Document\n\nThis is a sample **Markdown** document.\n\n## Math Support\n\nInline math: $E = mc^2$\n\nDisplay math:\n$$\\int_a^b f(x)dx = F(b) - F(a)$$\n\n## Syntax Highlighting\n\n\`\`\`javascript\nfunction hello() {\n  console.log("Hello World");\n}\n\`\`\`\n\n## Page Breaks\nUse \\newpage or <!-- pagebreak --> to force a new page.`;
 
-        // Handle Advanced Mode Toggle
         toggleEditor.addEventListener('change', () => {
             editorSection.style.display = toggleEditor.checked ? 'block' : 'none';
         });
 
-        // Load Sample
         loadSampleBtn.addEventListener('click', () => {
             window.currentMarkdown = sampleMd;
             mdEditor.value = sampleMd;
@@ -113,62 +100,47 @@ async function rendermd2pdf(container) {
             if (window.showToast) showToast('Sample loaded!');
         });
 
-        // Setup drag and drop
         mdDropZone.addEventListener('click', () => mdFile.click());
-        if (typeof setupDropZone === 'function') {
-            setupDropZone('mdPdfDropZone', 'mdFile');
-        }
+        if (typeof setupDropZone === 'function') setupDropZone('mdPdfDropZone', 'mdFile');
 
-        const printStyles = (theme = 'light') => `
-        <style>
-            body { 
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-                line-height: 1.6;
-                color: ${theme === 'dark' ? '#c9d1d9' : '#24292e'};
-                background: ${theme === 'dark' ? '#0d1117' : 'white'};
-                max-width: 900px;
-                margin: ${theme === 'print' ? '2.54cm !important' : '0 auto'};
-                padding: ${theme === 'print' ? '0 !important' : '1rem'};
-            }
-            .markdown-body {
-                color: ${theme === 'dark' ? '#c9d1d9' : '#24292e'};
-            }
-            h1, h2, h3, h4, h5, h6 { 
-                margin-top: 1.5rem;
-                margin-bottom: 1rem;
-                font-weight: 600;
-                line-height: 1.25;
-                color: inherit;
-                page-break-after: avoid;
-            }
-            h1 { font-size: 2em; border-bottom: 1px solid ${theme === 'dark' ? '#21262d' : '#eaecef'}; padding-bottom: 0.3rem; }
-            h2 { font-size: 1.5em; border-bottom: 1px solid ${theme === 'dark' ? '#21262d' : '#eaecef'}; padding-bottom: 0.3rem; }
-            p { margin: 0 0 1rem; orphans: 3; widows: 3; }
-            code, pre { font-family: 'SF Mono', Monaco, Consolas, 'Courier New', monospace; font-size: 0.9rem; border-radius: 3px; }
-            code { padding: 0.2rem 0.4rem; color: ${theme === 'dark' ? '#c9d1d9' : '#24292e'}; background: ${theme === 'dark' ? 'rgba(110,118,129,0.4)' : '#f6f8fa'}; }
-            pre { padding: 1rem; overflow: auto; line-height: 1.45; background: ${theme === 'dark' ? '#161b22' : '#f6f8fa'}; border-radius: 6px; page-break-inside: avoid; }
-            pre code { background: none; padding: 0; color: ${theme === 'dark' ? '#c9d1d9' : '#24292e'}; }
-            table { border-collapse: collapse; width: 100%; margin: 1rem 0; page-break-inside: avoid; }
-            th, td { border: 1px solid ${theme === 'dark' ? '#30363d' : '#dfe2e5'}; padding: 0.6rem 1rem; text-align: left; }
-            th { background: ${theme === 'dark' ? '#21262d' : '#f6f8fa'}; font-weight: 600; }
-            tr:nth-child(even) { background: ${theme === 'dark' ? '#161b22' : '#fafbfc'}; }
-            blockquote { margin: 0; padding: 0 1rem; color: ${theme === 'dark' ? '#8b949e' : '#6a737d'}; border-left: 0.25rem solid ${theme === 'dark' ? '#30363d' : '#dfe2e5'}; }
-            img { max-width: 100%; height: auto; page-break-inside: avoid; }
-            ul, ol { padding-left: 2rem; margin: 1rem 0; page-break-inside: avoid; }
-            li { margin: 0.25rem 0; }
-            hr { height: 0.25rem; padding: 0; margin: 2rem 0; background: ${theme === 'dark' ? '#30363d' : '#e1e4e8'}; border: 0; }
-            .page-break { page-break-before: always; height: 0; margin: 0; padding: 0; }
-            @media print {
-                body { margin: 2.54cm !important; padding: 0 !important; background: var(--bg-surface) !important; color: black !important; }
-                .markdown-body { color: black !important; }
-                pre, table, img, ul, ol { break-inside: avoid; }
-                h1, h2, h3, h4, h5, h6 { break-after: avoid; }
-                code { background: #f6f8fa !important; color: black !important; border: 1px solid #ccc; }
-                pre { background: #f6f8fa !important; border: 1px solid #ccc; }
-                pre code { border: none !important; }
-            }
-        </style>
-    `;
+        function getPrintStyles(theme = 'light', pageSize = 'a4', orientation = 'portrait') {
+            return `
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+                    line-height: 1.6;
+                    color: ${theme === 'dark' ? '#c9d1d9' : '#24292e'};
+                    background: ${theme === 'dark' ? '#0d1117' : 'white'};
+                    padding: 2.54cm;
+                }
+                h1, h2, h3, h4, h5, h6 {
+                    margin-top: 1.5rem;
+                    margin-bottom: 1rem;
+                    font-weight: 600;
+                    page-break-after: avoid;
+                }
+                h1 { font-size: 2em; border-bottom: 1px solid ${theme === 'dark' ? '#21262d' : '#eaecef'}; padding-bottom: 0.3rem; }
+                h2 { font-size: 1.5em; border-bottom: 1px solid ${theme === 'dark' ? '#21262d' : '#eaecef'}; padding-bottom: 0.3rem; }
+                p { margin: 0 0 1rem; orphans: 3; widows: 3; }
+                code, pre { font-family: 'SF Mono', Monaco, Consolas, monospace; font-size: 0.9rem; border-radius: 3px; }
+                code { padding: 0.2rem 0.4rem; background: ${theme === 'dark' ? 'rgba(110,118,129,0.4)' : '#f6f8fa'}; }
+                pre { padding: 1rem; overflow: auto; background: ${theme === 'dark' ? '#161b22' : '#f6f8fa'}; border-radius: 6px; page-break-inside: avoid; }
+                pre code { background: none; padding: 0; }
+                table { border-collapse: collapse; width: 100%; margin: 1rem 0; page-break-inside: avoid; }
+                th, td { border: 1px solid ${theme === 'dark' ? '#30363d' : '#dfe2e5'}; padding: 0.6rem 1rem; text-align: left; }
+                th { background: ${theme === 'dark' ? '#21262d' : '#f6f8fa'}; }
+                blockquote { margin: 0; padding: 0 1rem; color: ${theme === 'dark' ? '#8b949e' : '#6a737d'}; border-left: 0.25rem solid ${theme === 'dark' ? '#30363d' : '#dfe2e5'}; }
+                img { max-width: 100%; page-break-inside: avoid; }
+                .page-break { page-break-before: always; height: 0; }
+                @media print {
+                    body { margin: 2.54cm; }
+                }
+            </style>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+            `;
+        }
 
         function preprocessMarkdown(text) {
             text = text.replace(/\\newpage/g, '<div class="page-break"></div>');
@@ -176,65 +148,35 @@ async function rendermd2pdf(container) {
             return text;
         }
 
-        marked.use({ gfm: true, breaks: true });
+        marked.setOptions({ gfm: true, breaks: true });
 
-        // Render markdown to preview pane
         function renderPreview() {
             const text = window.currentMarkdown || '';
             if (!text) {
-                mdRendered.innerHTML = `
-                    <div style="color: var(--text-muted); padding: 4rem; text-align: center; border: 2px dashed var(--border-subtle); margin: 2rem; border-radius: 12px;">
-                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">Markdown</div>
-                        Upload a Markdown file or click "Load Sample" to see preview
-                    </div>
-                `;
+                mdRendered.innerHTML = `<div style="color:var(--text-muted); padding:4rem; text-align:center;">Upload a Markdown file or click "Load Sample"</div>`;
                 return;
             }
             const processed = preprocessMarkdown(text);
-
-            const renderer = new marked.Renderer();
-            const oldCode = renderer.code.bind(renderer);
-            renderer.code = function (code, language, isEscaped) {
-                if (language === 'math') {
-                    return '$$' + code + '$$';
-                }
-                return oldCode(code, language, isEscaped);
-            };
-
-            const html = DOMPurify.sanitize(marked.parse(processed, { renderer }));
-
+            const rawHtml = DOMPurify.sanitize(marked.parse(processed));
             const theme = mdDarkTheme.checked ? 'dark' : 'light';
             mdPreviewBox.style.background = theme === 'dark' ? '#0d1117' : 'white';
-
-            mdRendered.innerHTML = printStyles(theme) + `<div class="markdown-body" style="padding: 1rem;">${html}</div>`;
-
+            mdRendered.innerHTML = `<div class="markdown-body" style="padding:1rem;">${rawHtml}</div>`;
             if (window.renderMathInElement) {
-                try {
-                    renderMathInElement(mdRendered, {
-                        delimiters: [
-                            { left: '$$', right: '$$', display: true },
-                            { left: '$', right: '$', display: false },
-                            { left: '\\(', right: '\\)', display: false },
-                            { left: '\\[', right: '\\]', display: true }
-                        ],
-                        throwOnError: false
-                    });
-                } catch (e) {
-                    console.error("Math render error:", e);
-                }
+                renderMathInElement(mdRendered, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false },
+                        { left: '\\(', right: '\\)', display: false },
+                        { left: '\\[', right: '\\]', display: true }
+                    ],
+                    throwOnError: false
+                });
             }
-
-            if (window.Prism) {
-                try {
-                    Prism.highlightAllUnder(mdRendered);
-                } catch (e) {
-                    console.error("Prism error", e);
-                }
-            }
+            if (window.Prism) Prism.highlightAllUnder(mdRendered);
+            updateMdFloatingBtn();
         }
 
         mdDarkTheme.addEventListener('change', renderPreview);
-
         mdEditor.addEventListener('input', debounce(() => {
             window.currentMarkdown = mdEditor.value;
             renderPreview();
@@ -255,124 +197,112 @@ async function rendermd2pdf(container) {
                 return;
             }
             try {
-            if (window.showFileOnDropZone) showFileOnDropZone("mdPdfDropZone", file);
+                if (window.showFileOnDropZone) showFileOnDropZone("mdPdfDropZone", file);
                 const text = await file.text();
                 window.currentMarkdown = text;
                 mdEditor.value = text;
                 renderPreview();
                 if (window.trackEvent) trackEvent('Tool', 'file_loaded', 'md2pdf');
-            } catch (readErr) {
-                if (window.showToast) showToast('Unable to read this Markdown file. Please try another file.', 'error');
+            } catch (err) {
+                if (window.showToast) showToast('Unable to read file.', 'error');
             }
         });
 
-        // No default rendering; preview empty until file upload.
+        function updateMdFloatingBtn() {
+            if (!mdFloatingBtn) return;
+            mdFloatingBtn.style.display = (window.currentMarkdown && window.currentMarkdown.trim()) ? 'inline-flex' : 'none';
+        }
 
-        printBtn.addEventListener('click', async () => {
+        // Generate PDF using print dialog (reliable, preserves math & highlighting)
+        async function generateMdPdf() {
             const text = window.currentMarkdown;
             if (!text || !text.trim()) {
-                if (window.showToast) showToast('Please upload a Markdown file first.', 'warning');
-                else alert('Please upload a Markdown file first.');
+                if (window.showToast) showToast('Please upload or enter Markdown content first.', 'warning');
                 return;
             }
-            if (window.rateLimiter && !rateLimiter.canProceed('md2pdf-print', 2000)) {
-                if (window.showToast) showToast('Please wait a moment before generating another PDF.', 'warning');
+            if (window.rateLimiter && !rateLimiter.canProceed('md2pdf', 2000)) {
+                if (window.showToast) showToast('Please wait before generating another PDF.', 'warning');
                 return;
             }
-            printBtn.disabled = true; printBtn.innerHTML = '⏳ Preparing...';
-            if (window.showSpinner) showSpinner('Preparing PDF...');
+
+            printBtn.disabled = true;
+            if (mdFloatingBtn) mdFloatingBtn.disabled = true;
+            const originalText = printBtn.innerHTML;
+            printBtn.innerHTML = '⏳ Preparing PDF...';
+            if (window.showSpinner) showSpinner('Rendering Markdown with math and syntax highlighting...');
+
             try {
                 const processed = preprocessMarkdown(text);
-                const html = DOMPurify.sanitize(marked.parse(processed));
-                let exportNode = null;
-                try {
-                    renderPreview();
-                    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
-                    exportNode = document.createElement('div');
-                    exportNode.style.background = mdDarkTheme.checked ? '#0d1117' : '#ffffff';
-                    exportNode.style.color = mdDarkTheme.checked ? '#c9d1d9' : '#24292e';
-                    exportNode.style.padding = '0.75in';
-                    exportNode.style.width = sizeSelect.value === 'letter' ? '8.5in' : '8.27in';
-                    exportNode.innerHTML = mdRendered.innerHTML || (printStyles('light') + `<div class="markdown-body">${html}</div>`);
-                    document.body.appendChild(exportNode);
-                    await html2pdf().set({
-                        margin: 0,
-                        filename: 'markdown-document.pdf',
-                        image: { type: 'jpeg', quality: 0.95 },
-                        html2canvas: { scale: 2, useCORS: true, backgroundColor: mdDarkTheme.checked ? '#0d1117' : '#ffffff' },
-                        jsPDF: { unit: 'in', format: sizeSelect.value, orientation: orientSelect.value },
-                        pagebreak: { mode: ['css', 'legacy'] }
-                    }).from(exportNode).save();
-                    exportNode.remove();
-                    if (window.trackEvent) trackEvent('Tool', 'convert', 'md2pdf');
-                    if (window.showToast) showToast('PDF downloaded successfully.');
-                    printBtn.disabled = false;
-                    printBtn.innerHTML = '🖨️ Generate PDF';
-                    return;
-                } catch (exportErr) {
-                    if (exportNode) exportNode.remove();
-                    console.warn('html2pdf export failed, falling back to print:', exportErr);
-                    if (window.showToast) showToast('Direct PDF export failed. Opening print fallback.', 'warning');
-                }
+                const rawHtml = DOMPurify.sanitize(marked.parse(processed));
+                const theme = mdDarkTheme.checked ? 'dark' : 'light';
+                const pageSize = sizeSelect.value;
+                const orientation = orientSelect.value;
+
                 const fullHtml = `<!DOCTYPE html>
-<html><head><title>ConvertPDF - Markdown Document</title>${printStyles('print')}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" integrity="sha384-wcIxkf4k558AjM3Yz3BBFQUbk/zgIYC2R0QpeeYb+TwlBVMrlgLqwRjRtGZiK7ww" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" integrity="sha384-wFjoQjtV1y5jVHbt0p35Ui8aV8GVpEZkyF99OXWqP/eNJDU93D3Ugxkoyh6Y2I4A" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" integrity="sha384-hIoBPJpTUs74ddyc4bFZSM1TVlQDA60VBbJS0oA934VSz82sBx1X7kSx2ATBDIyd" crossorigin="anonymous"><\/script>
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"><\/script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha384-06z5D//U/xpvxZHuUz92xBvq3DqBBFi7Up53HRrbV7Jlv7Yvh/MZ7oenfUe9iCEt" crossorigin="anonymous"><\/script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha384-Uq05+JLko69eOiPr39ta9bh7kld5PKZoU+fF7g0EXTAriEollhZ+DrN8Q/Oi8J2Q" crossorigin="anonymous"><\/script>
-<style>
-@page { size: ${sizeSelect.value} ${orientSelect.value}; }
-@media print { body { margin: 2.54cm; } }
-</style>
-</head><body><div class="markdown-body">${html}</div>
-<script>
-    window.addEventListener('load', function() {
-        if (window.Prism && Prism.plugins && Prism.plugins.autoloader) {
-            Prism.plugins.autoloader.languages_path =
-                'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
-        }
-        if (window.renderMathInElement) {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left:'$$',right:'$$',display:true},
-                    {left:'$',right:'$',display:false},
-                    {left:'\\\\[',right:'\\\\]',display:true},
-                    {left:'\\\\(',right:'\\\\)',display:false}
-                ],
-                throwOnError: false
-            });
-        }
-        if (window.Prism) Prism.highlightAll();
-        setTimeout(() => window.print(), 800);
-    });
-<\/script></body></html>`;
-                const win = window.open('', '_blank');
-                if (!win) {
-                    if (window.showToast) showToast('Please allow popups for this site to generate PDFs.', 'warning');
-                    else alert('Pop‑up blocked');
-                    printBtn.disabled = false;
-                    printBtn.innerHTML = '🖨️ Generate PDF';
-                    return;
-                }
-                win.document.write(fullHtml); win.document.close();
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Markdown Document - ConvertPDF</title>
+                    ${getPrintStyles(theme, pageSize, orientation)}
+                    <style>
+                        @page {
+                            size: ${pageSize} ${orientation};
+                            margin: 2.54cm;
+                        }
+                    </style>
+                    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"><\/script>
+                    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"><\/script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"><\/script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"><\/script>
+                </head>
+                <body>
+                    <div class="markdown-body">${rawHtml}</div>
+                    <script>
+                        window.addEventListener('load', function() {
+                            if (window.renderMathInElement) {
+                                renderMathInElement(document.body, {
+                                    delimiters: [
+                                        {left:'$$',right:'$$',display:true},
+                                        {left:'$',right:'$',display:false},
+                                        {left:'\\\\[',right:'\\\\]',display:true},
+                                        {left:'\\\\(',right:'\\\\)',display:false}
+                                    ],
+                                    throwOnError: false
+                                });
+                            }
+                            if (window.Prism) Prism.highlightAll();
+                            setTimeout(() => {
+                                window.print();
+                                setTimeout(() => window.close(), 1000);
+                            }, 500);
+                        });
+                    <\/script>
+                </body>
+                </html>`;
+
+                const printWindow = window.open('', '_blank');
+                if (!printWindow) throw new Error('Popup blocked. Please allow pop-ups for this site.');
+                printWindow.document.write(fullHtml);
+                printWindow.document.close();
+
                 if (window.trackEvent) trackEvent('Tool', 'convert', 'md2pdf');
-                setTimeout(() => { printBtn.disabled = false; printBtn.innerHTML = '🖨️ Generate PDF'; }, 3000);
-            } catch (e) {
-                if (window.showToast) showToast('Error: ' + e.message, 'error');
-                else alert('Error: ' + e.message);
-                printBtn.disabled = false;
-                printBtn.innerHTML = '🖨️ Generate PDF';
+                if (window.showToast) showToast('🖨️ Print dialog opened – choose "Save as PDF".', 'info');
+            } catch (err) {
+                console.error(err);
+                if (window.showToast) showToast('Failed to generate PDF: ' + err.message, 'error');
             } finally {
+                printBtn.disabled = false;
+                if (mdFloatingBtn) mdFloatingBtn.disabled = false;
+                printBtn.innerHTML = originalText;
                 if (window.hideSpinner) hideSpinner();
             }
-        });
-    } catch (___err) {
-        console.error('rendermd2pdf error:', ___err);
-        const warn = document.createElement('div');
-        warn.className = 'warning';
-        warn.textContent = '⚠️ Tool failed to load: ' + ___err.message + '. Please check your internet connection and refresh.';
-        container.replaceChildren(warn);
+        }
+
+        printBtn.addEventListener('click', generateMdPdf);
+        if (mdFloatingBtn) mdFloatingBtn.addEventListener('click', generateMdPdf);
+
+    } catch (err) {
+        console.error('rendermd2pdf error:', err);
+        container.innerHTML = `<div class="warning">⚠️ Tool failed to load: ${err.message}</div>`;
     }
 }

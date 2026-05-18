@@ -238,7 +238,8 @@ async function renderrotatepdf(container) {
                 const pdf = await pdfjsLib.getDocument({ data: arrayBuf }).promise;
                 const totalPages = pdf.numPages;
 
-                currentPdf = await PDFLib.PDFDocument.load(arrayBuf);
+                const arrayBuf2 = await file.arrayBuffer();
+                currentPdf = await PDFLib.PDFDocument.load(arrayBuf2);
 
                 renderThumbnails(pdf, totalPages);
                 controls.style.display = 'block';

@@ -74,10 +74,18 @@ async function rendersignpdf(container) {
 
             <div id="drawSignatureGroup" class="input-group" style="display:none;">
                 <label>Draw your signature below</label>
+                <div style="margin-bottom: 0.75rem; display: flex; gap: 0.5rem;">
+                    <label style="font-size:0.85rem; color: var(--text-muted); flex: 1; display: flex; align-items: center;">
+                        <input type="range" id="penSize" min="1" max="8" value="2" style="flex: 1;">
+                        Pen Size: <span id="penSizeValue">2</span>px
+                    </label>
+                </div>
                 <canvas id="signatureCanvas" width="500" height="150"
-                    style="border: 1px solid var(--border); border-radius: 4px; cursor: crosshair; max-width: 100%; display: block; touch-action: none;"></canvas>
-                <div style="margin-top: 0.5rem;">
-                    <button id="clearSignature" class="secondary" type="button">Clear Drawing</button>
+                    style="border: 2px solid var(--accent); border-radius: 4px; cursor: crosshair; max-width: 100%; display: block; touch-action: none; background: var(--surface-strong);"></canvas>
+                <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
+                    <button id="clearSignature" class="secondary" type="button">🗑️ Clear</button>
+                    <button id="undoSignature" class="secondary" type="button">↶ Undo</button>
+                    <button id="redoSignature" class="secondary" type="button">↷ Redo</button>
                 </div>
             </div>
 
@@ -92,38 +100,48 @@ async function rendersignpdf(container) {
                     </select>
                 </div>
                 <div class="input-group">
-                    <label for="signaturePage">Page to Sign</label>
+                    <label for="signaturePage">Pages to Sign</label>
                     <select id="signaturePage">
-                        <option value="last">Last Page</option>
-                        <option value="first">First Page</option>
+                        <option value="last">Last Page Only</option>
+                        <option value="first">First Page Only</option>
                         <option value="all">All Pages</option>
                     </select>
-                    <p class="note">Choose which page(s) receive the signature.</p>
+                    <p class="note" id="pageInfo"></p>
                 </div>
             </div>
-        </div>
-
-        <button id="signPdfBtn" class="primary" disabled>Sign PDF</button>
-
-        <div id="signProgressContainer" style="display:none; width: 100%; background: var(--bg-input); border-radius: 4px; margin: 1rem 0;">
-          <div id="signProgressBar" style="width: 0%; height: 6px; background-color: var(--accent); border-radius: 4px; transition: width 0.2s;"></div>
-        </div>
-
-        <div class="preview-box" id="signProgress" style="min-height:50px; display: none; text-align: center; margin-top: 1rem;"></div>
-
-        <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1.5rem;">
-            <button id="downloadSignBtn" class="download-btn" disabled>⬇ Download Signed PDF</button>
-        </div>
-        `;
-
-        const inp = document.getElementById('signPdfInput');
-        const dropZone = document.getElementById('signPdfDropZone');
-        const options = document.getElementById('signOptions');
-        const btn = document.getElementById('signPdfBtn');
-        const progressDiv = document.getElementById('signProgress');
+            <div class="input-group" style="margin-top: 1rem;">
+                <label for="signatureScale">Signature Size</label>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <input type="range" id="signatureScale" min="0.5" max="2" step="0.1" value="1" style="flex: 1;">
+                    <span id="scaleValue" style="min-width: 50px; text-align: right;">100%</span>
+                </div>
+            </div>
+                <div id="placementHelper" class="preview-box" style="padding: 1rem; margin-top:1rem;">
+                    <div style="font-weight:700; margin-bottom:0.75rem;">Signature placement preview</div>
+                    <div style="display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:0.5rem;">
+                        <div class="placement-cell" data-position="top-left" style="border:1px solid var(--border-subtle); border-radius:0.75rem; padding:0.75rem; text-align:center;">Top Left</div>
+                        <div class="placement-cell" data-position="top-right" style="border:1px solid var(--border-subtle); border-radius:0.75rem; padding:0.75rem; text-align:center;">Top Right</div>
+                        <div class="placement-cell" data-position="bottom-left" style="border:1px solid var(--border-subtle); border-radius:0.75rem; padding:0.75rem; text-align:center;">Bottom Left</div>
+                        <div class="placement-cell" data-position="bottom-right" style="border:1px solid var(--border-subtle); border-radius:0.75rem; padding:0.75rem; text-align:center;">Bottom Right</div>
+                    </div>
+                    <p class="note" style="margin-top:0.75rem;">The signature will be placed in the selected corner on the chosen page(s).</p>
+                </div>
+                <div style="display:flex; flex-wrap:wrap; gap:1rem; align-items:center; margin-top:1.5rem;">
+                    <button id="signPdfBtn" class="primary" type="button">Sign PDF</button>
+                    <button id="downloadSignBtn" class="secondary" type="button" disabled>Download Signed PDF</button>
+                </div>
+                <div id="signProgressContainer" style="display:none; margin-top:1rem;">
+                    <div id="signProgressText" style="margin-bottom:0.5rem; color: var(--text-muted);">Ready to sign your PDF.</div>
+                    <div style="background: var(--surface-strong); border-radius: 999px; overflow:hidden; height: 0.75rem;">
+                        <div id="signProgressBar" style="width: 0%; height: 100%; background: var(--accent); transition: width 0.25s ease;"></div>
+                    </div>
+                </div>
+            `;
         const progressContainer = document.getElementById('signProgressContainer');
         const progressBar = document.getElementById('signProgressBar');
+        const progressDiv = document.getElementById('signProgressText');
         const downloadBtn = document.getElementById('downloadSignBtn');
+        const btn = document.getElementById('signPdfBtn');
         const sigTypeSel = document.getElementById('signatureType');
         const sigColorSel = document.getElementById('signatureColor');
         const sigFontSel = document.getElementById('signatureFont');
@@ -134,6 +152,16 @@ async function rendersignpdf(container) {
         const clearBtn = document.getElementById('clearSignature');
         const positionSel = document.getElementById('signaturePosition');
         const pageSel = document.getElementById('signaturePage');
+        const dropZone = document.getElementById('signPdfDropZone');
+        const inp = document.getElementById('signPdfInput');
+        const options = document.getElementById('signOptions');
+        const penSizeInput = document.getElementById('penSize');
+        const penSizeValue = document.getElementById('penSizeValue');
+        const undoBtn = document.getElementById('undoSignature');
+        const redoBtn = document.getElementById('redoSignature');
+        const scaleSel = document.getElementById('signatureScale');
+        const scaleValue = document.getElementById('scaleValue');
+        const pageInfo = document.getElementById('pageInfo');
 
         let currentFile = null;
         let isDrawing = false;
@@ -147,12 +175,99 @@ async function rendersignpdf(container) {
 
         function setupCtx() {
             ctx.strokeStyle = getDrawColor();
-            ctx.lineWidth = 2;
+            ctx.lineWidth = penSizeInput.value;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
         }
         setupCtx();
         sigColorSel.addEventListener('change', setupCtx);
+        penSizeInput.addEventListener('input', setupCtx);
+
+        const placementCells = Array.from(document.querySelectorAll('#placementHelper .placement-cell'));
+        
+        // Undo/Redo system for drawn signatures
+        let drawingHistory = [];
+        let historyIndex = -1;
+        
+        function saveDrawingState() {
+            historyIndex++;
+            if (historyIndex < drawingHistory.length) {
+                drawingHistory = drawingHistory.slice(0, historyIndex);
+            }
+            drawingHistory.push(canvas.toDataURL());
+            updateHistoryButtons();
+        }
+        
+        function updateHistoryButtons() {
+            undoBtn.disabled = historyIndex <= 0;
+            redoBtn.disabled = historyIndex >= drawingHistory.length - 1;
+        }
+        
+        undoBtn.addEventListener('click', () => {
+            if (historyIndex > 0) {
+                historyIndex--;
+                const img = new Image();
+                img.src = drawingHistory[historyIndex];
+                img.onload = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
+                    updateHistoryButtons();
+                };
+            }
+        });
+        
+        redoBtn.addEventListener('click', () => {
+            if (historyIndex < drawingHistory.length - 1) {
+                historyIndex++;
+                const img = new Image();
+                img.src = drawingHistory[historyIndex];
+                img.onload = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
+                    updateHistoryButtons();
+                };
+            }
+        });
+        
+        function updatePlacementPreview() {
+            placementCells.forEach(cell => {
+                const active = cell.dataset.position === positionSel.value;
+                cell.style.background = active ? 'rgba(255,255,255,0.08)' : 'transparent';
+                cell.style.borderColor = active ? 'var(--accent)' : 'var(--border-subtle)';
+                cell.style.cursor = 'pointer';
+            });
+        }
+        
+        function updatePageInfo() {
+            if (!currentFile) return;
+            if (pageSel.value === 'all') {
+                pageInfo.textContent = '✓ All pages will be signed';
+            } else if (pageSel.value === 'first') {
+                pageInfo.textContent = '✓ First page will be signed';
+            } else {
+                pageInfo.textContent = '✓ Last page will be signed';
+            }
+        }
+        
+        placementCells.forEach(cell => {
+            cell.addEventListener('click', () => {
+                positionSel.value = cell.dataset.position;
+                updatePlacementPreview();
+            });
+        });
+        positionSel.addEventListener('change', updatePlacementPreview);
+        pageSel.addEventListener('change', updatePageInfo);
+        
+        penSizeInput.addEventListener('change', (e) => {
+            ctx.lineWidth = e.target.value;
+            penSizeValue.textContent = e.target.value;
+        });
+        
+        scaleSel.addEventListener('change', (e) => {
+            scaleValue.textContent = Math.round(e.target.value * 100) + '%';
+        });
+        
+        updatePlacementPreview();
 
         // Mouse drawing (corrected for canvas scaling)
         function getPos(e) {
@@ -168,6 +283,10 @@ async function rendersignpdf(container) {
             ctx.beginPath();
             const p = getPos(e);
             ctx.moveTo(p.x, p.y);
+            // Save state when starting to draw
+            if (historyIndex < 0) {
+                saveDrawingState();
+            }
         });
         canvas.addEventListener('mousemove', e => {
             if (!isDrawing) return;
@@ -175,7 +294,10 @@ async function rendersignpdf(container) {
             ctx.lineTo(p.x, p.y);
             ctx.stroke();
         });
-        canvas.addEventListener('mouseup', () => isDrawing = false);
+        canvas.addEventListener('mouseup', () => {
+            isDrawing = false;
+            saveDrawingState();
+        });
         canvas.addEventListener('mouseleave', () => isDrawing = false);
 
         // Touch drawing
@@ -200,9 +322,17 @@ async function rendersignpdf(container) {
             ctx.lineTo((t.clientX - rect.left) * sx, (t.clientY - rect.top) * sy);
             ctx.stroke();
         }, { passive: false });
-        canvas.addEventListener('touchend', () => isDrawing = false);
+        canvas.addEventListener('touchend', () => {
+            isDrawing = false;
+            saveDrawingState();
+        });
 
-        clearBtn.addEventListener('click', () => ctx.clearRect(0, 0, canvas.width, canvas.height));
+        clearBtn.addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawingHistory = [];
+            historyIndex = -1;
+            updateHistoryButtons();
+        });
 
         // Drop zone
         dropZone.addEventListener('click', () => inp.click());
@@ -216,7 +346,7 @@ async function rendersignpdf(container) {
         });
 
         // File loaded
-        inp.addEventListener('change', () => {
+        inp.addEventListener('change', async () => {
             const file = inp.files[0];
             if (!file) return;
             currentFile = file;
@@ -224,6 +354,17 @@ async function rendersignpdf(container) {
             options.style.display = 'block';
             downloadBtn.disabled = true;
             btn.disabled = false;
+            
+            // Load PDF to get page count
+            try {
+                const arrayBuf = await file.arrayBuffer();
+                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuf);
+                const pageCount = pdfDoc.getPageCount();
+                pageInfo.textContent = `✓ PDF has ${pageCount} page${pageCount !== 1 ? 's' : ''} • ${pageSel.value === 'all' ? 'All pages' : pageSel.value === 'first' ? 'First page' : 'Last page'} will be signed`;
+            } catch (e) {
+                pageInfo.textContent = '✓ PDF loaded';
+            }
+            
             if (window.showToast) showToast(`Loaded: ${file.name}`);
         });
 
@@ -239,9 +380,13 @@ async function rendersignpdf(container) {
             if (sigTypeSel.value === 'draw') {
                 const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 if (!imgData.data.some(v => v !== 0)) {
-                    if (window.showToast) showToast('Please draw a signature first', 'error');
+                    if (window.showToast) showToast('✏️ Please draw a signature first', 'error');
                     return;
                 }
+            }
+            
+            if (sigTypeSel.value === 'text' && sigColorSel.value === 'red') {
+                if (window.showToast) showToast('ℹ️ Red signatures are often used to indicate rejection or revision');
             }
 
             btn.disabled = true;
@@ -307,7 +452,8 @@ async function rendersignpdf(container) {
                         const sigBytes = await fetch(dataUrl).then(r => r.arrayBuffer());
                         const sigEmbed = await pdfDoc.embedPng(sigBytes);
 
-                        const sigW = Math.min(200, width / 3);
+                        let sigW = Math.min(200, width / 3);
+                        sigW = sigW * parseFloat(scaleSel.value);
                         const sigH = (sigEmbed.height / sigEmbed.width) * sigW;
 
                         let x, y;
@@ -334,17 +480,18 @@ async function rendersignpdf(container) {
                 const signBase = currentFile.name.replace(/\.pdf$/i, '') || 'document';
                 downloadBtn.onclick = () => downloadBlob(blob, `${signBase}-signed.pdf`);
 
-                if (window.showToast) showToast('PDF signed successfully!');
+                if (window.showToast) showToast('✅ PDF signed successfully!', 'success');
+                downloadBtn.style.animation = 'pulse 0.5s ease 2';
 
                 setTimeout(() => {
                     progressContainer.style.display = 'none';
                     progressBar.style.width = '0%';
                     progressDiv.style.display = 'none';
-                }, 2000);
+                }, 2500);
 
             } catch (e) {
-                progressDiv.textContent = `Error: ${e.message}`;
-                if (window.showToast) showToast('Failed to sign PDF: ' + e.message, 'error');
+                progressDiv.innerHTML = `❌ Error: ${e.message}`;
+                if (window.showToast) showToast('❌ Failed to sign PDF: ' + e.message, 'error');
                 console.error(e);
             } finally {
                 btn.disabled = false;
