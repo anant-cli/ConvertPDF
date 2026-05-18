@@ -186,9 +186,20 @@ a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
-textarea:focus-visible {
-    outline: 2px solid var(--accent-light);
-    outline-offset: 2px;
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid var(--accent-light);
+    outline-offset: 3px;
+    border-radius: 3px;
+    /* Visible even on coloured backgrounds */
+    box-shadow: 0 0 0 1px var(--bg-root), 0 0 0 4px var(--accent-light);
+}
+
+/* Extra clarity for tool cards when keyboard-navigated */
+.tool-card:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 4px;
+    box-shadow: 0 0 0 2px var(--bg-root), 0 0 0 5px var(--accent), var(--shadow-glow);
 }
 
 .skip-link {
@@ -1936,9 +1947,160 @@ input[type="color"] {
     }
 }
 
+/* ==============================================
+   ACCESSIBILITY: prefers-reduced-motion
+   Critical for ADHD/OCD users — kills ALL motion
+   ============================================== */
 @media (prefers-reduced-motion: reduce) {
+
+    /* Kill every transition and animation site-wide */
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    /* Hide the custom cursor entirely */
     .custom-cursor {
         display: none !important;
+    }
+
+    /* Disable aurora gradient animation on hero */
+    .hero-bg,
+    .hero-aurora {
+        animation: none !important;
+        background-image: none !important;
+    }
+
+    /* Reveal elements immediately — no fade-up */
+    .reveal {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+
+    /* Page-load fadeUp — show instantly */
+    .page-fade,
+    main,
+    .tool-wrapper {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    /* Card tilt / 3-D transforms — flatten */
+    .tool-card,
+    .blog-card,
+    .step-card,
+    .faq-item,
+    .blog-mini-card {
+        transform: none !important;
+        transition: none !important;
+    }
+
+    /* Magnetic buttons — lock in place */
+    .button,
+    .download-btn,
+    .back-btn {
+        transform: none !important;
+        transition: none !important;
+    }
+
+    /* Progress bars — jump to value immediately */
+    .progress-fill,
+    .quality-fill {
+        transition: none !important;
+    }
+
+    /* Toast — appear instantly */
+    .toast {
+        animation: none !important;
+    }
+
+    /* Spinner — freeze it (still shows, just not spinning) */
+    .spinner,
+    .spinner-icon {
+        animation: none !important;
+    }
+
+    /* Mobile nav slide — instant open/close */
+    .main-nav ul,
+    .main-nav {
+        transition: none !important;
+        max-height: none !important;
+    }
+
+    /* Scroll reveal observer target — always visible */
+    [data-reveal],
+    [data-animate] {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* ==============================================
+   ACCESSIBILITY: prefers-color-scheme light
+   Ensure readable contrast for light-mode users
+   ============================================== */
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg-root:         #f4f7ff;
+        --bg-surface:      #ffffff;
+        --bg-card:         #ffffff;
+        --bg-card-hover:   #eef3ff;
+        --bg-input:        #f0f4ff;
+        --bg-overlay:      rgba(255, 255, 255, 0.9);
+        --text-primary:    #0d1733;
+        --text-secondary:  #374469;
+        --text-muted:      #6b7da3;
+        --border-subtle:   rgba(0, 0, 0, 0.08);
+        --border-card:     rgba(79, 158, 255, 0.2);
+        --shadow-sm:       0 1px 3px rgba(0, 0, 0, 0.1);
+        --shadow-md:       0 4px 16px rgba(0, 0, 0, 0.1);
+        --shadow-lg:       0 12px 40px rgba(0, 0, 0, 0.12);
+        --shadow-glow:     0 0 24px rgba(79, 158, 255, 0.12);
+    }
+
+    /* Invert aurora so it's subtle on light background */
+    .hero-bg {
+        opacity: 0.25;
+    }
+
+    /* Footer needs stronger contrast */
+    .site-footer {
+        background: #1a2340;
+        color: #f0f4ff;
+    }
+
+    /* Inputs */
+    input,
+    select,
+    textarea {
+        background: var(--bg-input);
+        color: var(--text-primary);
+    }
+}
+
+/* ==============================================
+   ACCESSIBILITY: forced-colors / high-contrast
+   Windows High Contrast Mode support
+   ============================================== */
+@media (forced-colors: active) {
+    .button,
+    .download-btn {
+        border: 2px solid ButtonText;
+    }
+
+    .tool-card {
+        border: 1px solid ButtonText;
+    }
+
+    .skip-link:focus {
+        outline: 3px solid Highlight;
     }
 }
 

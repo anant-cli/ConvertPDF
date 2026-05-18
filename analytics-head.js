@@ -11,15 +11,15 @@
     function gtag() { dataLayer.push(arguments); }
     window.gtag = gtag;
 
-    // Step 2: Set Consent Mode v2 DEFAULTS (deny everything ad-related until user accepts).
+    // Step 2: Set Consent Mode v2 DEFAULTS (deny ad-related until user accepts).
     gtag('consent', 'default', {
-        ad_storage:           'denied',
-        ad_user_data:         'denied',
-        ad_personalization:   'denied',
-        analytics_storage:    'granted',
-        functionality_storage:'granted',
-        security_storage:     'granted',
-        wait_for_update:       500
+        ad_storage:            'denied',
+        ad_user_data:          'denied',
+        ad_personalization:    'denied',
+        analytics_storage:     'granted',
+        functionality_storage: 'granted',
+        security_storage:      'granted',
+        wait_for_update:        500
     });
 
     // Step 3: Load GA4 asynchronously.
@@ -30,15 +30,17 @@
     gaScript.onload = function () {
         gtag('js', new Date());
         gtag('config', GA_ID, {
-            anonymize_ip: true,
-            send_page_view: true
+            send_page_view: true,
+            // GA4 handles IP anonymization automatically — no anonymize_ip needed
+            // Enhanced measurement: file downloads, outbound clicks, etc.
+            enhanced_measurement: true
         });
     };
     gaScript.onerror = function () { /* site works without analytics */ };
     document.head.appendChild(gaScript);
 
-    // Step 4: Load AdSense Auto Ads script asynchronously.
-    // Auto ads will only serve personalised ads when ad_storage is 'granted'.
+    // Step 4: Load AdSense Auto Ads asynchronously.
+    // Auto ads serve personalised ads only when ad_storage is 'granted'.
     var adsScript = document.createElement('script');
     adsScript.async = true;
     adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1745874358886453';

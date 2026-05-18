@@ -387,9 +387,20 @@
     }
 
     /**
-     * Initializes scroll-reveal animations
+     * Initializes scroll-reveal animations.
+     * Skips animation entirely when user prefers reduced motion.
      */
     function initScrollReveals() {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Immediately show all reveals if user prefers reduced motion
+        if (prefersReducedMotion) {
+            document.querySelectorAll('.reveal').forEach(function (el) {
+                el.classList.add('active');
+            });
+            return;
+        }
+
         const observer = new IntersectionObserver(
             function (entries) {
                 entries.forEach(function (entry) {
@@ -550,6 +561,36 @@
         slot.innerHTML = '<span>Advertisement</span>';
 
         anchor.parentNode.insertBefore(slot, anchor.nextSibling);
+
+        // Auto Ads self-initialize from the script tag in analytics-head.js.
+        // Do NOT call adsbygoogle.push({}) here — that is only for manual <ins> units
+        // and will throw "All ins elements already have ads" if called with Auto Ads.
+    }
+
+    /**
+     * Adds a hidden aria-live region for assertive announcements
+     * (e.g. conversion errors) that screen readers catch immediately.
+     */
+    function ensureAriaAnnouncer() {
+        if (document.getElementById('aria-announcer')) return;
+        const el = document.createElement('div');
+        el.id = 'aria-announcer';
+        el.setAttribute('aria-live', 'assertive');
+        el.setAttribute('aria-atomic', 'true');
+        el.setAttribute('role', 'alert');
+        el.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;';
+        document.body.appendChild(el);
+
+        // Expose globally so tool scripts can announce errors
+        window.__announce = function (msg) {
+            el.textContent = '';
+            // Double rAF forces screen readers to pick up the change
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    el.textContent = msg;
+                });
+            });
+        };
     }
 
     /**
@@ -587,6 +628,7 @@
         // Core functionality
         setupCookieConsent();
         ensureSkipLink();
+        ensureAriaAnnouncer();
         ensurePrivacyNote();
         normalizeGlobalLabels();
         normalizeFooterDetails();

@@ -1,4 +1,10 @@
-const CACHE_NAME = 'convertpdf-v6';
+/**
+ * ConvertPDF Service Worker v7
+ * Strategy: Cache-first for static assets, network-first for pages,
+ * always bypass ad/analytics network calls.
+ */
+const CACHE_NAME = 'convertpdf-v7';
+
 const AD_DOMAINS = [
     'googlesyndication.com',
     'doubleclick.net',
@@ -65,17 +71,25 @@ function isFontRequest(url) {
     return url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com');
 }
 
+function isNavigationRequest(req) {
+    return req.mode === 'navigate';
+}
+
+// Install: cache assets individually so a single 404 won't fail the whole SW.
 self.addEventListener('install', event => {
     event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('[SW] Pre-caching static assets');
-                return cache.addAll(STATIC_ASSETS);
-            })
-            .then(() => self.skipWaiting())
+        caches.open(CACHE_NAME).then(cache => {
+            const promises = STATIC_ASSETS.map(url =>
+                cache.add(url).catch(err => {
+                    console.warn('[SW] Failed to pre-cache:', url, err);
+                })
+            );
+            return Promise.all(promises);
+        }).then(() => self.skipWaiting())
     );
 });
 
+// Activate: delete stale caches.
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys()
@@ -89,14 +103,33 @@ self.addEventListener('activate', event => {
     );
 });
 
-// Stale-while-revalidate strategy
+// Fetch: stale-while-revalidate for assets, network-first for navigation.
 self.addEventListener('fetch', event => {
     if (event.request.method !== 'GET') return;
     if (isAdRequest(event.request.url)) return;
-    // Let font requests pass through without SW interception
-    // (they are handled by the browser directly per CSP)
     if (isFontRequest(event.request.url)) return;
 
+    // Navigation: try network first, fall back to cached index
+    if (isNavigationRequest(event.request)) {
+        event.respondWith(
+            fetch(event.request)
+                .then(res => {
+                    if (res && res.status === 200) {
+                        const clone = res.clone();
+                        caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+                    }
+                    return res;
+                })
+                .catch(() =>
+                    caches.match(event.request).then(cached =>
+                        cached || caches.match('/index.html')
+                    )
+                )
+        );
+        return;
+    }
+
+    // Assets: stale-while-revalidate
     event.respondWith(
         caches.open(CACHE_NAME).then(cache => {
             return cache.match(event.request).then(cachedResponse => {
@@ -105,14 +138,13 @@ self.addEventListener('fetch', event => {
                         cache.put(event.request, networkResponse.clone());
                     }
                     return networkResponse;
-                }).catch(() => {
-                    // Return a valid offline fallback response
-                    return cachedResponse || new Response('Network error', {
+                }).catch(() =>
+                    cachedResponse || new Response('Network error', {
                         status: 503,
                         statusText: 'Service Unavailable',
                         headers: { 'Content-Type': 'text/plain' }
-                    });
-                });
+                    })
+                );
 
                 return cachedResponse || fetchPromise;
             });
