@@ -113,7 +113,9 @@ async function rendermd2pdf(container) {
                     color: ${theme === 'dark' ? '#c9d1d9' : '#24292e'};
                     background: ${theme === 'dark' ? '#0d1117' : 'white'};
                     padding: 2.54cm;
+                    -webkit-print-color-adjust: exact;
                 }
+                .markdown-body { max-width: 800px; margin: 0 auto; }
                 h1, h2, h3, h4, h5, h6 {
                     margin-top: 1.5rem;
                     margin-bottom: 1rem;
@@ -131,10 +133,12 @@ async function rendermd2pdf(container) {
                 th, td { border: 1px solid ${theme === 'dark' ? '#30363d' : '#dfe2e5'}; padding: 0.6rem 1rem; text-align: left; }
                 th { background: ${theme === 'dark' ? '#21262d' : '#f6f8fa'}; }
                 blockquote { margin: 0; padding: 0 1rem; color: ${theme === 'dark' ? '#8b949e' : '#6a737d'}; border-left: 0.25rem solid ${theme === 'dark' ? '#30363d' : '#dfe2e5'}; }
-                img { max-width: 100%; page-break-inside: avoid; }
+                img { max-width: 100%; page-break-inside: avoid; display:block; margin: 0.5rem auto; }
                 .page-break { page-break-before: always; height: 0; }
+                hr { border: none; border-top: 1px solid ${theme === 'dark' ? '#21262d' : '#e1e4e8'}; margin: 1.25rem 0; }
                 @media print {
                     body { margin: 2.54cm; }
+                    code, pre { -webkit-print-color-adjust: exact; }
                 }
             </style>
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">

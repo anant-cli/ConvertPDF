@@ -111,7 +111,7 @@ async function renderdocx2pdf(container) {
         const docxPrintStyles = `
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: 'Calibri','Segoe UI',Roboto,sans-serif; line-height: 1.6; color: #2c3e50; background: white; padding: 2.54cm; }
+            body { font-family: 'Calibri','Segoe UI',Roboto,sans-serif; line-height: 1.6; color: #2c3e50; background: white; padding: 2.54cm; -webkit-print-color-adjust: exact; }
             .docx-body { max-width: 100%; margin: 0 auto; }
             .docx-body h1 { font-size: 28px; color: #1e2b4f; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-top: 30px; margin-bottom: 20px; page-break-after: avoid; }
             .docx-body h2 { font-size: 24px; color: #2c3e50; border-bottom: 1px solid #bdc3c7; padding-bottom: 8px; margin-top: 25px; margin-bottom: 15px; page-break-after: avoid; }
@@ -123,9 +123,16 @@ async function renderdocx2pdf(container) {
             .docx-body th { background: #3498db; color: white; padding: 12px; border: 1px solid #2980b9; }
             .docx-body td { padding: 10px 12px; border: 1px solid #ddd; }
             .docx-body tr:nth-child(even) { background: #f8f9fa; }
-            .docx-body img { max-width: 100%; height: auto; page-break-inside: avoid; }
+            .docx-body img { max-width: 100%; height: auto; page-break-inside: avoid; display:block; margin:0 auto; }
             @media print { body { margin: 2.54cm; } .page-break { page-break-before: always; } }
         </style>`;
+
+        // Create a scoped preview stylesheet to avoid leaking global rules into the host page
+        const docxPreviewStyles = docxPrintStyles
+            .replace(/\* \{/, '.docx-body * {')
+            .replace(/\n\s*body \{/, '\n            .docx-body {')
+            .replace(/@media print\s*\{\s*body \{/, '@media print { .docx-body {')
+            .replace(/\.page-break/g, '.docx-body .page-break');
 
         function enhanceHeadings(html) {
             if (!detectHeadings.checked) return html;
@@ -190,7 +197,8 @@ async function renderdocx2pdf(container) {
                     });
                 }
 
-                previewDiv.innerHTML = docxPrintStyles + `<div class="docx-body">${html}</div>`;
+                // Use scoped preview styles in the page to prevent global style leakage
+                previewDiv.innerHTML = docxPreviewStyles + `<div class="docx-body">${html}</div>`;
                 window.currentDocxHtml = html;
                 printBtn.disabled = false;
                 updateDocxFloatingBtn();
