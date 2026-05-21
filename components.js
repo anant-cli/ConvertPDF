@@ -11,7 +11,6 @@
     // ==================== CONSTANTS ====================
 
     const CONSTANTS = {
-        CONSENT_STORAGE_KEY: 'convertpdf_consent_v1',
         ANIMATION_DELAY: 500,
         INTERSECTION_THRESHOLD: 0.1,
         TILT_SENSITIVITY: 10,
@@ -261,105 +260,6 @@
         });
     }
 
-    // ==================== COOKIE CONSENT ====================
-
-    /**
-     * Applies user's consent choice
-     * @param {string} choice - 'all' or 'essential'
-     */
-    function applyConsentChoice(choice) {
-        if (typeof window.__updateAdConsent === 'function') {
-            window.__updateAdConsent(choice);
-        } else if (typeof window.gtag === 'function') {
-            // Fallback if analytics-head.js not yet loaded
-            const consentSettings = choice === 'all' ? {
-                ad_storage: 'granted',
-                ad_user_data: 'granted',
-                ad_personalization: 'granted',
-                analytics_storage: 'granted'
-            } : {
-                ad_storage: 'denied',
-                ad_user_data: 'denied',
-                ad_personalization: 'denied',
-                analytics_storage: 'granted'
-            };
-            
-            window.gtag('consent', 'update', consentSettings);
-        }
-    }
-
-    /**
-     * Sets up cookie consent banner
-     */
-    function setupCookieConsent() {
-        if (document.getElementById('cookie-consent-root')) return;
-
-        // Check for existing consent
-        try {
-            const stored = localStorage.getItem(CONSTANTS.CONSENT_STORAGE_KEY);
-            if (stored === 'all' || stored === 'essential') {
-                applyConsentChoice(stored);
-                return;
-            }
-        } catch (e) {
-            console.warn('localStorage not available:', e);
-        }
-
-        // Create consent banner
-        const root = document.createElement('div');
-        root.id = 'cookie-consent-root';
-        root.className = 'cookie-consent-root';
-        root.setAttribute('role', 'dialog');
-        root.setAttribute('aria-labelledby', 'cookie-consent-title');
-        root.setAttribute('aria-modal', 'true');
-        root.innerHTML = `
-            <div class="cookie-consent-inner">
-                <p id="cookie-consent-title" class="cookie-consent-title">Cookies &amp; Privacy</p>
-                <p class="cookie-consent-text">
-                    We use essential cookies to keep the site working, Google Analytics for anonymous traffic statistics, 
-                    and (if you accept) advertising cookies for Google AdSense ads that help fund free access. 
-                    Your documents are processed entirely in your browser and never uploaded. 
-                    <a href="/privacy.html">Privacy Policy</a>
-                </p>
-                <div class="cookie-consent-actions">
-                    <button type="button" class="button cookie-btn-accept" id="cookie-consent-accept">Accept all</button>
-                    <button type="button" class="button secondary cookie-btn-ess" id="cookie-consent-essential">Essential only</button>
-                    <button type="button" class="button secondary cookie-btn-reject" id="cookie-consent-reject">Reject all</button>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(root);
-
-        // Handler for consent choice
-        function handleConsent(choice) {
-            try {
-                localStorage.setItem(CONSTANTS.CONSENT_STORAGE_KEY, choice);
-            } catch (e) {
-                console.warn('Failed to save consent:', e);
-            }
-            
-            applyConsentChoice(choice);
-            
-            // Fade out and remove
-            root.style.opacity = '0';
-            setTimeout(() => root.remove(), 300);
-        }
-
-        // Event listeners
-        document.getElementById('cookie-consent-accept').addEventListener('click', () => {
-            handleConsent('all');
-        });
-        
-        document.getElementById('cookie-consent-essential').addEventListener('click', () => {
-            handleConsent('essential');
-        });
-        
-        document.getElementById('cookie-consent-reject').addEventListener('click', () => {
-            handleConsent('essential');
-        });
-    }
-
     // ==================== PREMIUM UI ENHANCEMENTS ====================
 
     /**
@@ -532,42 +432,6 @@
     }
 
     /**
-     * Adds privacy note to footer
-     */
-    function ensurePrivacyNote() {
-        const footer = document.querySelector('.site-footer .footer-bottom');
-        if (!footer || footer.querySelector('.privacy-note')) return;
-
-        const note = document.createElement('p');
-        note.className = 'privacy-note';
-        note.textContent = 'We use Google Analytics for anonymous traffic. Optional ads may appear if you accept marketing cookies in the banner. Your documents are never uploaded.';
-        footer.insertBefore(note, footer.firstChild);
-    }
-
-    /**
-     * Creates ad slot placeholders
-     */
-    function ensureAdSlots() {
-        if (!document.body || document.querySelector('.ad-slot')) return;
-
-        const anchor = document.querySelector('#toolContainer') || document.querySelector('.content-section');
-        if (!anchor || !anchor.parentNode) return;
-
-        const slot = document.createElement('aside');
-        slot.className = 'ad-slot';
-        slot.setAttribute('aria-label', 'Advertisement');
-        slot.setAttribute('role', 'complementary');
-        slot.hidden = true;
-        slot.innerHTML = '<span>Advertisement</span>';
-
-        anchor.parentNode.insertBefore(slot, anchor.nextSibling);
-
-        // Auto Ads self-initialize from the script tag in analytics-head.js.
-        // Do NOT call adsbygoogle.push({}) here — that is only for manual <ins> units
-        // and will throw "All ins elements already have ads" if called with Auto Ads.
-    }
-
-    /**
      * Adds a hidden aria-live region for assertive announcements
      * (e.g. conversion errors) that screen readers catch immediately.
      */
@@ -619,6 +483,15 @@
         }
     }
 
+    /**
+     * Clear stale consent/analytics data left from previous site version
+     */
+    function clearLegacyStorage() {
+        try {
+            localStorage.removeItem('convertpdf_consent_v1');
+        } catch (e) { /* ignore */ }
+    }
+
     // ==================== INITIALIZATION ====================
 
     /**
@@ -626,14 +499,12 @@
      */
     function init() {
         // Core functionality
-        setupCookieConsent();
+        clearLegacyStorage();
         ensureSkipLink();
         ensureAriaAnnouncer();
-        ensurePrivacyNote();
         normalizeGlobalLabels();
         normalizeFooterDetails();
         ensurePwaSupport();
-        ensureAdSlots();
         setupHamburger();
         setActiveNavLink();
         ensureToastContainer();

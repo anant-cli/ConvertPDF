@@ -1,18 +1,8 @@
 /**
- * ConvertPDF Service Worker v7
- * Strategy: Cache-first for static assets, network-first for pages,
- * always bypass ad/analytics network calls.
+ * ConvertPDF Service Worker v8
+ * Strategy: Cache-first for static assets, network-first for HTML pages.
  */
-const CACHE_NAME = 'convertpdf-v7';
-
-const AD_DOMAINS = [
-    'googlesyndication.com',
-    'doubleclick.net',
-    'googleads.g.doubleclick.net',
-    'adtrafficquality.google',
-    'google-analytics.com',
-    'googletagmanager.com'
-];
+const CACHE_NAME = 'convertpdf-v8';
 
 const STATIC_ASSETS = [
     '/',
@@ -22,7 +12,6 @@ const STATIC_ASSETS = [
     '/utils.js',
     '/script.js',
     '/components.js',
-    '/analytics-head.js',
     '/favicon.png',
     '/favicon.ico',
     '/icon-192.png',
@@ -63,10 +52,6 @@ const STATIC_ASSETS = [
     '/tools/web2pdf.js'
 ];
 
-function isAdRequest(url) {
-    return AD_DOMAINS.some(domain => url.includes(domain));
-}
-
 function isFontRequest(url) {
     return url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com');
 }
@@ -106,7 +91,6 @@ self.addEventListener('activate', event => {
 // Fetch: stale-while-revalidate for assets, network-first for navigation.
 self.addEventListener('fetch', event => {
     if (event.request.method !== 'GET') return;
-    if (isAdRequest(event.request.url)) return;
     if (isFontRequest(event.request.url)) return;
 
     // Navigation: try network first, fall back to cached index

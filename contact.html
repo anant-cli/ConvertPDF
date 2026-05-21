@@ -3,12 +3,12 @@
 
 <head>
   <meta charset="UTF-8">
-  <script async src="/analytics-head.js"></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0f172a">
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="preconnect" href="https://pagead2.googlesyndication.com">
+
   <link rel="preload" href="/styles.css" as="style">
   <title>Contact Us | ConvertPDF</title>
   <meta name="description" content="Have questions about ConvertPDF? Found a bug or want to suggest a feature? Drop us a line. We're always happy to help.">
@@ -83,8 +83,7 @@
         <p>ConvertPDF is a passion project built for privacy. If something isn't working, or you have an idea to make
           it better, I'd love to hear from you.</p>
 
-        <form name="contact" method="POST" netlify data-netlify="true" class="contact-form">
-          <input type="hidden" name="form-name" value="contact">
+        <form class="contact-form" id="contact-form" novalidate>
 
           <div class="form-group">
             <label for="contact-name">Name <span class="required">*</span></label>

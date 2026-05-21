@@ -316,35 +316,11 @@ window.rateLimiter = rateLimiter;
 // ==================== ANALYTICS ====================
 
 /**
- * Tracks events with Google Analytics
- * @param {string} category - Event category
- * @param {string} action - Event action
- * @param {string} label - Event label
- * @param {number} value - Event value
+ * trackEvent - no-op stub (analytics removed)
+ * Retained for compatibility with tool scripts that call trackEvent().
  */
 function trackEvent(category, action, label, value = 0) {
-    if (typeof window.gtag !== 'function') return;
-    
-    try {
-        window.gtag('event', action, {
-            event_category: category,
-            event_label: label,
-            value: value
-        });
-
-        // Track conversions for important actions
-        const conversionActions = ['download', 'convert', 'encrypt', 'merge', 'compress'];
-        if (conversionActions.includes(action)) {
-            window.gtag('event', 'generate_lead', {
-                event_category: 'Tool',
-                event_label: label,
-                currency: 'USD',
-                value: 0
-            });
-        }
-    } catch (e) {
-        console.warn('Analytics tracking failed:', e);
-    }
+    // Analytics removed — this function is intentionally a no-op.
 }
 
 // ==================== SEO HELPERS ====================
