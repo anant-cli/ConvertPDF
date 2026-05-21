@@ -186,9 +186,10 @@
      */
     function normalizeGlobalLabels() {
         const navMap = {
+            'blog/index.html': '📰 Blog',
+            'blog/': '📰 Blog',
             'index.html': '🏠 Home',
             'all-tools.html': '🛠️ All Tools',
-            'blog': '📰 Blog',
             'about.html': 'ℹ️ About',
             'contact.html': '📞 Contact',
             'privacy.html': '🔒 Privacy',
@@ -198,9 +199,9 @@
         document.querySelectorAll('.main-nav a').forEach(function (a) {
             const href = a.getAttribute('href') || '';
             const lower = href.toLowerCase();
-            
+
             for (const [key, value] of Object.entries(navMap)) {
-                if (lower.endsWith(key) || (key === 'blog' && lower.includes('blog/'))) {
+                if (lower.endsWith(key) || lower.includes(key)) {
                     a.textContent = value;
                     break;
                 }
@@ -474,7 +475,7 @@
             window.addEventListener('load', function () {
                 navigator.serviceWorker.register('/sw.js')
                     .then(function (registration) {
-                        console.log('ServiceWorker registration successful');
+                        // SW registered
                     })
                     .catch(function (err) {
                         console.warn('ServiceWorker registration failed:', err);
